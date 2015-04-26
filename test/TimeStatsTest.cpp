@@ -8,7 +8,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Ivan Chen, ivanchen36@gmail.com
+ *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
 

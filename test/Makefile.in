@@ -34,7 +34,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = autoptrtest$(EXEEXT) timestatstest$(EXEEXT)
+noinst_PROGRAMS = test$(EXEEXT) autoptrtest$(EXEEXT) \
+	timestatstest$(EXEEXT) singletontest$(EXEEXT) logtest$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -52,6 +53,24 @@ autoptrtest_LDADD = $(LDADD)
 autoptrtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(autoptrtest_LDFLAGS) $(LDFLAGS) -o $@
+am_logtest_OBJECTS = LogTest.$(OBJEXT)
+logtest_OBJECTS = $(am_logtest_OBJECTS)
+logtest_LDADD = $(LDADD)
+logtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(logtest_LDFLAGS) $(LDFLAGS) -o $@
+am_singletontest_OBJECTS = SingletonTest.$(OBJEXT)
+singletontest_OBJECTS = $(am_singletontest_OBJECTS)
+singletontest_LDADD = $(LDADD)
+singletontest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(singletontest_LDFLAGS) $(LDFLAGS) -o $@
+am_test_OBJECTS = Test.$(OBJEXT)
+test_OBJECTS = $(am_test_OBJECTS)
+test_LDADD = $(LDADD)
+test_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(test_LDFLAGS) $(LDFLAGS) -o $@
 am_timestatstest_OBJECTS = TimeStatsTest.$(OBJEXT)
 timestatstest_OBJECTS = $(am_timestatstest_OBJECTS)
 timestatstest_LDADD = $(LDADD)
@@ -71,8 +90,12 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(autoptrtest_SOURCES) $(timestatstest_SOURCES)
-DIST_SOURCES = $(autoptrtest_SOURCES) $(timestatstest_SOURCES)
+SOURCES = $(autoptrtest_SOURCES) $(logtest_SOURCES) \
+	$(singletontest_SOURCES) $(test_SOURCES) \
+	$(timestatstest_SOURCES)
+DIST_SOURCES = $(autoptrtest_SOURCES) $(logtest_SOURCES) \
+	$(singletontest_SOURCES) $(test_SOURCES) \
+	$(timestatstest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -197,14 +220,20 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 TEST_INCLUDE = $(top_srcdir)/test
 TEST_SRC = $(top_srcdir)/test
-LIB_PATH = $(top_srcdir)/libsrc/.libs
+LIB_PATH = $(top_srcdir)/libsrc/eagle/.libs
 TEST_LD = -L$(LIB_PATH) -leagle -ltcmalloc
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE)
-autoptrtest_SOURCES = $(TEST_SRC)/AutoPtrTest.cpp
+test_SOURCES = Test.cpp
+test_LDFLAGS = $(TEST_LD)
+autoptrtest_SOURCES = AutoPtrTest.cpp
 autoptrtest_LDFLAGS = $(TEST_LD)
-timestatstest_SOURCES = $(TEST_SRC)/TimeStatsTest.cpp
+timestatstest_SOURCES = TimeStatsTest.cpp
 timestatstest_LDFLAGS = $(TEST_LD)
+singletontest_SOURCES = SingletonTest.cpp
+singletontest_LDFLAGS = $(TEST_LD)
+logtest_SOURCES = LogTest.cpp
+logtest_LDFLAGS = $(TEST_LD)
 all: all-am
 
 .SUFFIXES:
@@ -251,6 +280,15 @@ clean-noinstPROGRAMS:
 autoptrtest$(EXEEXT): $(autoptrtest_OBJECTS) $(autoptrtest_DEPENDENCIES) 
 	@rm -f autoptrtest$(EXEEXT)
 	$(autoptrtest_LINK) $(autoptrtest_OBJECTS) $(autoptrtest_LDADD) $(LIBS)
+logtest$(EXEEXT): $(logtest_OBJECTS) $(logtest_DEPENDENCIES) 
+	@rm -f logtest$(EXEEXT)
+	$(logtest_LINK) $(logtest_OBJECTS) $(logtest_LDADD) $(LIBS)
+singletontest$(EXEEXT): $(singletontest_OBJECTS) $(singletontest_DEPENDENCIES) 
+	@rm -f singletontest$(EXEEXT)
+	$(singletontest_LINK) $(singletontest_OBJECTS) $(singletontest_LDADD) $(LIBS)
+test$(EXEEXT): $(test_OBJECTS) $(test_DEPENDENCIES) 
+	@rm -f test$(EXEEXT)
+	$(test_LINK) $(test_OBJECTS) $(test_LDADD) $(LIBS)
 timestatstest$(EXEEXT): $(timestatstest_OBJECTS) $(timestatstest_DEPENDENCIES) 
 	@rm -f timestatstest$(EXEEXT)
 	$(timestatstest_LINK) $(timestatstest_OBJECTS) $(timestatstest_LDADD) $(LIBS)
@@ -262,6 +300,9 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AutoPtrTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LogTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingletonTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeStatsTest.Po@am__quote@
 
 .cpp.o:
@@ -284,34 +325,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
-
-AutoPtrTest.o: $(TEST_SRC)/AutoPtrTest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AutoPtrTest.o -MD -MP -MF $(DEPDIR)/AutoPtrTest.Tpo -c -o AutoPtrTest.o `test -f '$(TEST_SRC)/AutoPtrTest.cpp' || echo '$(srcdir)/'`$(TEST_SRC)/AutoPtrTest.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/AutoPtrTest.Tpo $(DEPDIR)/AutoPtrTest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(TEST_SRC)/AutoPtrTest.cpp' object='AutoPtrTest.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AutoPtrTest.o `test -f '$(TEST_SRC)/AutoPtrTest.cpp' || echo '$(srcdir)/'`$(TEST_SRC)/AutoPtrTest.cpp
-
-AutoPtrTest.obj: $(TEST_SRC)/AutoPtrTest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AutoPtrTest.obj -MD -MP -MF $(DEPDIR)/AutoPtrTest.Tpo -c -o AutoPtrTest.obj `if test -f '$(TEST_SRC)/AutoPtrTest.cpp'; then $(CYGPATH_W) '$(TEST_SRC)/AutoPtrTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(TEST_SRC)/AutoPtrTest.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/AutoPtrTest.Tpo $(DEPDIR)/AutoPtrTest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(TEST_SRC)/AutoPtrTest.cpp' object='AutoPtrTest.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AutoPtrTest.obj `if test -f '$(TEST_SRC)/AutoPtrTest.cpp'; then $(CYGPATH_W) '$(TEST_SRC)/AutoPtrTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(TEST_SRC)/AutoPtrTest.cpp'; fi`
-
-TimeStatsTest.o: $(TEST_SRC)/TimeStatsTest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TimeStatsTest.o -MD -MP -MF $(DEPDIR)/TimeStatsTest.Tpo -c -o TimeStatsTest.o `test -f '$(TEST_SRC)/TimeStatsTest.cpp' || echo '$(srcdir)/'`$(TEST_SRC)/TimeStatsTest.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/TimeStatsTest.Tpo $(DEPDIR)/TimeStatsTest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(TEST_SRC)/TimeStatsTest.cpp' object='TimeStatsTest.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TimeStatsTest.o `test -f '$(TEST_SRC)/TimeStatsTest.cpp' || echo '$(srcdir)/'`$(TEST_SRC)/TimeStatsTest.cpp
-
-TimeStatsTest.obj: $(TEST_SRC)/TimeStatsTest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TimeStatsTest.obj -MD -MP -MF $(DEPDIR)/TimeStatsTest.Tpo -c -o TimeStatsTest.obj `if test -f '$(TEST_SRC)/TimeStatsTest.cpp'; then $(CYGPATH_W) '$(TEST_SRC)/TimeStatsTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(TEST_SRC)/TimeStatsTest.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/TimeStatsTest.Tpo $(DEPDIR)/TimeStatsTest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(TEST_SRC)/TimeStatsTest.cpp' object='TimeStatsTest.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TimeStatsTest.obj `if test -f '$(TEST_SRC)/TimeStatsTest.cpp'; then $(CYGPATH_W) '$(TEST_SRC)/TimeStatsTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(TEST_SRC)/TimeStatsTest.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
