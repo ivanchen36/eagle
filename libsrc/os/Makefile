@@ -48,7 +48,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libos_la_LIBADD =
-am_libos_la_OBJECTS = OsApi.lo FileEx.lo ProcessSem.lo
+am_libos_la_OBJECTS = OsApi.lo FileEx.lo ProcessSem.lo ThreadSem.lo
 libos_la_OBJECTS = $(am_libos_la_OBJECTS)
 libos_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -191,7 +191,7 @@ LIBSRC_PATH = $(top_srcdir)/libsrc
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
 INCLUDES = -I$(LIB_INCLUDE)
 noinst_LTLIBRARIES = libos.la
-libos_la_SOURCES = OsApi.cpp FileEx.cpp ProcessSem.cpp
+libos_la_SOURCES = OsApi.cpp FileEx.cpp ProcessSem.cpp ThreadSem.cpp
 libos_la_LDFLAGS = -lrt
 all: all-am
 
@@ -248,6 +248,7 @@ distclean-compile:
 include ./$(DEPDIR)/FileEx.Plo
 include ./$(DEPDIR)/OsApi.Plo
 include ./$(DEPDIR)/ProcessSem.Plo
+include ./$(DEPDIR)/ThreadSem.Plo
 
 .cpp.o:
 	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

@@ -11,8 +11,6 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-
-
 #ifndef  _PROCESSSEM_H_
 #define  _PROCESSSEM_H_
 

@@ -29,7 +29,10 @@ ProcessSem::ProcessSem(const int val) : m_semId(-1)
 
 ProcessSem::~ProcessSem()
 {
-    semctl(m_semId, 0, IPC_RMID);
+    if (semctl(m_semId, 0, IPC_RMID))
+    {
+        ERRORLOG1("semctl err, %s", strerror(errno));
+    }
 }
 
 int ProcessSem::init(int val)
