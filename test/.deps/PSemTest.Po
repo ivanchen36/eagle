@@ -1,4 +1,4 @@
-LogTest.o: LogTest.cpp /usr/include/stdio.h /usr/include/features.h \
+PSemTest.o: PSemTest.cpp /usr/include/stdio.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h \
  /usr/lib/gcc/x86_64-redhat-linux/4.4.7/include/stddef.h \
@@ -84,6 +84,11 @@ LogTest.o: LogTest.cpp /usr/include/stdio.h /usr/include/features.h \
  /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/ostream.tcc \
  /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/istream \
  /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/istream.tcc \
+ /usr/include/sys/wait.h /usr/include/signal.h /usr/include/bits/signum.h \
+ /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h \
+ /usr/include/bits/sigcontext.h /usr/include/bits/sigstack.h \
+ /usr/include/sys/ucontext.h /usr/include/bits/sigthread.h \
+ /usr/include/sys/resource.h /usr/include/bits/resource.h \
  ../libsrc/include/Log.h /usr/include/stdint.h /usr/include/string.h \
  /usr/include/errno.h /usr/include/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/asm/errno.h \
@@ -97,7 +102,8 @@ LogTest.o: LogTest.cpp /usr/include/stdio.h /usr/include/features.h \
  /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_tempbuf.h \
  /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_construct.h \
  /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_uninitialized.h \
- ../libsrc/include/OsApi.h ../libsrc/include/Lock.h
+ ../libsrc/include/OsApi.h ../libsrc/include/Lock.h \
+ ../libsrc/include/ProcessSem.h
 
 /usr/include/stdio.h:
 
@@ -315,6 +321,28 @@ LogTest.o: LogTest.cpp /usr/include/stdio.h /usr/include/features.h \
 
 /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/istream.tcc:
 
+/usr/include/sys/wait.h:
+
+/usr/include/signal.h:
+
+/usr/include/bits/signum.h:
+
+/usr/include/bits/siginfo.h:
+
+/usr/include/bits/sigaction.h:
+
+/usr/include/bits/sigcontext.h:
+
+/usr/include/bits/sigstack.h:
+
+/usr/include/sys/ucontext.h:
+
+/usr/include/bits/sigthread.h:
+
+/usr/include/sys/resource.h:
+
+/usr/include/bits/resource.h:
+
 ../libsrc/include/Log.h:
 
 /usr/include/stdint.h:
@@ -356,3 +384,5 @@ LogTest.o: LogTest.cpp /usr/include/stdio.h /usr/include/features.h \
 ../libsrc/include/OsApi.h:
 
 ../libsrc/include/Lock.h:
+
+../libsrc/include/ProcessSem.h:

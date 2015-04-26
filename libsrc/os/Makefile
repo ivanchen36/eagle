@@ -48,8 +48,11 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libos_la_LIBADD =
-am_libos_la_OBJECTS = OsApi.lo FileEx.lo
+am_libos_la_OBJECTS = OsApi.lo FileEx.lo ProcessSem.lo
 libos_la_OBJECTS = $(am_libos_la_OBJECTS)
+libos_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(libos_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I. -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -188,7 +191,8 @@ LIBSRC_PATH = $(top_srcdir)/libsrc
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
 INCLUDES = -I$(LIB_INCLUDE)
 noinst_LTLIBRARIES = libos.la
-libos_la_SOURCES = OsApi.cpp FileEx.cpp
+libos_la_SOURCES = OsApi.cpp FileEx.cpp ProcessSem.cpp
+libos_la_LDFLAGS = -lrt
 all: all-am
 
 .SUFFIXES:
@@ -233,7 +237,7 @@ clean-noinstLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libos.la: $(libos_la_OBJECTS) $(libos_la_DEPENDENCIES) 
-	$(CXXLINK)  $(libos_la_OBJECTS) $(libos_la_LIBADD) $(LIBS)
+	$(libos_la_LINK)  $(libos_la_OBJECTS) $(libos_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -243,6 +247,7 @@ distclean-compile:
 
 include ./$(DEPDIR)/FileEx.Plo
 include ./$(DEPDIR)/OsApi.Plo
+include ./$(DEPDIR)/ProcessSem.Plo
 
 .cpp.o:
 	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

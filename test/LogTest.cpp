@@ -35,7 +35,10 @@ void test()
 
 void test1()
 {
-    g_sysLog->redirectToOther(STDOUT_FILENO);
+    if (g_sysLog->redirectToOther(STDOUT_FILENO))
+    {
+        DEBUGLOG("redirectToOther err");
+    }
     DEBUGLOG("debug test1");
     DEBUGLOG1("%s", "debug1 test1");
     INFOLOG("info test1");
@@ -48,8 +51,11 @@ void test1()
 
 void test2()
 {
-    g_sysLog->redirectToLog(STDOUT_FILENO);
-    printf("test2");
+    if (g_sysLog->redirectToLog(STDOUT_FILENO))
+    {
+        DEBUGLOG("redirectToLog err");
+    }
+    printf("test2\n");
 }
 
 /**

@@ -1,43 +1,92 @@
-#include <linux/sem.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <fcntl.h>
 
 #include "ProcessSem.h"
 #include "Log.h"
 
-ProcessSem()
+union semun 
 {
-    union semun sem;
-    op.val = val;
+    int              val;    /*  Value for SETVAL */
+    struct semid_ds *buf;    /*  Buffer for IPC_STAT, IPC_SET */
+    unsigned short  *array;  /*  Array for GETALL, SETALL */
+    struct seminfo  *__buf;  /*  Buffer for IPC_INFO
+                                 (Linux-specific) */
+};
+
+ProcessSem::ProcessSem(const int val) : m_semId(-1)
+{
     m_semId = semget(IPC_PRIVATE, 1, IPC_CREAT | S_IRUSR | S_IWUSR);
     if (-1 != m_semId) 
     {
+        init(val);
+    }else
+    {
         ERRORLOG1("semget err, %s", strerror(errno));
-
-        return -1;
     }
-    m_semId = semctl(m_semId, 0, SETVAL, op);
 }
 
 ProcessSem::~ProcessSem()
 {
+    semctl(m_semId, 0, IPC_RMID);
+}
+
+int ProcessSem::init(int val)
+{
+    union semun sem;
+
+    sem.val = 0;
+    if (semctl(m_semId, 0, SETVAL, sem))
     {
-    semctl(sem_id, 0, IPC_RMID);
+        ERRORLOG1("semctl err, %s", strerror(errno));
+
+        return -1;
     }
+
+    return 0;
 }
 
-int ProcessSem::post(const int val)
+int ProcessSem::op(const int val, const int sec)
 {
-    if (-1 != m_semId) return -1;
-    i;
+    if (-1 == m_semId) return -1;
+
+    struct sembuf op;
+    struct timespec t;
+    struct timespec *timeOut = NULL;
+
+    op.sem_num = 0;
+    op.sem_op = val;
+    op.sem_flg = SEM_UNDO;
+    if (sec > 0)
+    {
+        t.tv_sec = sec;
+        t.tv_nsec = 0;
+        timeOut = &t;
+    }
+    if (semtimedop(m_semId, &op, 1, timeOut))
+    {
+        if (ETIMEDOUT == errno || EAGAIN == errno) return 1;
+
+        ERRORLOG1("semop err, %s", strerror(errno));
+
+        return -1;
+    }
+
+    return 0;
 }
 
-int ProcessSem::wait(const int val)
+int ProcessSem::post()
 {
-    if (-1 != m_semId) return -1;
-    i;
+    return op(1); 
 }
 
-int ProcessSem::timedWait(const int val)
+int ProcessSem::wait()
 {
-    if (-1 != m_semId) return -1;
-    i;
+    return op(-1);
+}
+
+int ProcessSem::timedWait(const int sec)
+{
+    return op(-1, sec);
 }

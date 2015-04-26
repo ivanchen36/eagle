@@ -27,14 +27,14 @@ Log::~Log()
 
 int Log::redirectToOther(const int fd)
 {
-    if (dup2(fd, m_file->getFd())) return -1;
+    if (dup2(fd, m_file->getFd()) == -1) return -1;
 
     return 0;
 }
 
 int Log::redirectToLog(const int fd)
 {
-    if (dup2(m_file->getFd(), fd)) return -1;
+    if (dup2(m_file->getFd(), fd) == -1) return -1;
 
     return 0;
 }

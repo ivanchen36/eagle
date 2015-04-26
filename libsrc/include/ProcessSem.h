@@ -21,14 +21,16 @@
 class ProcessSem
 {
 public:
-    ProcessSem();
+    ProcessSem(const int val = 0);
     ~ProcessSem();
 
-    int post(const int val = 1);
-    int wait(const int val = 1);
-    int timedWait(const int val = 1);
+    int op(const int val, const int sec = 0);
+    int post();
+    int wait();
+    int timedWait(const int sec);
 
 private:
+    int init(int val);
     int m_semId;
 };
 

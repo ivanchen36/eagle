@@ -17,6 +17,9 @@
 #define _EG_LOG_H_
 
 #include <stdint.h>
+#include <string.h>
+#include <errno.h>
+
 #include "FileEx.h"
 #include "Lock.h"
 

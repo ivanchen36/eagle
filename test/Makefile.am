@@ -7,12 +7,10 @@ LIB_PATH = $(top_srcdir)/libsrc/eagle/.libs
 TEST_LD = -L$(LIB_PATH) -leagle -ltcmalloc
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
 
-noinst_PROGRAMS = test autoptrtest timestatstest singletontest \
-				  logtest
+noinst_PROGRAMS = autoptrtest timestatstest singletontest \
+				  logtest psemtest
 
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE)
-test_SOURCES = Test.cpp
-test_LDFLAGS = $(TEST_LD)
 
 autoptrtest_SOURCES = AutoPtrTest.cpp
 autoptrtest_LDFLAGS = $(TEST_LD)
@@ -25,3 +23,6 @@ singletontest_LDFLAGS = $(TEST_LD)
 
 logtest_SOURCES = LogTest.cpp
 logtest_LDFLAGS = $(TEST_LD)
+
+psemtest_SOURCES = PSemTest.cpp
+psemtest_LDFLAGS = $(TEST_LD)
