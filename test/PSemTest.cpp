@@ -22,7 +22,7 @@
 
 using namespace std;
 
-void test(ProcessSemPtr &semPtr)
+void test(SemaphorePtr &semPtr)
 {
     pid_t pid=fork();
     if(pid<0)
@@ -70,7 +70,7 @@ void test(ProcessSemPtr &semPtr)
     }
 }
 
-void test1(ProcessSemPtr &semPtr)
+void test1(SemaphorePtr &semPtr)
 {
     int ret;
 
@@ -136,7 +136,7 @@ int main (int argc, char *argv[] )
     {
         DEBUGLOG("redirectToOther err");
     }
-    ProcessSemPtr semPtr = new ProcessSem();
+    SemaphorePtr semPtr = new ProcessSem();
     test1(semPtr);
     exit(3);
 

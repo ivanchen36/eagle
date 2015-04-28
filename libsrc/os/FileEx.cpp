@@ -3,6 +3,8 @@
 
 #include "FileEx.h"
 
+const static char *MODE[] = {"r", "w", "r+", "a", "w+", "a+"};
+
 FileEx::FileEx(const char *fileName, int mode) 
     : m_file(NULL), m_fileName(NULL)
 {

@@ -27,8 +27,6 @@
 #define RDWR_TRUNC 4
 #define RDWR_APPEND 5
 
-const static char *MODE[] = {"r", "w", "r+", "a", "w+", "a+"};
-
 class FileEx
 {
 public:

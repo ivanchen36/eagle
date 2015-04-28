@@ -21,7 +21,6 @@
 #include <errno.h>
 
 #include "FileEx.h"
-#include "Lock.h"
 
 class Log;
 extern AutoPtr<Log> g_sysLog;

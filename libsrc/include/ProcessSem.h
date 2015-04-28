@@ -14,18 +14,18 @@
 #ifndef  _PROCESSSEM_H_
 #define  _PROCESSSEM_H_
 
-#include "AutoPtr.h"
+#include "SemEx.h"
 
-class ProcessSem
+class ProcessSem : public Semaphore
 {
 public:
     ProcessSem(const int val = 0);
     ~ProcessSem();
 
     int op(const int val, const int sec = 0);
-    int post();
-    int wait();
-    int timedWait(const int sec);
+    virtual int post();
+    virtual int wait();
+    virtual int timedWait(const int sec);
 
 private:
     int init(int val);

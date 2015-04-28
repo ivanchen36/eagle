@@ -44,7 +44,7 @@ public:
     {
         cout << "print"  << " " << m_name << endl;
     }
-
+ 
 private:
     AutoPtrTest()
     {
@@ -52,9 +52,18 @@ private:
         cout << "constructor" << " " << m_name << endl;
     }
 
-    friend class AutoPtr<AutoPtrTest>;
-
     string m_name;
+    friend class AutoPtr<AutoPtrTest>;
+    friend class AutoPtrTestChild;
+};
+
+class AutoPtrTestChild : public AutoPtrTest
+{
+public:
+    AutoPtrTestChild(const char *name)
+    {
+        cout << "child constructor" << endl;
+    }
 };
 
 typedef AutoPtr<AutoPtrTest> APTestPtr;
@@ -64,6 +73,7 @@ typedef AutoPtr<AutoPtrTest> APTestPtr;
  */
 int main ( int argc, char *argv[] )
 {
+    APTestPtr child = new AutoPtrTestChild("");
     APTestPtr ptr = new AutoPtrTest("test1");
     APTestPtr ptr1 = ptr;
     ptr->print();

@@ -15,25 +15,11 @@
 #ifndef  _SINGLETON_H_
 #define  _SINGLETON_H_
 
-#include "Lock.h"
+#include "MutexLock.h"
 
 using namespace std;
 
-class SingletonInitializer
-{
-public:
-    SingletonInitializer()
-    {
-        pthread_mutex_init(&s_lock, NULL);
-    }
-
-    ~SingletonInitializer()
-    {
-        pthread_mutex_destroy(&s_lock);
-    }
-
-    static pthread_mutex_t s_lock;
-};
+extern MutexLockPtr g_singletonLock;
 
 template<class T> class Singleton 
 {
@@ -42,7 +28,7 @@ public:
     {
         if (s_instance) return *s_instance;
 
-        Lock lock(SingletonInitializer::s_lock);
+        LockGuard guard(g_singletonLock);
         if (s_instance) return *s_instance;
 
         s_cleaner;

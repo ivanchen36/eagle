@@ -16,9 +16,9 @@
 
 #include <semaphore.h>
 
-#include "AutoPtr.h"
+#include "SemEx.h"
 
-class ThreadSem
+class ThreadSem : public Semaphore
 {
 public:
     ThreadSem(const int val = 0);
