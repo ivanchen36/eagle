@@ -16,7 +16,7 @@
 #include <iostream>
 
 #include "Log.h"
-#include "Thread.h"
+#include "TaskThread.h"
 
 using namespace std;
 
@@ -56,7 +56,7 @@ int main ( int argc, char *argv[] )
     TaskPtr task = new HelloTask ("say hello");
 
     DEBUGLOG("create thread");
-    ThreadPtr thread = new Thread(task);
+    TaskThreadPtr thread = new TaskThread(task);
 
     DEBUGLOG("start thread");
     thread->start();

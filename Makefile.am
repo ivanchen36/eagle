@@ -3,4 +3,4 @@
 AUTOMAKE_OPTIONS = foreign
 CXXFLAGS = -g
 
-SUBDIRS = libsrc test pro
+SUBDIRS = libsrc test

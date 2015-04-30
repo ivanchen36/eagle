@@ -70,7 +70,7 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libeagle_la_DEPENDENCIES = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la
-am_libeagle_la_OBJECTS = Eagle.lo
+am_libeagle_la_OBJECTS = Eagle.lo TaskThread.lo
 libeagle_la_OBJECTS = $(am_libeagle_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -211,7 +211,7 @@ OS_PATH = $(top_srcdir)/libsrc/os
 UTIL_PATH = $(top_srcdir)/libsrc/util
 INCLUDES = -I$(LIB_INCLUDE)
 lib_LTLIBRARIES = libeagle.la
-libeagle_la_SOURCES = Eagle.cpp
+libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp
 libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la
 all: all-am
 
@@ -288,6 +288,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Eagle.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TaskThread.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

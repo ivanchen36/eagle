@@ -36,7 +36,7 @@ build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = autoptrtest$(EXEEXT) timestatstest$(EXEEXT) \
 	singletontest$(EXEEXT) logtest$(EXEEXT) psemtest$(EXEEXT) \
-	threadtest$(EXEEXT)
+	threadtest$(EXEEXT) shmtest$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -66,6 +66,12 @@ psemtest_LDADD = $(LDADD)
 psemtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(psemtest_LDFLAGS) $(LDFLAGS) -o $@
+am_shmtest_OBJECTS = ShmTest.$(OBJEXT)
+shmtest_OBJECTS = $(am_shmtest_OBJECTS)
+shmtest_LDADD = $(LDADD)
+shmtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(shmtest_LDFLAGS) $(LDFLAGS) -o $@
 am_singletontest_OBJECTS = SingletonTest.$(OBJEXT)
 singletontest_OBJECTS = $(am_singletontest_OBJECTS)
 singletontest_LDADD = $(LDADD)
@@ -98,11 +104,13 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(autoptrtest_SOURCES) $(logtest_SOURCES) \
-	$(psemtest_SOURCES) $(singletontest_SOURCES) \
-	$(threadtest_SOURCES) $(timestatstest_SOURCES)
+	$(psemtest_SOURCES) $(shmtest_SOURCES) \
+	$(singletontest_SOURCES) $(threadtest_SOURCES) \
+	$(timestatstest_SOURCES)
 DIST_SOURCES = $(autoptrtest_SOURCES) $(logtest_SOURCES) \
-	$(psemtest_SOURCES) $(singletontest_SOURCES) \
-	$(threadtest_SOURCES) $(timestatstest_SOURCES)
+	$(psemtest_SOURCES) $(shmtest_SOURCES) \
+	$(singletontest_SOURCES) $(threadtest_SOURCES) \
+	$(timestatstest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -243,6 +251,8 @@ psemtest_SOURCES = PSemTest.cpp
 psemtest_LDFLAGS = $(TEST_LD)
 threadtest_SOURCES = ThreadTest.cpp
 threadtest_LDFLAGS = $(TEST_LD)
+shmtest_SOURCES = ShmTest.cpp
+shmtest_LDFLAGS = $(TEST_LD)
 all: all-am
 
 .SUFFIXES:
@@ -295,6 +305,9 @@ logtest$(EXEEXT): $(logtest_OBJECTS) $(logtest_DEPENDENCIES)
 psemtest$(EXEEXT): $(psemtest_OBJECTS) $(psemtest_DEPENDENCIES) 
 	@rm -f psemtest$(EXEEXT)
 	$(psemtest_LINK) $(psemtest_OBJECTS) $(psemtest_LDADD) $(LIBS)
+shmtest$(EXEEXT): $(shmtest_OBJECTS) $(shmtest_DEPENDENCIES) 
+	@rm -f shmtest$(EXEEXT)
+	$(shmtest_LINK) $(shmtest_OBJECTS) $(shmtest_LDADD) $(LIBS)
 singletontest$(EXEEXT): $(singletontest_OBJECTS) $(singletontest_DEPENDENCIES) 
 	@rm -f singletontest$(EXEEXT)
 	$(singletontest_LINK) $(singletontest_OBJECTS) $(singletontest_LDADD) $(LIBS)
@@ -314,6 +327,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AutoPtrTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LogTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PSemTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShmTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingletonTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ThreadTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeStatsTest.Po@am__quote@

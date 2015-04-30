@@ -7,5 +7,6 @@ LIB_INCLUDE = $(top_srcdir)/libsrc/include
 INCLUDES = -I$(LIB_INCLUDE)
 
 noinst_LTLIBRARIES = libos.la
-libos_la_SOURCES = OsApi.cpp FileEx.cpp ProcessSem.cpp ThreadSem.cpp Thread.cpp MutexLock.cpp
+libos_la_SOURCES = OsApi.cpp FileEx.cpp ProcessSem.cpp ThreadSem.cpp \
+				   Thread.cpp MutexLock.cpp ShareMem.cpp
 libos_la_LDFLAGS  = -lrt
