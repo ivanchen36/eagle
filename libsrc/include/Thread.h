@@ -29,7 +29,6 @@ public:
     virtual void run(){}
 
 private:
-    int m_isInit;
     pthread_t m_id;
 
     friend class AutoPtr<Thread>;

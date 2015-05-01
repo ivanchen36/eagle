@@ -7,7 +7,7 @@ void *threadStart(void *arg)
 }
 
 Thread::Thread(const int stackSize) 
-: m_isInit(0)
+: m_id(0)
 {
     pthread_attr_t attr;
     int ret = pthread_attr_init(&attr);
@@ -27,19 +27,19 @@ Thread::Thread(const int stackSize)
     ret = pthread_create(&m_id, &attr, threadStart, (void *)this);
     if (ret)
     {
+        m_id = 0;
         ERRORLOG1("pthread_create err, ret %d", ret);
 
         return;
     }
 
-    m_isInit = 1;
     ret = pthread_attr_destroy(&attr);
     if (ret) ERRORLOG1("pthread_attr_destroy err, ret %d", ret);
 }
 
 Thread::~Thread()
 {
-    if (!m_isInit) return;
+    if (!m_id) return;
 
     int ret = pthread_join(m_id, NULL);
     if (ret)

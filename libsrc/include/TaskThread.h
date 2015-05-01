@@ -65,8 +65,6 @@ private:
         ERRORLOG("err constructor");
     }
 
-    int m_isInit;
-    pthread_t m_id;
     Status m_status;
     SemaphorePtr m_sem; 
     TaskPtr m_task;

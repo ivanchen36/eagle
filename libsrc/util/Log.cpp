@@ -11,13 +11,13 @@ const static char *LOG_LEVEL_STR[] = {"debug", "info", "warn", "error"};
 
 Log::Log()
 {
-    m_file = new FileEx("./debug", RDWR_APPEND);
+    m_file = new FileEx("./debug", FileEx::RDWR_CREATE_APPEND);
     m_level = DEBUG_LOG;
 }
 
 Log::Log(const char *fileName, int level)
 {
-    m_file = new FileEx(fileName, RDWR_APPEND);
+    m_file = new FileEx(fileName, FileEx::RDWR_CREATE_APPEND);
     m_level = level;
 }
 

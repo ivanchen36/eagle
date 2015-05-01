@@ -63,10 +63,7 @@ void test2()
  */
 int main ( int argc, char *argv[] )
 {
-    uint64_t num1 = (uint64_t)-1;
-    uint64_t num2 = 2;
     test1();
-    DEBUGLOG1("-1 %u", (uint64_t)-1);
 
     return EXIT_SUCCESS;
 }

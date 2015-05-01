@@ -8,7 +8,7 @@ TEST_LD = -L$(LIB_PATH) -leagle -ltcmalloc
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
 
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
-				  logtest psemtest threadtest shmtest
+				  logtest psemtest threadtest shmtest mmaptest
 
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE)
 
@@ -32,3 +32,6 @@ threadtest_LDFLAGS = $(TEST_LD)
 
 shmtest_SOURCES = ShmTest.cpp
 shmtest_LDFLAGS = $(TEST_LD)
+
+mmaptest_SOURCES = MmapTest.cpp
+mmaptest_LDFLAGS = $(TEST_LD)

@@ -8,5 +8,5 @@ INCLUDES = -I$(LIB_INCLUDE)
 
 noinst_LTLIBRARIES = libos.la
 libos_la_SOURCES = OsApi.cpp FileEx.cpp ProcessSem.cpp ThreadSem.cpp \
-				   Thread.cpp MutexLock.cpp ShareMem.cpp
+				   Thread.cpp MutexLock.cpp ShareMem.cpp MmapFile.cpp
 libos_la_LDFLAGS  = -lrt

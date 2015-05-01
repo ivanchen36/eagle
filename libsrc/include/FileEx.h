@@ -20,29 +20,36 @@
 
 #include "AutoPtr.h"
 
-#define RDONLY 0
-#define WRONLY_TRUNC 1
-#define RDWR 2
-#define RDWR_CREATE 3
-#define RDWR_TRUNC 4
-#define RDWR_APPEND 5
-
 class FileEx
 {
 public:
-    FileEx(const char *fileName, int mode);
+    enum Mode
+    {
+        RDONLY = 0,
+        RDWR,
+        WRONLY_CREATE_RESET,
+        RDWR_CREATE_RESET,
+        WRONLY_CREATE_APPEND,
+        RDWR_CREATE_APPEND,
+    };
+    FileEx(const char *fileName, const Mode mode);
     ~FileEx();
 
 	void flush();
     int getFd();
-    int seek(long offset, int pos);
-    int read(uint8_t *buf, int len);
-    int write(const uint8_t *buf, int len);
+    int getSize();
+    int setSize(const int size);
+    int seek(const int offset, const int pos);
+    int read(uint8_t *buf, const int len);
+    int write(const uint8_t *buf, const int len);
     int writeStr(const char *str);
-    int readByLen(uint8_t *buf, int len);
-    int writeByLen(const uint8_t *buf, int len);
-    int readByOffset(uint8_t *buf, int len, int offset);
-    int writeByOffset(uint8_t *buf, int len, int offset);
+    int readByLen(uint8_t *buf, const int len);
+    int writeByLen(const uint8_t *buf, const int len);
+    int readByOffset(uint8_t *buf, const int len, const int offset);
+    int writeByOffset(uint8_t *buf, const int len, const int offset);
+
+    static int getSize(int fd);
+    static int setSize(const int fd, const int size);
 
 private:
     FileEx():m_file(NULL), m_fileName(NULL){};

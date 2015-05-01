@@ -33,7 +33,7 @@ private:
     ShareMem(){};
     void free(void *ptr, int id);
 
-    std::map<uintptr_t, int> m_shmMap;
+    std::map<intptr_t, int> m_shmMap;
 
     friend class Singleton<ShareMem>;
 };

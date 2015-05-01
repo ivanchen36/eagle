@@ -1,11 +1,54 @@
 ﻿#include <string.h>
 #include <errno.h>
+#include <unistd.h>
+#include <sys/statvfs.h>
+#include <sys/stat.h>
 
 #include "FileEx.h"
 
-const static char *MODE[] = {"r", "w", "r+", "a", "w+", "a+"};
+namespace
+{
+    const char *MODE[] = {"r", "r+", "w", "w+", "a", "a+"};
+}
 
-FileEx::FileEx(const char *fileName, int mode) 
+int FileEx::getSize(const int fd)
+{
+    struct stat st;
+
+    if (fstat(fd, &st))
+    {
+        printf("fstat error: %s!", strerror(errno));
+
+        return -1;
+    }
+
+    return st.st_size;
+}
+
+int FileEx::setSize(const int fd, const int size)
+{
+    struct statvfs vfs;
+
+    if (fstatvfs(fd, &vfs))
+    {
+        printf("fstatvfs error: %s!", strerror(errno));
+
+        return -1;
+    }
+
+    if (vfs.f_bfree * vfs.f_bsize < size) return -1;
+
+    if (ftruncate(fd, size))
+    {
+        printf("ftruncate error: %s!", strerror(errno));
+
+        return -1;
+    }
+
+    return 0;
+}
+
+FileEx::FileEx(const char *fileName, const Mode mode) 
     : m_file(NULL), m_fileName(NULL)
 {
     m_mode = mode;
@@ -31,18 +74,6 @@ FileEx::FileEx(const char *fileName, int mode)
     {
         strcpy(m_fileName, fileName);
     }
-
-    if (RDWR_CREATE == m_mode)
-    {
-        if (fseek(m_file, 0L, SEEK_SET) == -1)
-        {
-            fclose(m_file);
-            m_file = NULL;
-            printf("fseek error: %s!", strerror(errno));
-
-            return;
-        }
-    }
 }
 
 FileEx::~FileEx()
@@ -55,6 +86,17 @@ FileEx::~FileEx()
     if (m_fileName) delete []m_fileName;
 }
 
+int FileEx::getSize()
+{
+    return getSize(fileno(m_file));
+}
+
+int FileEx::setSize(const int size)
+{
+    if (RDONLY == m_mode) return -1;
+
+    return setSize(fileno(m_file), size);
+}
 
 int FileEx::getFd()
 {
@@ -68,14 +110,14 @@ void FileEx::flush()
     fflush(m_file);
 }
 
-int FileEx::seek(long offset, int pos)
+int FileEx::seek(const int offset, const int pos)
 {
     if (!m_file) return -1;
 
     return fseek(m_file, offset, pos);
 }
 
-int FileEx::read(uint8_t *buf, int len)
+int FileEx::read(uint8_t *buf, const int len)
 {
     if (!m_file) return -1;
 
@@ -93,7 +135,7 @@ int FileEx::read(uint8_t *buf, int len)
     return rs;
 }
 
-int FileEx::write(const uint8_t *buf, int len)
+int FileEx::write(const uint8_t *buf, const int len)
 {
     if (!m_file) return -1;
 
@@ -120,18 +162,19 @@ int FileEx::writeStr(const char *str)
     return writeByLen((const uint8_t *)str, len);
 }
 
-int FileEx::readByLen(uint8_t *buf, int len)
+int FileEx::readByLen(uint8_t *buf, const int len)
 {
     if (!m_file) return -1;
 
     int rs = 0; 
+    int readLen = 0;
     do  
     {   
-        rs = fread(buf, 1, len, m_file);
-        len = len - rs; 
-    }while (len && rs);
+        rs = fread(buf + readLen, 1, len - readLen, m_file);
+        if (rs > 0) readLen += rs;
+    }while (rs > 0 && len != readLen);
 
-    if (!len) return 0;
+    if (len == readLen) return 0;
 
     if (ferror(m_file))
     {
@@ -142,18 +185,19 @@ int FileEx::readByLen(uint8_t *buf, int len)
     return -1;
 }
 
-int FileEx::writeByLen(const uint8_t *buf, int len)
+int FileEx::writeByLen(const uint8_t *buf, const int len)
 {
     if (!m_file) return -1;
 
     int rs = 0; 
+    int writeLen = 0;
     do  
     {   
-        rs = fwrite(buf, 1, len, m_file);
-        len = len - rs; 
-    }while (len && rs);
+        rs = fwrite(buf + writeLen, 1, len - writeLen, m_file);
+        if (rs > 0) writeLen += rs;
+    }while (rs > 0 && len != writeLen);
 
-    if (!len) return 0;
+    if (len == writeLen) return 0;
 
     if (ferror(m_file))
     {
@@ -164,7 +208,7 @@ int FileEx::writeByLen(const uint8_t *buf, int len)
     return -1;
 }
 
-int FileEx::readByOffset(uint8_t *buf, int len, int offset)
+int FileEx::readByOffset(uint8_t *buf, const int len, const int offset)
 {
     if (!m_file) return -1;
 
@@ -174,7 +218,7 @@ int FileEx::readByOffset(uint8_t *buf, int len, int offset)
 
 }
 
-int FileEx::writeByOffset(uint8_t *buf, int len, int offset)
+int FileEx::writeByOffset(uint8_t *buf, const int len, const int offset)
 {
     if (!m_file) return -1;
 

@@ -36,7 +36,7 @@ build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = autoptrtest$(EXEEXT) timestatstest$(EXEEXT) \
 	singletontest$(EXEEXT) logtest$(EXEEXT) psemtest$(EXEEXT) \
-	threadtest$(EXEEXT) shmtest$(EXEEXT)
+	threadtest$(EXEEXT) shmtest$(EXEEXT) mmaptest$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -60,6 +60,12 @@ logtest_LDADD = $(LDADD)
 logtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(logtest_LDFLAGS) $(LDFLAGS) -o $@
+am_mmaptest_OBJECTS = MmapTest.$(OBJEXT)
+mmaptest_OBJECTS = $(am_mmaptest_OBJECTS)
+mmaptest_LDADD = $(LDADD)
+mmaptest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(mmaptest_LDFLAGS) $(LDFLAGS) -o $@
 am_psemtest_OBJECTS = PSemTest.$(OBJEXT)
 psemtest_OBJECTS = $(am_psemtest_OBJECTS)
 psemtest_LDADD = $(LDADD)
@@ -104,11 +110,11 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(autoptrtest_SOURCES) $(logtest_SOURCES) \
-	$(psemtest_SOURCES) $(shmtest_SOURCES) \
+	$(mmaptest_SOURCES) $(psemtest_SOURCES) $(shmtest_SOURCES) \
 	$(singletontest_SOURCES) $(threadtest_SOURCES) \
 	$(timestatstest_SOURCES)
 DIST_SOURCES = $(autoptrtest_SOURCES) $(logtest_SOURCES) \
-	$(psemtest_SOURCES) $(shmtest_SOURCES) \
+	$(mmaptest_SOURCES) $(psemtest_SOURCES) $(shmtest_SOURCES) \
 	$(singletontest_SOURCES) $(threadtest_SOURCES) \
 	$(timestatstest_SOURCES)
 ETAGS = etags
@@ -253,6 +259,8 @@ threadtest_SOURCES = ThreadTest.cpp
 threadtest_LDFLAGS = $(TEST_LD)
 shmtest_SOURCES = ShmTest.cpp
 shmtest_LDFLAGS = $(TEST_LD)
+mmaptest_SOURCES = MmapTest.cpp
+mmaptest_LDFLAGS = $(TEST_LD)
 all: all-am
 
 .SUFFIXES:
@@ -302,6 +310,9 @@ autoptrtest$(EXEEXT): $(autoptrtest_OBJECTS) $(autoptrtest_DEPENDENCIES)
 logtest$(EXEEXT): $(logtest_OBJECTS) $(logtest_DEPENDENCIES) 
 	@rm -f logtest$(EXEEXT)
 	$(logtest_LINK) $(logtest_OBJECTS) $(logtest_LDADD) $(LIBS)
+mmaptest$(EXEEXT): $(mmaptest_OBJECTS) $(mmaptest_DEPENDENCIES) 
+	@rm -f mmaptest$(EXEEXT)
+	$(mmaptest_LINK) $(mmaptest_OBJECTS) $(mmaptest_LDADD) $(LIBS)
 psemtest$(EXEEXT): $(psemtest_OBJECTS) $(psemtest_DEPENDENCIES) 
 	@rm -f psemtest$(EXEEXT)
 	$(psemtest_LINK) $(psemtest_OBJECTS) $(psemtest_LDADD) $(LIBS)
@@ -326,6 +337,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AutoPtrTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LogTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MmapTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PSemTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShmTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingletonTest.Po@am__quote@

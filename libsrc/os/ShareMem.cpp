@@ -5,7 +5,7 @@
 
 ShareMem::~ShareMem()
 {
-    std::map<uintptr_t, int>::iterator it;
+    std::map<intptr_t, int>::iterator it;
 
     for (it = m_shmMap.begin(); it != m_shmMap.end();)
     {
@@ -51,14 +51,14 @@ void *ShareMem::alloc(const int size, const int key)
         }
         id = -1;
     }
-    if (-1 == (uintptr_t)ptr)
+    if (-1 == (intptr_t)ptr)
     {
         ERRORLOG("shmat failed!");
 
         return NULL;
     }
 
-    m_shmMap[(uintptr_t)ptr] = isNew ? id : -1;
+    m_shmMap[(intptr_t)ptr] = isNew ? id : -1;
 
     return ptr;
 }
@@ -74,8 +74,8 @@ void ShareMem::free(void *ptr)
 {
     if (!ptr) return;
 
-    int id = m_shmMap[(uintptr_t)ptr];
+    int id = m_shmMap[(intptr_t)ptr];
 
-    m_shmMap.erase((uintptr_t)ptr);
+    m_shmMap.erase((intptr_t)ptr);
     free(ptr, id);
 }
