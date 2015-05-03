@@ -15,7 +15,7 @@ int FileEx::getSize(const int fd)
 {
     struct stat st;
 
-    if (fstat(fd, &st))
+    if (fstat(fd, &st) != 0)
     {
         printf("fstat error: %s!", strerror(errno));
 
@@ -29,7 +29,7 @@ int FileEx::setSize(const int fd, const int size)
 {
     struct statvfs vfs;
 
-    if (fstatvfs(fd, &vfs))
+    if (fstatvfs(fd, &vfs) != 0)
     {
         printf("fstatvfs error: %s!", strerror(errno));
 
@@ -38,7 +38,7 @@ int FileEx::setSize(const int fd, const int size)
 
     if (vfs.f_bfree * vfs.f_bsize < size) return -1;
 
-    if (ftruncate(fd, size))
+    if (ftruncate(fd, size) != 0)
     {
         printf("ftruncate error: %s!", strerror(errno));
 
@@ -54,7 +54,7 @@ FileEx::FileEx(const char *fileName, const Mode mode)
     m_mode = mode;
     m_file = fopen(fileName, MODE[m_mode]);
 
-    if (!m_file)
+    if (NULL == m_file)
     {
         printf("fopen error: %s!", strerror(errno));
 
@@ -64,10 +64,10 @@ FileEx::FileEx(const char *fileName, const Mode mode)
     int len = 0;
     char *tmp = rindex((char *)fileName,'/');
 
-    if (!tmp) tmp = rindex((char *)fileName,'\\');
+    if (NULL == tmp) tmp = rindex((char *)fileName,'\\');
     len = tmp ? strlen(tmp) : strlen(fileName);
     m_fileName = new char[len + 1];    
-    if (tmp)
+    if (NULL != tmp)
     {
         strcpy(m_fileName, tmp);
     }else
@@ -78,12 +78,12 @@ FileEx::FileEx(const char *fileName, const Mode mode)
 
 FileEx::~FileEx()
 {
-    if (m_file)
+    if (NULL != m_file)
     {
         fflush(m_file);
         fclose(m_file);
     }
-    if (m_fileName) delete []m_fileName;
+    if (NULL != m_fileName) delete []m_fileName;
 }
 
 int FileEx::getSize()
@@ -105,28 +105,28 @@ int FileEx::getFd()
 
 void FileEx::flush()
 {
-    if (!m_file) return;
+    if (NULL == m_file) return;
 
     fflush(m_file);
 }
 
 int FileEx::seek(const int offset, const int pos)
 {
-    if (!m_file) return -1;
+    if (NULL == m_file) return -1;
 
     return fseek(m_file, offset, pos);
 }
 
 int FileEx::read(uint8_t *buf, const int len)
 {
-    if (!m_file) return -1;
+    if (NULL == m_file) return -1;
 
     int rs;
     FILE *file = m_file;
 
     rs = fread(buf, 1, len, file);
 
-    if (!rs && ferror(file))
+    if (0 == rs && ferror(file) != 0)
     {
         clearerr(file);
         printf("an error occurred when read file %s!", m_fileName);
@@ -137,14 +137,14 @@ int FileEx::read(uint8_t *buf, const int len)
 
 int FileEx::write(const uint8_t *buf, const int len)
 {
-    if (!m_file) return -1;
+    if (NULL == m_file) return -1;
 
     int rs;
     FILE *file = m_file;
 
     rs = fwrite(buf, 1, len, m_file);
 
-    if (!rs && ferror(file))
+    if (0 == rs && ferror(file) != 0)
     {
         clearerr(file);
         printf("an error occurred when write file %s!", m_fileName);
@@ -155,7 +155,7 @@ int FileEx::write(const uint8_t *buf, const int len)
 
 int FileEx::writeStr(const char *str)
 {
-    if (!m_file) return -1;
+    if (NULL == m_file) return -1;
 
     int len = strlen(str);
     
@@ -164,7 +164,7 @@ int FileEx::writeStr(const char *str)
 
 int FileEx::readByLen(uint8_t *buf, const int len)
 {
-    if (!m_file) return -1;
+    if (NULL == m_file) return -1;
 
     int rs = 0; 
     int readLen = 0;
@@ -176,7 +176,7 @@ int FileEx::readByLen(uint8_t *buf, const int len)
 
     if (len == readLen) return 0;
 
-    if (ferror(m_file))
+    if (ferror(m_file) != 0)
     {
         clearerr(m_file);
         printf("an error occurred when read file %s!", m_fileName);
@@ -187,7 +187,7 @@ int FileEx::readByLen(uint8_t *buf, const int len)
 
 int FileEx::writeByLen(const uint8_t *buf, const int len)
 {
-    if (!m_file) return -1;
+    if (NULL == m_file) return -1;
 
     int rs = 0; 
     int writeLen = 0;
@@ -199,7 +199,7 @@ int FileEx::writeByLen(const uint8_t *buf, const int len)
 
     if (len == writeLen) return 0;
 
-    if (ferror(m_file))
+    if (ferror(m_file) != 0)
     {
         clearerr(m_file);
         printf("an error occurred when write file %s!", m_fileName);
@@ -210,9 +210,9 @@ int FileEx::writeByLen(const uint8_t *buf, const int len)
 
 int FileEx::readByOffset(uint8_t *buf, const int len, const int offset)
 {
-    if (!m_file) return -1;
+    if (NULL == m_file) return -1;
 
-    if(fseek(m_file, offset, SEEK_SET) == -1) return -1;
+    if (fseek(m_file, offset, SEEK_SET) != 0) return -1;
 
     return readByLen(buf, len);
 
@@ -220,9 +220,9 @@ int FileEx::readByOffset(uint8_t *buf, const int len, const int offset)
 
 int FileEx::writeByOffset(uint8_t *buf, const int len, const int offset)
 {
-    if (!m_file) return -1;
+    if (NULL == m_file) return -1;
 
-    if(fseek(m_file, offset, SEEK_SET) == -1) return -1;
+    if (fseek(m_file, offset, SEEK_SET) != 0) return -1;
 
     return writeByLen(buf, len);
 }

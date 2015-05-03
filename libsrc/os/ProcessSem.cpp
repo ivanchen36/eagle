@@ -29,7 +29,7 @@ ProcessSem::ProcessSem(const int val) : m_semId(-1)
 
 ProcessSem::~ProcessSem()
 {
-    if (semctl(m_semId, 0, IPC_RMID))
+    if (semctl(m_semId, 0, IPC_RMID) != 0)
     {
         ERRORLOG1("semctl err, %s", strerror(errno));
     }
@@ -40,7 +40,7 @@ int ProcessSem::init(int val)
     union semun sem;
 
     sem.val = 0;
-    if (semctl(m_semId, 0, SETVAL, sem))
+    if (semctl(m_semId, 0, SETVAL, sem) != 0)
     {
         ERRORLOG1("semctl err, %s", strerror(errno));
 
@@ -67,7 +67,7 @@ int ProcessSem::op(const int val, const int sec)
         t.tv_nsec = 0;
         timeOut = &t;
     }
-    if (semtimedop(m_semId, &op, 1, timeOut))
+    if (semtimedop(m_semId, &op, 1, timeOut) != 0)
     {
         if (ETIMEDOUT == errno || EAGAIN == errno) return 1;
 

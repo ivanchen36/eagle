@@ -40,14 +40,14 @@ MmapFile::~MmapFile()
 {
     if (-1 == m_fd) return;
 
-    if (m_ptr) unmap();
+    if (NULL != m_ptr) unmap();
     closeFile();
-    if (m_fileName) delete m_fileName;
+    if (NULL != m_fileName) delete m_fileName;
 }
 
 int MmapFile::flush()
 {
-    if (msync(m_ptr, m_pageSize, MS_ASYNC)) 
+    if (msync(m_ptr, m_pageSize, MS_ASYNC) != 0) 
     {
         ERRORLOG2("msync file %s failed, err %s", 
                 m_fileName, strerror(errno));
@@ -62,7 +62,7 @@ int MmapFile::unlink()
 {
     if (-1 == m_fd && !m_isShm) return -1;
 
-    if (shm_unlink(m_fileName))
+    if (shm_unlink(m_fileName) != 0)
     {
         ERRORLOG2("shm_unlink file %s failed, err %s", 
                 m_fileName, strerror(errno));
@@ -75,7 +75,7 @@ int MmapFile::unlink()
 
 void MmapFile::closeFile()
 {
-    if (close(m_fd))
+    if (close(m_fd) != 0)
     {
         ERRORLOG2("close file %s failed, err %s", 
                 m_fileName, strerror(errno));
@@ -86,7 +86,7 @@ void MmapFile::closeFile()
 int MmapFile::unmap()
 {
     int ret = munmap(m_ptr, m_pageSize);
-    if (ret)
+    if (ret != 0)
     {
         ERRORLOG2("munmap file %s failed, err %s", 
                 m_fileName, strerror(errno));
@@ -98,7 +98,7 @@ int MmapFile::unmap()
 
 int MmapFile::setSize(const int size)
 {
-    if (!(PROT_WRITE & m_prot)) return -1;
+    if ((PROT_WRITE & m_prot) == 0) return -1;
 
     return FileEx::setSize(m_fd, size);
 }
@@ -107,7 +107,7 @@ int MmapFile::mapByOffset(const int startOffset)
 {
     if (-1 == m_fd) return -1;
     
-    if (startOffset != m_startOffset && m_ptr && unmap()) return -1;
+    if (startOffset != m_startOffset && m_ptr && unmap() != 0) return -1;
 
     int ret = -1;
     m_startOffset = startOffset;
@@ -118,7 +118,7 @@ int MmapFile::mapByOffset(const int startOffset)
 
         return -1;
     }
-    if (!ret) m_fileSize = m_endOffset;
+    if (0 == ret) m_fileSize = m_endOffset;
 
     m_ptr = (uint8_t *)mmap(NULL, m_pageSize, m_prot, 
             MAP_SHARED, m_fd, m_startOffset);
@@ -133,7 +133,7 @@ int MmapFile::mapByOffset(const int startOffset)
 
 int MmapFile::read(char *buf, const int len, const int offset)
 {
-    if (read((uint8_t *)buf, len, offset)) return -1;
+    if (read((uint8_t *)buf, len, offset) != 0) return -1;
 
     buf[len] = 0;
 
@@ -149,8 +149,8 @@ int MmapFile::write(const char *buf, const int offset)
 
 int MmapFile::read(uint8_t *buf, const int len, const int offset)
 {
-    if (!m_ptr) return -1;
-    if (!(m_prot & PROT_READ)) return -1;
+    if (NULL == m_ptr) return -1;
+    if ((m_prot & PROT_READ) == 0) return -1;
     
     int tmp;
     int readLen = 0;
@@ -160,7 +160,7 @@ int MmapFile::read(uint8_t *buf, const int len, const int offset)
     {
         if (readOffset < m_startOffset || readOffset > m_endOffset)
         {
-            if (mapByOffset((readOffset / m_pageSize) * m_pageSize))
+            if (mapByOffset((readOffset / m_pageSize) * m_pageSize) != 0)
                 return -1;
         }
 
@@ -176,8 +176,8 @@ int MmapFile::read(uint8_t *buf, const int len, const int offset)
 
 int MmapFile::write(const uint8_t *buf, const int len, const int offset)
 {
-    if (!m_ptr) return -1;
-    if (!(m_prot & PROT_WRITE)) return -1;
+    if (NULL == m_ptr) return -1;
+    if ((m_prot & PROT_WRITE) == 0) return -1;
 
     int tmp;
     int writeLen = 0;
@@ -187,7 +187,7 @@ int MmapFile::write(const uint8_t *buf, const int len, const int offset)
     {
         if (writeOffset < m_startOffset || writeOffset >= m_endOffset)
         {
-            if (mapByOffset((writeOffset / m_pageSize) * m_pageSize))
+            if (mapByOffset((writeOffset / m_pageSize) * m_pageSize) != 0)
                 return -1;
         }
 

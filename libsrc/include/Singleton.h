@@ -26,10 +26,10 @@ template<class T> class Singleton
 public:
     static T &instance()
     {
-        if (s_instance) return *s_instance;
+        if (NULL != s_instance) return *s_instance;
 
         LockGuard guard(g_singletonLock);
-        if (s_instance) return *s_instance;
+        if (NULL != s_instance) return *s_instance;
 
         s_cleaner;
         s_instance = new T();
@@ -43,7 +43,7 @@ private:
        SingletonCleaner(){}; 
        ~SingletonCleaner()
        {
-           if (s_instance) delete s_instance;
+           if (NULL != s_instance) delete s_instance;
        }
     };
 

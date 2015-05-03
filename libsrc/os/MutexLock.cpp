@@ -4,19 +4,19 @@
 MutexLock::MutexLock()
 {
     int ret = pthread_mutex_init(&m_mutex, NULL);
-    if (ret) ERRORLOG1("pthread_mutex_init err, ret %d", ret);
+    if (ret != 0) ERRORLOG1("pthread_mutex_init err, ret %d", ret);
 }
 
 MutexLock::~MutexLock()
 {
     int ret = pthread_mutex_destroy(&m_mutex);
-    if (ret) ERRORLOG1("pthread_mutex_destroy err, ret %d", ret);
+    if (ret != 0) ERRORLOG1("pthread_mutex_destroy err, ret %d", ret);
 }
 
 int MutexLock::lock()
 {
     int ret = pthread_mutex_lock(&m_mutex);
-    if (ret)
+    if (ret != 0)
     {
         ERRORLOG1("pthread_mutex_lock err, ret %d", ret);
 
@@ -29,7 +29,7 @@ int MutexLock::lock()
 int MutexLock::unLock()
 {
     int ret = pthread_mutex_unlock(&m_mutex);
-    if (ret)
+    if (ret != 0)
     {
         ERRORLOG1("pthread_mutex_unlock err, ret %d", ret);
 
@@ -42,7 +42,7 @@ int MutexLock::unLock()
 int MutexLock::tryLock()
 {
     int ret = pthread_mutex_trylock(&m_mutex);
-    if (ret)
+    if (ret != 0)
     {
         if (EBUSY == ret) return 1;
 

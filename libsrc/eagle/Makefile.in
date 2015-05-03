@@ -70,7 +70,8 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libeagle_la_DEPENDENCIES = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la
-am_libeagle_la_OBJECTS = Eagle.lo TaskThread.lo
+am_libeagle_la_OBJECTS = Eagle.lo TaskThread.lo SignalManager.lo \
+	MasterSigManager.lo ChildSigManager.lo
 libeagle_la_OBJECTS = $(am_libeagle_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -209,9 +210,11 @@ top_srcdir = @top_srcdir@
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
 OS_PATH = $(top_srcdir)/libsrc/os
 UTIL_PATH = $(top_srcdir)/libsrc/util
-INCLUDES = -I$(LIB_INCLUDE)
+INCLUDES = -I$(LIB_INCLUDE) -I.
 lib_LTLIBRARIES = libeagle.la
-libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp
+libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
+					  MasterSigManager.cpp ChildSigManager.cpp
+
 libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la
 all: all-am
 
@@ -287,7 +290,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChildSigManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Eagle.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MasterSigManager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SignalManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TaskThread.Plo@am__quote@
 
 .cpp.o:

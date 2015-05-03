@@ -29,7 +29,7 @@ void *ShareMem::alloc(const int size, const int key)
     void *ptr;
 
     id = shmget(key, size, (SHM_R | SHM_W | IPC_CREAT | IPC_EXCL));
-    if (key && -1 == id) 
+    if (key != 0 && -1 == id) 
     {
         isNew = 0;
         id = shmget(key, size, (SHM_R | SHM_W));
@@ -37,23 +37,23 @@ void *ShareMem::alloc(const int size, const int key)
 
     if (-1 == id)
     {
-        ERRORLOG1("shmget %d failed!", size);
+        ERRORLOG2("shmget %d err, %s!", size, strerror(errno));
 
         return NULL;
     }
 
     ptr = shmat(id, NULL, 0);
-    if (!key)
+    if (0 == key)
     {
         if (shmctl(id, IPC_RMID, NULL) == -1)
         {
-            ERRORLOG("shmctl IPC_RMID failed!");
+            ERRORLOG1("shmctl IPC_RMID err, %s!", strerror(errno));
         }
         id = -1;
     }
     if (-1 == (intptr_t)ptr)
     {
-        ERRORLOG("shmat failed!");
+        ERRORLOG1("shmat err, %s!", strerror(errno));
 
         return NULL;
     }
@@ -65,9 +65,9 @@ void *ShareMem::alloc(const int size, const int key)
 
 void ShareMem::free(void *ptr, int id)
 {
-    if (shmdt(ptr) == -1) ERRORLOG("shmdt failed!");
+    if (shmdt(ptr) == -1) ERRORLOG1("shmdt err, %s!", strerror(errno));
     if (-1 != id && shmctl(id, IPC_RMID, NULL) == -1) 
-        ERRORLOG1("shmctl IPC_RMID failed, id %d!", id);
+        ERRORLOG2("shmctl IPC_RMID  %d err, %s!", id, strerror(errno));
 }
 
 void ShareMem::free(void *ptr)

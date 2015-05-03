@@ -18,6 +18,7 @@
 #include <iostream>
 #include <vector>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 #include "Log.h"
 #include "ShareMem.h"
@@ -73,7 +74,7 @@ void child(char *str)
 {
     for (int i = 0; i < 5; ++i)
     {
-        if (!i)
+        if (0 == i)
         {
             strcpy(str, CHILDDIALOGARR[i]);
 
@@ -171,7 +172,7 @@ int main ( int argc, char *argv[] )
         DEBUGLOG("redirectToOther err");
     }
 
-    test1();
+    test2();
 
     return EXIT_SUCCESS;
 }

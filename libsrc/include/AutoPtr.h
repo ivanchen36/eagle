@@ -32,7 +32,7 @@ public:
     AutoPtr(T *ptr)
     {
         m_ptr = ptr;
-        if (!m_ptr) m_ptr = new T();
+        if (NULL == m_ptr) m_ptr = new T();
         m_ref = new int(1); 
     }
 
@@ -53,7 +53,7 @@ public:
     ~AutoPtr()
     {
         OsApi::atomicSub(*m_ref, 1);
-        if (!*m_ref)
+        if (0 == *m_ref)
         {
             delete m_ref;
             delete m_ptr;
@@ -84,14 +84,14 @@ public:
     AutoPtr& operator=(T *p)
     {
         OsApi::atomicSub(*m_ref, 1);
-        if (!*m_ref)
+        if (0 == *m_ref)
         {
             delete m_ref;
             delete m_ptr;
         }
 
         m_ptr = p;
-        if (!m_ptr) m_ptr = new T();
+        if (NULL == m_ptr) m_ptr = new T();
         m_ref = new int(1); 
     }
 
@@ -100,7 +100,7 @@ public:
         if (m_ptr == r.m_ptr) return;
 
         OsApi::atomicSub(*m_ref, 1);
-        if (!*m_ref)
+        if (0 == *m_ref)
         {
             delete m_ref;
             delete m_ptr;
@@ -116,7 +116,7 @@ public:
         if (m_ptr == r.m_ptr) return;
 
         OsApi::atomicSub(*m_ref, 1);
-        if (!*m_ref)
+        if (0 == *m_ref)
         {
             delete m_ref;
             delete m_ptr;

@@ -9,7 +9,7 @@ Task::Task(const char *taskName) : m_name(NULL)
 
 Task::~Task()
 {
-    if (m_name) delete []m_name;
+    if (NULL != m_name) delete []m_name;
 }
 
 const char *Task::getName()
