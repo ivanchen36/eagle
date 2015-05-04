@@ -1,4 +1,8 @@
 #include "MasterSigManager.h"
+#include "ProcessManager.h"
+#include "Log.h"
+
+extern int g_isQuit;
 
 MasterSigManager::MasterSigManager()
 {
@@ -17,5 +21,7 @@ MasterSigManager::Type MasterSigManager::getType()
 
 void MasterSigManager::sigQuit()
 {
-
+    DEBUGLOG("master quit");
+    ProcessManagerI::instance().quitAllChild();
+    g_isQuit = 1;
 }

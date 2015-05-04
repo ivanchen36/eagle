@@ -1,6 +1,6 @@
 # Process this file with automake to produce Makefile.in
 
 AUTOMAKE_OPTIONS = foreign
-CXXFLAGS = -g
+CXXFLAGS = -g -O0
 
 SUBDIRS = libsrc test

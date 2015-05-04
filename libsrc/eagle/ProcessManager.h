@@ -13,11 +13,22 @@
  */
 #ifndef  _PROCESSMANAGER_H_
 #define  _PROCESSMANAGER_H_
+#include <vector>
+
 #include "Singleton.h"
 
 class ProcessManager
 {
+public:
+    ProcessManager();
+    ~ProcessManager();
 
+    int spawnProcess(const int processNum);
+    int quitChild(const int pid);
+    void quitAllChild();
+
+private:
+    std::vector<pid_t> childList;
 };
 
 typedef Singleton<ProcessManager> ProcessManagerI;

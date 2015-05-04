@@ -19,22 +19,20 @@ namespace
 void SignalManager::init()
 {
     struct sigaction sa;
-    void (*saHandler)(int);
+    void (*sigHandleFunc)(int);
     SaHandleMap::const_iterator it;
 
-    saHandler = getType() == MASTER ?
+    sigHandleFunc = getType() == MASTER ?
         masterSaHandler : childSaHandler;
-    for (it = m_handleMap.begin(); it != m_handleMap.end();)
+    for (it = m_handleMap.begin(); it != m_handleMap.end(); ++it)
     {
         bzero(&sa, sizeof(struct sigaction)); 
-        sa.sa_handler = saHandler;
+        sa.sa_handler = sigHandleFunc;
         sigemptyset(&sa.sa_mask); 
         if (sigaction(it->first, &sa, NULL) == -1) 
         {
             ERRORLOG2("sigaction %d err, %s", 
                     it->first, strerror(errno));
-
-            continue;
         }
     }
 }
@@ -44,7 +42,7 @@ void SignalManager::handleSig(const int sig)
     SaHandleMap::const_iterator it;
     if ((it = m_handleMap.find(sig)) != m_handleMap.end())
     {
-        (*it->second)();
+        (this->*(it->second))();
 
         return;
     }

@@ -11,26 +11,22 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-
 #ifndef  _EAGLE_H_
 #define  _EAGLE_H_
 
+#include "Define.h"
 #include "Singleton.h"
-typedef void (*ExitFunc)();
 
 class Eagle
 {
 public:
-    int init();
+    void init(NotifyQuitFunc func);
     void destroy();
 
 private:
     Eagle();
     ~Eagle();
 
-
-    pid_t m_childPid;
-    ExitFunc m_eixt();
     friend class Singleton<Eagle>;
 };
 typedef Singleton<Eagle> EagleI;

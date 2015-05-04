@@ -1,4 +1,5 @@
 #include "ChildSigManager.h"
+#include "Log.h"
 
 ChildSigManager::ChildSigManager()
 {
@@ -9,9 +10,9 @@ ChildSigManager::~ChildSigManager()
 {
 }
 
-void ChildSigManager::init(WaitQuitFunc waitQuit)
+void ChildSigManager::init(NotifyQuitFunc func)
 {
-    m_waitQuitFunc = waitQuit;
+    m_notifyQuitFunc = func;
     SignalManager::init();
 }
 
@@ -22,5 +23,6 @@ ChildSigManager::Type ChildSigManager::getType()
 
 void ChildSigManager::sigQuit()
 {
-    (*m_waitQuitFunc)();
+    DEBUGLOG("child quit");
+    (*m_notifyQuitFunc)();
 }

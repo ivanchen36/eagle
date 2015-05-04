@@ -1,6 +1,8 @@
 # Process this file with automake to produce Makefile.in
 AUTOMAKE_OPTIONS = foreign
 
+CXXFLAGS = -g -O0
+
 TEST_INCLUDE = $(top_srcdir)/test
 TEST_SRC = $(top_srcdir)/test
 LIB_PATH = $(top_srcdir)/libsrc/eagle/.libs
@@ -8,7 +10,8 @@ TEST_LD = -L$(LIB_PATH) -leagle -ltcmalloc
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
 
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
-				  logtest psemtest threadtest shmtest mmaptest
+				  logtest psemtest threadtest shmtest mmaptest \
+				  eagletest
 
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE)
 
@@ -35,3 +38,6 @@ shmtest_LDFLAGS = $(TEST_LD)
 
 mmaptest_SOURCES = MmapTest.cpp
 mmaptest_LDFLAGS = $(TEST_LD)
+
+eagletest_SOURCES = EagleTest.cpp
+eagletest_LDFLAGS = $(TEST_LD)

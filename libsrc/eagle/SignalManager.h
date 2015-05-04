@@ -25,15 +25,16 @@ public:
         CHILD,
         UNKNOWN,
     };
-    typedef void (*SaHandle)();
 
     void init();
     void handleSig(const int sig);
     virtual Type getType() = 0;
 
 protected:
-    std::map<int, SaHandle> m_handleMap;
+    typedef void (SignalManager::*SaHandle)();
+    typedef std::map<int, SaHandle> SaHandleMap;
+
+    SaHandleMap m_handleMap;
 };
 
-typedef std::map<int, SignalManager::SaHandle> SaHandleMap;
 #endif   /* ----- #ifndef _SIGNALMANAGER_H_  ----- */

@@ -23,12 +23,12 @@ public:
     ChildSigManager();
     ~ChildSigManager();
 
-    void init(WaitQuitFunc waitQuit);
+    void init(NotifyQuitFunc func);
     Type getType();
     void sigQuit();
 
 private:
-    WaitQuitFunc m_waitQuitFunc;
+    NotifyQuitFunc m_notifyQuitFunc;
 };
 
 typedef Singleton<ChildSigManager> ChildSigManagerI;
