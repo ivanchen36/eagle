@@ -6,8 +6,8 @@
 
 namespace
 {
-    const int F_MODE[] = {O_RDONLY, O_WRONLY | O_CREAT, O_RDWR | O_CREAT};
-    const int M_MODE[] = {PROT_READ, PROT_WRITE, PROT_READ | PROT_WRITE};
+const int F_MODE[] = {O_RDONLY, O_WRONLY | O_CREAT, O_RDWR | O_CREAT};
+const int M_MODE[] = {PROT_READ, PROT_WRITE, PROT_READ | PROT_WRITE};
 }
 
 MmapFile::MmapFile(const char *fileName, const int isShm, 
@@ -28,8 +28,7 @@ MmapFile::MmapFile(const char *fileName, const int isShm,
         return;
     }
 
-    int len = strlen(fileName);
-    m_fileName = new char[len + 1];
+    m_fileName = new char[strlen(fileName) + 1];
     strcpy(m_fileName, fileName);
     m_prot = M_MODE[mode];
     m_fileSize = FileEx::getSize(m_fd);

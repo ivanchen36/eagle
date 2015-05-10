@@ -13,7 +13,8 @@
  */
 #ifndef  _CHILDSIGMANAGER_H_
 #define  _CHILDSIGMANAGER_H_
-#include "Define.h"
+
+#include "CallBack.h"
 #include "Singleton.h"
 #include "SignalManager.h"
 
@@ -23,12 +24,12 @@ public:
     ChildSigManager();
     ~ChildSigManager();
 
-    void init(NotifyQuitFunc func);
+    void init(const CallBack &notifyQuitCb);
     Type getType();
     void sigQuit();
 
 private:
-    NotifyQuitFunc m_notifyQuitFunc;
+    CallBack m_notifyQuitCb;
 };
 
 typedef Singleton<ChildSigManager> ChildSigManagerI;

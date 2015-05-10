@@ -1,10 +1,20 @@
 #include "MutexLock.h"
 #include "Log.h"
 
-MutexLock::MutexLock()
+MutexLock::MutexLock(const int isRecursive)
 {
-    int ret = pthread_mutex_init(&m_mutex, NULL);
+    int ret;
+    pthread_mutexattr_t attr;
+
+    pthread_mutexattr_init(&attr);
+    if (isRecursive)
+    {
+        ret = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+        if (ret != 0) ERRORLOG1("pthread_mutexattr_settype err, ret %d", ret);
+    }
+    ret = pthread_mutex_init(&m_mutex, &attr);
     if (ret != 0) ERRORLOG1("pthread_mutex_init err, ret %d", ret);
+    pthread_mutexattr_destroy(&attr);
 }
 
 MutexLock::~MutexLock()
@@ -54,12 +64,12 @@ int MutexLock::tryLock()
     return 0;
 }
 
-LockGuard::LockGuard(MutexLockPtr &lock) : m_lock(lock)
+LockGuard::LockGuard(MutexLock &lock) : m_lock(lock)
 {
-    m_lock->lock();
+    m_lock.lock();
 }
 
 LockGuard::~LockGuard()
 {
-    m_lock->unLock();
+    m_lock.unLock();
 }

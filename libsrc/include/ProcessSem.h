@@ -22,10 +22,10 @@ public:
     ProcessSem(const int val = 0);
     ~ProcessSem();
 
-    int op(const int val, const int sec = 0);
     virtual int post();
     virtual int wait();
     virtual int timedWait(const int sec);
+    int op(const int val, const int sec = 0);
 
 private:
     int init(int val);

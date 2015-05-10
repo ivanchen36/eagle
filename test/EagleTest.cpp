@@ -23,7 +23,7 @@ using namespace std;
 
 int g_waitQuit;
 
-void notifyQuit()
+void notifyQuit(void *pram)
 {
     g_waitQuit = 1;
 }
@@ -33,13 +33,12 @@ void notifyQuit()
  */
 int main ( int argc, char *argv[] )
 {
-#if 1
     if (g_sysLog->redirectToOther(STDOUT_FILENO))
     {
         DEBUGLOG("redirectToOther err");
     }
-#endif
-    EagleI::instance().init(notifyQuit);
+    CallBack cb(notifyQuit);
+    EagleI::instance().init(cb);
 
     while (0 == g_waitQuit)
     {

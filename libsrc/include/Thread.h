@@ -16,23 +16,29 @@
 #include <pthread.h>
 
 #include "AutoPtr.h"
-
-static void *threadStart(void *arg);
+#include "CallBack.h"
 
 class Thread
 {
 public:
-    
+    Thread(const CallBack &cb, const int isDetach = 1, const int stackSize = 0);
     Thread(const int stackSize = 0);
     ~Thread();
 
-    virtual void run(){}
+    virtual void run();
+    int isDetach()
+    {
+        return m_isDetach != 0;
+    }
 
 private:
+    void init(const int stackSize);
+
+    int m_isDetach;
     pthread_t m_id;
+    CallBack m_cb;
 
     friend class AutoPtr<Thread>;
-    friend void *threadStart(void *arg);
 };
 
 typedef AutoPtr<Thread> ThreadPtr;

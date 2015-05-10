@@ -8,7 +8,7 @@
 
 namespace
 {
-    const char *MODE[] = {"r", "r+", "w", "w+", "a", "a+"};
+const char *MODE[] = {"r", "r+", "w", "w+", "a", "a+"};
 }
 
 int FileEx::getSize(const int fd)

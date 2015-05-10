@@ -14,13 +14,13 @@
 #ifndef  _EAGLE_H_
 #define  _EAGLE_H_
 
-#include "Define.h"
+#include "CallBack.h"
 #include "Singleton.h"
 
 class Eagle
 {
 public:
-    void init(NotifyQuitFunc func);
+    void init(const CallBack &notifyQuitCb);
     void destroy();
 
 private:

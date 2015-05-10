@@ -24,9 +24,9 @@ public:
     ThreadSem(const int val = 0);
     ~ThreadSem();
 
-    int post();
-    int wait();
-    int timedWait(const int sec);
+    virtual int post();
+    virtual int wait();
+    virtual int timedWait(const int sec);
 
 private:
     int m_isInit;

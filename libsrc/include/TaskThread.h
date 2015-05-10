@@ -14,6 +14,7 @@
 #ifndef  _TASKTHREAD_H_
 #define  _TASKTHREAD_H_
 
+#include "Log.h"
 #include "Thread.h"
 #include "ThreadSem.h"
 #include "MutexLock.h"
@@ -25,7 +26,11 @@ public:
     ~Task();
 
     const char *getName();
-    virtual int excute(){}
+    virtual int excute()
+    {
+        ERRORLOG("task object has destructed");
+    }
+
 private:
     Task()
     {

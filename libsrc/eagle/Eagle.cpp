@@ -6,8 +6,9 @@
 #include "ProcessManager.h"
 #include "ChildSigManager.h"
 #include "MasterSigManager.h"
+#include "ProcessSem.h"
 
-int g_isQuit = 0;
+int g_isReceiveSigQuit = 0;
 
 Eagle::Eagle()
 {
@@ -19,22 +20,24 @@ Eagle::~Eagle()
 
 }
 
-void Eagle::init(NotifyQuitFunc func)
+void Eagle::init(const CallBack &notifyQuitCb)
 {
     pid_t pid;
     int processNum = 4;
+    ProcessSemPtr semPtr = new ProcessSem();
 
     int ret = ProcessManagerI::instance().spawnProcess(processNum);
     if (ret < 0)
     {
-        ProcessManagerI::instance().quitAllChild(); 
+        ProcessManagerI::instance().quitAll(); 
 
         //todo
         return;
     }
     if (0 == ret)
     {
-        ChildSigManagerI::instance().init(func);
+        ChildSigManagerI::instance().init(notifyQuitCb);
+        semPtr->wait();
         DEBUGLOG("spawn child");
 
         return;
@@ -42,9 +45,10 @@ void Eagle::init(NotifyQuitFunc func)
 
     MasterSigManagerI::instance().init();
 
-    while (0 == g_isQuit)
+    while (!g_isReceiveSigQuit)
     {
         DEBUGLOG("wait sigquit");
+        //semPtr->op(processNum);
         sleep(1);
     }
 

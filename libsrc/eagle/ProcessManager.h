@@ -24,8 +24,8 @@ public:
     ~ProcessManager();
 
     int spawnProcess(const int processNum);
-    int quitChild(const int pid);
-    void quitAllChild();
+    int quit(const int pid);
+    void quitAll();
 
 private:
     std::vector<pid_t> childList;

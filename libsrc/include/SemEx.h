@@ -16,6 +16,9 @@
 
 #include "AutoPtr.h"
 
+#define IS_AGAIN() (ETIMEDOUT == errno || \
+        EAGAIN == errno || EINTR == errno)
+
 class Semaphore
 {
 public:

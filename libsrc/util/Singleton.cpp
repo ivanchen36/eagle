@@ -1,3 +1,3 @@
 #include "Singleton.h"
 
-MutexLockPtr g_singletonLock = new MutexLock();
+MutexLock g_singletonLock(1);

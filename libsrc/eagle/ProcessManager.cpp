@@ -38,7 +38,7 @@ int ProcessManager::spawnProcess(const int processNum)
     return 1;
 }
 
-int ProcessManager::quitChild(const int pid)
+int ProcessManager::quit(const int pid)
 {
     if (0 == kill(pid, SIGQUIT)) return 0;
 
@@ -47,12 +47,12 @@ int ProcessManager::quitChild(const int pid)
     return -1;
 }
 
-void ProcessManager::quitAllChild()
+void ProcessManager::quitAll()
 {
     std::vector<pid_t>::const_iterator it;
 
     for(it = childList.begin(); it != childList.end(); ++it)
     {
-        quitChild(*it);
+        quit(*it);
     }
 }

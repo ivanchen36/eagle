@@ -18,6 +18,7 @@
 #include <iostream>
 
 #include "Log.h"
+#include "EagleTime.h"
 
 using namespace std;
 
@@ -63,7 +64,19 @@ void test2()
  */
 int main ( int argc, char *argv[] )
 {
+    int i;
+
+    EagleTimeI::instance().autoUpdate();
     test1();
+    for (i = 0; i < 10; ++i)
+    {
+        sleep(10);
+    }
+    test1();
+    for (i = 0; i < 10; ++i)
+    {
+        sleep(10);
+    }
 
     return EXIT_SUCCESS;
 }

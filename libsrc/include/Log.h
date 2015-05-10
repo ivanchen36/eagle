@@ -113,12 +113,15 @@ public:
     void warn(const char *format, ...);
     void error(const char *format, ...);
 
+    static char *s_time;
+
 private:
     Log();
     void write(int level, const char *format, va_list args);
 
     int m_level; 
-    FileExPtr m_file;
+    FileEx m_file;
+
 
     friend class AutoPtr<Log>;
 };

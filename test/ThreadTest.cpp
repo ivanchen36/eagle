@@ -20,6 +20,8 @@
 
 using namespace std;
 
+int g_isQuit = 0;
+
 class HelloTask : public Task
 {
 public:
@@ -43,16 +45,32 @@ private:
     int m_index;
 };
 
-/**
- * @brief main 
- */
-int main ( int argc, char *argv[] )
+class HelloThread : public Thread
 {
-    if (g_sysLog->redirectToOther(STDOUT_FILENO))
+public:
+    HelloThread()
     {
-        DEBUGLOG("redirectToLog err");
+        DEBUGLOG("HelloThread");
     }
+    ~HelloThread()
+    {
+        DEBUGLOG("~HelloThread");
+    }
+    virtual void run()
+    {
+        DEBUGLOG("run hello");
+        int i = 4;
+        while (--i > 0)
+        {
+            sleep(2);
+            DEBUGLOG("hello");
+        }
+        g_isQuit = 1;
+    }
+};
 
+void test()
+{
     TaskPtr task = new HelloTask ("say hello");
 
     DEBUGLOG("create thread");
@@ -69,6 +87,59 @@ int main ( int argc, char *argv[] )
     sleep(10);
     DEBUGLOG("stop thread");
     thread->stop();
+}
 
+void test1()
+{
+    {
+        HelloThread thread;
+        usleep(10);
+    }
+    DEBUGLOG("wait");
+    while(!g_isQuit)
+    {
+        sleep(2);
+    }
+    sleep(2);
+}
+
+void sayHello(void *param)
+{
+    DEBUGLOG("run hello");
+    int i = 4;
+    while (--i > 0)
+    {
+        sleep(2);
+        DEBUGLOG("hello");
+    }
+    g_isQuit = 1;
+}
+
+void test2()
+{
+    {
+        CallBack cb(sayHello, NULL);
+        Thread thread(cb);
+    }
+    DEBUGLOG("wait");
+    while(!g_isQuit)
+    {
+        sleep(2);
+    }
+    sleep(2);
+}
+
+/**
+ * @brief main 
+ */
+int main ( int argc, char *argv[] )
+{
+    if (g_sysLog->redirectToOther(STDOUT_FILENO))
+    {
+        DEBUGLOG("redirectToLog err");
+    }
+
+    test2(); 
+    
     return EXIT_SUCCESS;
 }

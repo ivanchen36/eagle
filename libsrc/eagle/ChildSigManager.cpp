@@ -10,9 +10,9 @@ ChildSigManager::~ChildSigManager()
 {
 }
 
-void ChildSigManager::init(NotifyQuitFunc func)
+void ChildSigManager::init(const CallBack &notifyQuitCb)
 {
-    m_notifyQuitFunc = func;
+    m_notifyQuitCb = notifyQuitCb;
     SignalManager::init();
 }
 
@@ -24,5 +24,5 @@ ChildSigManager::Type ChildSigManager::getType()
 void ChildSigManager::sigQuit()
 {
     DEBUGLOG("child quit");
-    (*m_notifyQuitFunc)();
+    m_notifyQuitCb.excute();
 }

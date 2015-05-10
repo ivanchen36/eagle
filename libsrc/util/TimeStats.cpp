@@ -24,7 +24,7 @@ void TimeStats::disable()
 
 void TimeStats::start()
 {
-    if (1 == m_isEnable)
+    if (m_isEnable)
     {
         gettimeofday(&m_start, NULL);
     }
@@ -32,7 +32,7 @@ void TimeStats::start()
 
 long TimeStats::stop()
 {
-    if (1 == m_isEnable)
+    if (m_isEnable)
     {
         gettimeofday(&m_end, NULL);
 

@@ -2,6 +2,7 @@
 
 #include "ThreadSem.h"
 #include "Log.h"
+#include "EagleTime.h"
 
 ThreadSem::ThreadSem(const int val) : m_isInit(0)
 {
@@ -24,7 +25,7 @@ ThreadSem::~ThreadSem()
 
 int ThreadSem::post()
 {
-    if (0 == m_isInit) return -1;
+    if (!m_isInit) return -1;
 
     if (sem_post(&m_sem) != 0)
     {
@@ -38,7 +39,7 @@ int ThreadSem::post()
 
 int ThreadSem::wait()
 {
-    if (0 == m_isInit) return -1;
+    if (!m_isInit) return -1;
 
     if (sem_wait(&m_sem) != 0)
     {
@@ -52,16 +53,16 @@ int ThreadSem::wait()
 
 int ThreadSem::timedWait(const int sec)
 {
-    if (0 == m_isInit) return -1;
+    if (!m_isInit) return -1;
 
     struct timespec t;
 
-    t.tv_sec = time(NULL);
+    t.tv_sec = EagleTimeI::instance().getSec();
     t.tv_nsec = 0;
     t.tv_sec += sec;
     if (sem_timedwait(&m_sem, &t) != 0)
     {
-        if (ETIMEDOUT == errno || EAGAIN == errno) return 1;
+        if (IS_AGAIN()) return 1;
 
         ERRORLOG1("sem_timedwait failed, %s", strerror(errno));
 

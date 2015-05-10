@@ -6,12 +6,12 @@ CXXFLAGS = -g -O0
 TEST_INCLUDE = $(top_srcdir)/test
 TEST_SRC = $(top_srcdir)/test
 LIB_PATH = $(top_srcdir)/libsrc/eagle/.libs
-TEST_LD = -L$(LIB_PATH) -leagle -ltcmalloc
+TEST_LD = -L$(LIB_PATH) -leagle #-ltcmalloc
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
 
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
 				  logtest psemtest threadtest shmtest mmaptest \
-				  eagletest
+				  eagletest rbtest
 
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE)
 
@@ -41,3 +41,6 @@ mmaptest_LDFLAGS = $(TEST_LD)
 
 eagletest_SOURCES = EagleTest.cpp
 eagletest_LDFLAGS = $(TEST_LD)
+
+rbtest_SOURCES = RbTest.cpp
+rbtest_LDFLAGS = $(TEST_LD)

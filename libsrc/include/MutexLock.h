@@ -21,7 +21,7 @@
 class MutexLock
 {
 public:
-    MutexLock();
+    MutexLock(const int isRecursive = 0);
     ~MutexLock();
 
     int lock();
@@ -37,13 +37,13 @@ typedef AutoPtr<MutexLock> MutexLockPtr;
 class LockGuard
 {
 public:
-    LockGuard(MutexLockPtr &lock);
+    LockGuard(MutexLock &lock);
     ~LockGuard();
 
 private:
     void *operator new(size_t size);
 
-    MutexLockPtr m_lock;
+    MutexLock &m_lock;
 };
 
 #endif   /* ----- #ifndef _MUTEXLOCK_H_  ----- */

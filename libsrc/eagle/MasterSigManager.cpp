@@ -2,7 +2,7 @@
 #include "ProcessManager.h"
 #include "Log.h"
 
-extern int g_isQuit;
+extern int g_isReceiveSigQuit;
 
 MasterSigManager::MasterSigManager()
 {
@@ -22,6 +22,6 @@ MasterSigManager::Type MasterSigManager::getType()
 void MasterSigManager::sigQuit()
 {
     DEBUGLOG("master quit");
-    ProcessManagerI::instance().quitAllChild();
-    g_isQuit = 1;
+    ProcessManagerI::instance().quitAll();
+    g_isReceiveSigQuit = 1;
 }

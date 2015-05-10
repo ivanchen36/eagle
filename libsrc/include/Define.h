@@ -16,6 +16,4 @@
 
 #define MUL_TWO_ALIGN(d, a) (((d) + ((a) - 1)) & ~((a) - 1))
 
-typedef void (*NotifyQuitFunc)();
-
 #endif   /* ----- #ifndef _DEFINE_H_  ----- */

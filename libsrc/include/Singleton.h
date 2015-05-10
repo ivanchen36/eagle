@@ -17,9 +17,7 @@
 
 #include "MutexLock.h"
 
-using namespace std;
-
-extern MutexLockPtr g_singletonLock;
+extern MutexLock g_singletonLock;
 
 template<class T> class Singleton 
 {

@@ -69,7 +69,7 @@ int ProcessSem::op(const int val, const int sec)
     }
     if (semtimedop(m_semId, &op, 1, timeOut) != 0)
     {
-        if (ETIMEDOUT == errno || EAGAIN == errno) return 1;
+        if (IS_AGAIN()) return 1;
 
         ERRORLOG1("semop err, %s", strerror(errno));
 

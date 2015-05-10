@@ -11,5 +11,5 @@ INCLUDES = -I$(LIB_INCLUDE) -I.
 lib_LTLIBRARIES = libeagle.la
 libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
 					  MasterSigManager.cpp ChildSigManager.cpp \
-					  ProcessManager.cpp
+					  ProcessManager.cpp EagleTime.cpp Timer.cpp
 libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la
