@@ -17,33 +17,43 @@ union semun
 };
 
 ProcessSem::ProcessSem(const int preceesNum, const int val) 
-    : m_semId(-1)
+    : m_semId(-1), m_ref(NULL)
 {
-    m_ref = (int *)ShareMemI::instance().alloc(sizeof(int));
     m_semId = semget(IPC_PRIVATE, 1, IPC_CREAT | S_IRUSR | S_IWUSR);
-    if (-1 != m_semId) 
-    {
-        init(val);
-    }else
+    if (-1 == m_semId) 
     {
         ERRORLOG1("semget err, %s", strerror(errno));
+
+        return;
     }
-    *m_ref = preceesNum;
+
+    init(val);
+    if (preceesNum > 1)
+    {
+        m_ref = (int *)ShareMemI::instance().alloc(sizeof(int));
+        *m_ref = preceesNum;
+    }
 }
 
 ProcessSem::~ProcessSem()
 {
-    if (__sync_bool_compare_and_swap(const_cast<volatile int *>(m_ref), 1, 0))
+    int isDelete = 1;
+
+    if (NULL != m_ref)
     {
-        if (semctl(m_semId, 0, IPC_RMID) != 0)
+        if (!__sync_bool_compare_and_swap(const_cast<volatile int *>(m_ref), 1, 0))
         {
-            ERRORLOG1("semctl err, %s", strerror(errno));
+            __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
+            isDelete = 0;
         }
-    }else
-    {
-        __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
+        ShareMemI::instance().free(m_ref);
     }
-    ShareMemI::instance().free(m_ref);
+    if (!isDelete) return;
+
+    if (semctl(m_semId, 0, IPC_RMID) != 0)
+    {
+        ERRORLOG1("semctl err, %s", strerror(errno));
+    }
 }
 
 int ProcessSem::init(int val)

@@ -92,7 +92,6 @@ void test1(SemaphorePtr &semPtr)
             }
         }
         DEBUGLOG("child exit");
-        exit(3);
     }
     else
     {
@@ -125,7 +124,7 @@ void test1(SemaphorePtr &semPtr)
 
 void doTest()
 {
-    SemaphorePtr semPtr = new ProcessSem();
+    SemaphorePtr semPtr = new ProcessSem(2);
     test1(semPtr);
 }
 

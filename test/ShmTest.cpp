@@ -133,41 +133,6 @@ void test1()
     }
 }
 
-void test2()
-{
-    int ret;
-    char *str;
-    int dialogKey = 888;
-
-    str = (char *)ShareMemI::instance().alloc(48, dialogKey);
-    pid_t pid=fork();
-    DEBUGLOG1("1   %u", (intptr_t)str);
-    if(pid<0)
-    {
-        ERRORLOG("fork err");
-    }
-    else if(pid == 0)
-    {
-        ShareMemI::instance().free(str);
-        str = (char *)ShareMemI::instance().alloc(48, dialogKey);
-        DEBUGLOG1("2   %u", (intptr_t)str);
-        str[0] = 0;
-        child(str);
-        DEBUGLOG1("2   %u", (intptr_t)str);
-        ShareMemI::instance().free(str);
-        exit(3);
-    }
-    else
-    {
-        DEBUGLOG1("3   %u", (intptr_t)str);
-        str[0] = 0;
-        parent(str);
-        DEBUGLOG1("3   %u", (intptr_t)str);
-        ShareMemI::instance().free(str);
-        waitpid(-1, NULL, 0);
-    }
-}
-
 /**
  * @brief main 
  */
@@ -179,7 +144,7 @@ int main ( int argc, char *argv[] )
         DEBUGLOG("redirectToOther err");
     }
 
-    test2();
+    test1();
 
     return EXIT_SUCCESS;
 }
