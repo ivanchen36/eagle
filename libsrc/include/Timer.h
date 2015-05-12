@@ -71,6 +71,7 @@ private:
     TaskNode *m_taskListHead;
     MutexLock m_lock;
     TaskMap m_taskMap;
+    timer_t m_timer;
 
     friend class StartTimer;
 };

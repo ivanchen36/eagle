@@ -26,8 +26,6 @@ void SignalManager::init()
         masterSaHandler : childSaHandler;
     for (it = m_handleMap.begin(); it != m_handleMap.end(); ++it)
     {
-        if (it->first == SIGALRM) continue; /* only timer use */
-
         bzero(&sa, sizeof(struct sigaction)); 
         sa.sa_handler = sigHandleFunc;
         sigemptyset(&sa.sa_mask); 

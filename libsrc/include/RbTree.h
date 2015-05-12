@@ -14,8 +14,6 @@
 #ifndef  _RbTree_H_
 #define  _RbTree_H_
 
-#include "MutexLock.h"
-
 template<class K, class V> class RbTree
 {
 public:
@@ -122,7 +120,6 @@ public:
     int insert(const K &key, const V &val)
     {
         Node *n;
-        LockGuard guard(m_lock);
 
         if (NULL == m_root)
         {
@@ -154,7 +151,6 @@ public:
 
     int erase(const K &key)
     {
-        LockGuard guard(m_lock);
         Node *n = findNode(key);
 
         if (NULL == n) return -1;
@@ -168,7 +164,6 @@ public:
     {
         if (NULL == iter.m_node) return Iterator(NULL, this);
 
-        LockGuard guard(m_lock);
         Node *n = iter.m_node->itPrev;
 
         erase(iter.m_node);
@@ -179,7 +174,6 @@ public:
 
     void clear()
     {
-        LockGuard guard(m_lock);
         m_elements = 0;
         m_root = NULL;
         m_min = NULL;
@@ -194,7 +188,6 @@ public:
 
     Iterator find(const K &key)
     {
-        LockGuard guard(m_lock);
         return Iterator(findNode(key), this);
     }
 
@@ -245,15 +238,11 @@ private:
 
     Node *getNext(Node *n)
     {
-        LockGuard guard(m_lock);
-
         return n->itNext;
     }
 
     Node *getPrev(Node *n)
     {
-        LockGuard guard(m_lock);
-
         return n->itPrev;
     }
 
@@ -596,7 +585,6 @@ private:
     Node *m_max;
     Node *m_min;
     Node *m_iterListHead;
-    MutexLock m_lock;
 };
 
 #endif   /* ----- #ifndef _RbTree_H_  ----- */

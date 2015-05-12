@@ -11,14 +11,10 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-
-
 #ifndef  _AUTOPTR_H_
 #define  _AUTOPTR_H_
 
 #include <algorithm>
-
-#include "OsApi.h"
 
 template<class T> class AutoPtr 
 {
@@ -40,23 +36,25 @@ public:
     {
         m_ptr = r.m_ptr;
         m_ref = r.m_ref;
-        OsApi::atomicAdd(*m_ref, 1);
+        __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
     }
 
     template<class Y> AutoPtr(const AutoPtr<Y> &r)
     {
         m_ptr = r.m_ptr;
         m_ref = r.m_ref;
-        OsApi::atomicAdd(*m_ref, 1);
+        __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
     }
 
     ~AutoPtr()
     {
-        OsApi::atomicSub(*m_ref, 1);
-        if (0 == OsApi::atomicCompare(*m_ref, 0))
+        if (__sync_bool_compare_and_swap(const_cast<volatile int *>(m_ref), 1, 0))
         {
             delete m_ref;
             delete m_ptr;
+        }else
+        {
+            __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
         }
     }
 
@@ -83,7 +81,7 @@ public:
 
     AutoPtr& operator=(T *p)
     {
-        OsApi::atomicSub(*m_ref, 1);
+        __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
         if (0 == *m_ref)
         {
             delete m_ref;
@@ -99,7 +97,7 @@ public:
     {
         if (m_ptr == r.m_ptr) return;
 
-        OsApi::atomicSub(*m_ref, 1);
+        __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
         if (0 == *m_ref)
         {
             delete m_ref;
@@ -108,14 +106,14 @@ public:
 
         m_ptr = r.m_ptr;
         m_ref = r.m_ref;
-        OsApi::atomicAdd(*m_ref, 1);
+        __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
     }
 
     AutoPtr& operator=(const AutoPtr& r)
     {
         if (m_ptr == r.m_ptr) return;
 
-        OsApi::atomicSub(*m_ref, 1);
+        __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
         if (0 == *m_ref)
         {
             delete m_ref;
@@ -124,7 +122,7 @@ public:
 
         m_ptr = r.m_ptr;
         m_ref = r.m_ref;
-        OsApi::atomicAdd(*m_ref, 1);
+        __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
     }
 
     template<class Y> AutoPtr dynamicCast(const AutoPtr<Y> &r)

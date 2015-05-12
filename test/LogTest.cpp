@@ -69,15 +69,8 @@ int main ( int argc, char *argv[] )
     DEBUGLOG1("%d", sizeof(EagleTime));
     EagleTimeI::instance().autoUpdate();
     test1();
-    for (i = 0; i < 20; ++i)
-    {
-        sleep(10);
-    }
+    sleep(5);
     test1();
-    for (i = 0; i < 10; ++i)
-    {
-        sleep(10);
-    }
 
     return EXIT_SUCCESS;
 }

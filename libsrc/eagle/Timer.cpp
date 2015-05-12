@@ -8,7 +8,7 @@
 
 namespace
 {
-void excuteTimer(int sig)
+void excuteTimer(union sigval val)
 {
     TimerI::instance().excute();
 }
@@ -16,15 +16,20 @@ void excuteTimer(int sig)
 
 Timer::Timer() : m_nextExcuteTime((uint64_t)-1), m_taskListHead(NULL)
 { 
+    struct sigevent evp;
     struct sigaction sa;
 
-    bzero(&sa, sizeof(struct sigaction)); 
-    sa.sa_handler = excuteTimer;
-    sigemptyset(&sa.sa_mask); 
-    if (sigaction(SIGALRM, &sa, NULL) == -1) 
+    memset (&evp, 0, sizeof (evp));
+    evp.sigev_value.sival_ptr = &m_timer;
+    evp.sigev_notify = SIGEV_THREAD;
+    evp.sigev_notify_function = excuteTimer;
+
+    if (0 != timer_create(CLOCK_REALTIME, &evp, &m_timer))
     {
-        ERRORLOG2("sigaction %d err, %s", 
-                SIGALRM, strerror(errno));
+        m_timer = 0;
+        ERRORLOG1("timer_create err, %s", strerror(errno));
+
+        return;
     }
 }
 
@@ -45,18 +50,19 @@ Timer::~Timer()
         }
     }
     m_taskMap.clear();
+    if (0 != m_timer) timer_delete(m_timer);
 }
 
 int Timer::setTimer(int msec)
 {
-    struct itimerval   itv;
+    struct itimerspec ts;
 
-    itv.it_interval.tv_sec = 0;
-    itv.it_interval.tv_usec = 0;
-    itv.it_value.tv_sec = msec / 1000;
-    itv.it_value.tv_usec = (msec % 1000) * 1000;
+    ts.it_interval.tv_sec = 0;
+    ts.it_interval.tv_nsec = 0;
+    ts.it_value.tv_sec = msec / 1000;
+    ts.it_value.tv_nsec = (msec % 1000) * 1000000;
 
-    if (0 == setitimer(ITIMER_REAL, &itv, NULL)) return 0;
+    if (0 == timer_settime(m_timer, 0, &ts, NULL)) return 0;
 
     ERRORLOG1("setitimer error: %s!", strerror(errno));
 

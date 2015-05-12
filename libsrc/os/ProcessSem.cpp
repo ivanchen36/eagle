@@ -33,13 +33,15 @@ ProcessSem::ProcessSem(const int preceesNum, const int val)
 
 ProcessSem::~ProcessSem()
 {
-    OsApi::atomicSub(*m_ref, 1);
-    if (0 == OsApi::atomicCompare(*m_ref, 0))
+    if (__sync_bool_compare_and_swap(const_cast<volatile int *>(m_ref), 1, 0))
     {
         if (semctl(m_semId, 0, IPC_RMID) != 0)
         {
             ERRORLOG1("semctl err, %s", strerror(errno));
         }
+    }else
+    {
+        __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
     }
     ShareMemI::instance().free(m_ref);
 }

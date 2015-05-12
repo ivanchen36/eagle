@@ -5,7 +5,7 @@
 
 ShareMem::~ShareMem()
 {
-    std::map<intptr_t, int>::iterator it;
+    std::map<uintptr_t, int>::iterator it;
 
     for (it = m_shmMap.begin(); it != m_shmMap.end();)
     {
@@ -17,7 +17,7 @@ ShareMem::~ShareMem()
 void *ShareMem::calloc(const int size, const int key)
 {
     void *ptr = alloc(size, key);
-    if (!ptr) memset(ptr, 0, size);
+    if (NULL != ptr) memset(ptr, 0, size);
 
     return ptr;
 }
@@ -51,14 +51,14 @@ void *ShareMem::alloc(const int size, const int key)
         }
         id = -1;
     }
-    if (-1 == (intptr_t)ptr)
+    if ((void *)-1 == ptr)
     {
         ERRORLOG1("shmat err, %s!", strerror(errno));
 
         return NULL;
     }
 
-    m_shmMap[(intptr_t)ptr] = isNew ? id : -1;
+    m_shmMap[(uintptr_t)ptr] = isNew ? id : -1;
 
     return ptr;
 }
@@ -66,16 +66,18 @@ void *ShareMem::alloc(const int size, const int key)
 void ShareMem::free(void *ptr, int id)
 {
     if (shmdt(ptr) == -1) ERRORLOG1("shmdt err, %s!", strerror(errno));
+
     if (-1 != id && shmctl(id, IPC_RMID, NULL) == -1) 
         ERRORLOG2("shmctl IPC_RMID  %d err, %s!", id, strerror(errno));
 }
 
 void ShareMem::free(void *ptr)
 {
-    if (!ptr) return;
+    if (NULL == ptr) return;
 
-    int id = m_shmMap[(intptr_t)ptr];
+    std::map<uintptr_t, int>::iterator iter = m_shmMap.find((uintptr_t)ptr);
+    if (iter == m_shmMap.end()) return;
 
-    m_shmMap.erase((intptr_t)ptr);
-    free(ptr, id);
+    free(ptr, iter->second);
+    m_shmMap.erase(iter);
 }
