@@ -23,7 +23,7 @@ class Thread
 public:
     Thread(const CallBack &cb, const int isDetach = 1, const int stackSize = 0);
     Thread(const int stackSize = 0);
-    ~Thread();
+    virtual ~Thread();
 
     virtual void run();
     int isDetach()

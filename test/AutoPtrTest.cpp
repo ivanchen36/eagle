@@ -35,7 +35,7 @@ public:
         cout << "constructor" << " " << m_name << endl;
     }
 
-    ~AutoPtrTest()
+    virtual ~AutoPtrTest()
     {
         cout << "destructor" << " " << m_name << endl;
     }
@@ -63,6 +63,11 @@ public:
     AutoPtrTestChild(const char *name)
     {
         cout << "child constructor" << endl;
+    }
+
+    ~AutoPtrTestChild()
+    {
+        cout << "child destructor" << endl;
     }
 };
 

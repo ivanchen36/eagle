@@ -53,7 +53,7 @@ public:
     ~AutoPtr()
     {
         OsApi::atomicSub(*m_ref, 1);
-        if (0 == *m_ref)
+        if (0 == OsApi::atomicCompare(*m_ref, 0))
         {
             delete m_ref;
             delete m_ptr;

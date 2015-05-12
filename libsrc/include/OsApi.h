@@ -20,6 +20,7 @@ class OsApi
 public:
     static void atomicAdd(int &var, const int val);
     static void atomicSub(int &var, const int val);
+    static int atomicCompare(int &var, const int val);
 };
 
 #endif   /* ----- #ifndef _OSAPI_H_  ----- */

@@ -113,7 +113,7 @@ public:
     void warn(const char *format, ...);
     void error(const char *format, ...);
 
-    static char *s_time;
+    static void setLogTime(const char *logTime);
 
 private:
     Log();

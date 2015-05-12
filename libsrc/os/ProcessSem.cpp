@@ -5,6 +5,7 @@
 
 #include "ProcessSem.h"
 #include "Log.h"
+#include "ShareMem.h"
 
 union semun 
 {
@@ -15,8 +16,10 @@ union semun
                                  (Linux-specific) */
 };
 
-ProcessSem::ProcessSem(const int val) : m_semId(-1)
+ProcessSem::ProcessSem(const int preceesNum, const int val) 
+    : m_semId(-1)
 {
+    m_ref = (int *)ShareMemI::instance().alloc(sizeof(int));
     m_semId = semget(IPC_PRIVATE, 1, IPC_CREAT | S_IRUSR | S_IWUSR);
     if (-1 != m_semId) 
     {
@@ -25,14 +28,20 @@ ProcessSem::ProcessSem(const int val) : m_semId(-1)
     {
         ERRORLOG1("semget err, %s", strerror(errno));
     }
+    *m_ref = preceesNum;
 }
 
 ProcessSem::~ProcessSem()
 {
-    if (semctl(m_semId, 0, IPC_RMID) != 0)
+    OsApi::atomicSub(*m_ref, 1);
+    if (0 == OsApi::atomicCompare(*m_ref, 0))
     {
-        ERRORLOG1("semctl err, %s", strerror(errno));
+        if (semctl(m_semId, 0, IPC_RMID) != 0)
+        {
+            ERRORLOG1("semctl err, %s", strerror(errno));
+        }
     }
+    ShareMemI::instance().free(m_ref);
 }
 
 int ProcessSem::init(int val)

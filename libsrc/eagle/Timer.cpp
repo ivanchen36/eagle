@@ -47,11 +47,6 @@ Timer::~Timer()
     m_taskMap.clear();
 }
 
-void Timer::init()
-{
-    
-}
-
 int Timer::setTimer(int msec)
 {
     struct itimerval   itv;
@@ -81,20 +76,14 @@ Timer::TaskNode *Timer::find(const char *name)
     return NULL;
 }
 
-int Timer::addTimer(TaskNode *task)
+int Timer::addTimer(const uint64_t startTime, TaskNode *task)
 {
-    uint64_t startTime = EagleTimeI::instance().getMsec() + task->interval;
     TaskMap::Iterator iter = m_taskMap.find(startTime);
 
     if (m_taskMap.end() == iter)
     {
         task->nextTimer = NULL;
-        m_taskMap.insert(startTime, task);
-        if (1 == m_taskMap.size() || m_nextExcuteTime > startTime)
-        {
-            setTimer(task->interval);
-            m_nextExcuteTime = startTime;
-        }
+        m_taskMap.insert(startTime, task); 
     }else
     {
         task->nextTimer = iter->val;
@@ -106,38 +95,55 @@ void Timer::excute()
 {
     TaskNode *cur;
     TaskNode *next;
-    TaskMap::Iterator iter = m_taskMap.getMin();
-    if (iter == m_taskMap.end()) return;
-    
+    uint64_t tmp;
+    uint64_t startTime = (uint64_t)-1;
     LockGuard guard(m_lock);
-    cur = iter->val;
-    m_taskMap.erase(iter);
-    while (NULL != cur)
+    TaskMap::Iterator iter = m_taskMap.getMin();
+
+    if (EagleTimeI::instance().getMsec() > m_nextExcuteTime)
     {
-        next = cur->nextTimer;
-        if (0 == *(cur->name)) 
-        {
-            delete cur;
-        }else
-        {
-            if (cur->isAsync)
-            {
-                Thread thread(cur->cb);
-            }else
-            {
-                cur->cb.excute();
-            }
-            if (-1 == cur->times || --cur->times > 0)
-            {
-                addTimer(cur);
-            }else
-            {
-                delTask(cur);
-                delete cur;
-            }
-        }
-        cur = next;
+        m_nextExcuteTime = EagleTimeI::instance().getMsec();
     }
+
+    for (; iter != m_taskMap.end(); iter = m_taskMap.getMin())
+    {
+        if (m_nextExcuteTime < iter->key) break;
+
+        cur = iter->val;
+        m_taskMap.erase(iter);
+        while (NULL != cur)
+        {
+            next = cur->nextTimer;
+            if (0 == *(cur->name)) 
+            {
+                delete cur;
+            }else
+            {
+                if (cur->isAsync)
+                {
+                    Thread thread(cur->cb);
+                }else
+                {
+                    cur->cb.excute();
+                }
+                if (-1 == cur->times || --cur->times > 0)
+                {
+                    tmp = m_nextExcuteTime + cur->interval;
+                    addTimer(tmp, cur);
+                    if (startTime > tmp) startTime = tmp;
+                }else
+                {
+                    delTask(cur);
+                    delete cur;
+                }
+            }
+            cur = next;
+        }
+    }
+
+    if (iter->key < startTime) startTime = iter->key;
+    setTimer(startTime - m_nextExcuteTime);
+    m_nextExcuteTime = startTime;
 }
 
 int Timer::addTask(const char *name, const int msec,
@@ -153,10 +159,17 @@ int Timer::addTask(const char *name, const int msec,
         return -1;
     }
 
+    uint64_t startTime = EagleTimeI::instance().getMsec() + msec;
+
     tmp = new TaskNode(name, msec, isAsync, times, cb);
     tmp->nextTask = m_taskListHead;
     m_taskListHead = tmp;
-    addTimer(tmp);
+    addTimer(startTime, tmp);
+    if (m_nextExcuteTime > startTime)
+    {
+        setTimer(tmp->interval);
+        m_nextExcuteTime = startTime;
+    }
 
     return 0;
 }

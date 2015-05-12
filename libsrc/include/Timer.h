@@ -62,9 +62,8 @@ public:
 private:
     typedef RbTree<uint64_t, Timer::TaskNode *> TaskMap;
 
-    void init();
     int setTimer(int msec);
-    int addTimer(TaskNode *task);
+    int addTimer(const uint64_t startTime, TaskNode *task);
     TaskNode *find(const char *name);
     void delTask(TaskNode *task);
 

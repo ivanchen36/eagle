@@ -16,12 +16,12 @@ void updateEagleTime(void *param)
 EagleTime::EagleTime()
 {
     update();
-    Log::s_time = m_logTime;
+    Log::setLogTime(m_logTime);
 }
 
 EagleTime::~EagleTime()
 {
-
+    Log::setLogTime("1970-09-28 12:00:00");
 }
 
 void EagleTime::autoUpdate()

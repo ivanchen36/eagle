@@ -21,7 +21,7 @@ class Eagle
 {
 public:
     void init(const CallBack &notifyQuitCb);
-    void destroy();
+    int spawnChildProcess(const int processNum);
 
 private:
     Eagle();

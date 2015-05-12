@@ -22,6 +22,7 @@
 class Semaphore
 {
 public:
+    virtual ~Semaphore(){}
     virtual int post(){ return 0; }
     virtual int wait(){ return 0; }
     virtual int timedWait(const int sec){ return 0; }

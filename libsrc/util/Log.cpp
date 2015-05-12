@@ -4,14 +4,20 @@
 #include <unistd.h>
 
 #include "Log.h"
+#include "EagleTime.h"
 
 LogPtr g_sysLog = new Log("./debug.log", DEBUG_LOG);
 
-char *Log::s_time = "1970-09-28 12:00:00";
-
 namespace
 {
+const char *g_logTime = "1970-09-28 12:00:00";
 const char *LOG_LEVEL_STR[] = {"debug", "info", "warn", "error"};
+
+__attribute((constructor)) void init()  
+{ 
+    ShareMemI::instance();
+    EagleTimeI::instance().getLogTime();
+}
 }
 
 Log::Log()
@@ -28,6 +34,11 @@ Log::Log(const char *fileName, int level)
 
 Log::~Log()
 {   
+}
+
+void Log::setLogTime(const char *logTime)
+{
+    g_logTime = logTime;
 }
 
 int Log::redirectToOther(const int fd)
@@ -49,7 +60,7 @@ void Log::write(int level, const char *format, va_list args)
     int len;
     char buf[MAX_LINE_LEN];
 
-    snprintf(buf, MAX_LINE_LEN, "[%s %s]", s_time, LOG_LEVEL_STR[level]);
+    snprintf(buf, MAX_LINE_LEN, "[%s %s]", g_logTime, LOG_LEVEL_STR[level]);
     len = strlen(buf);
     vsnprintf(buf +len, MAX_LINE_LEN - len, format, args);
     len += strlen(buf + len);

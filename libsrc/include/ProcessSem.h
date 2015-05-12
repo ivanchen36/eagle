@@ -19,7 +19,7 @@
 class ProcessSem : public Semaphore
 {
 public:
-    ProcessSem(const int val = 0);
+    ProcessSem(const int preceesNum = 1, const int val = 0);
     ~ProcessSem();
 
     virtual int post();
@@ -30,6 +30,7 @@ public:
 private:
     int init(int val);
     int m_semId;
+    int *m_ref;
 };
 
 typedef AutoPtr<ProcessSem> ProcessSemPtr;

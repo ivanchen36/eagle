@@ -18,6 +18,7 @@
 #include <sys/wait.h>
 
 #include "Log.h"
+#include "EagleTime.h"
 #include "ProcessSem.h"
 
 using namespace std;
@@ -37,7 +38,6 @@ void test(SemaphorePtr &semPtr)
             DEBUGLOG("wait err");
         }
         DEBUGLOG("child exit");
-        exit(3);
     }
     else
     {
@@ -66,7 +66,6 @@ void test(SemaphorePtr &semPtr)
             DEBUGLOG1("child status %d", status);
         }
         DEBUGLOG("parent exit");
-        exit(3);
     }
 }
 
@@ -121,24 +120,27 @@ void test1(SemaphorePtr &semPtr)
             DEBUGLOG1("child status %d", status);
         }
         DEBUGLOG("parent exit");
-        exit(3);
     }
 }
 
-
+void doTest()
+{
+    SemaphorePtr semPtr = new ProcessSem();
+    test1(semPtr);
+}
 
 /**
  * @brief main 
  */
 int main (int argc, char *argv[] )
 {
+    EagleTimeI::instance().autoUpdate();
     if (g_sysLog->redirectToOther(STDOUT_FILENO))
     {
         DEBUGLOG("redirectToOther err");
     }
-    SemaphorePtr semPtr = new ProcessSem();
-    test1(semPtr);
-    exit(3);
+
+    doTest();
 
     return EXIT_SUCCESS;
 }

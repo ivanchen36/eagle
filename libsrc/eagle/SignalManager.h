@@ -26,6 +26,8 @@ public:
         UNKNOWN,
     };
 
+    virtual ~SignalManager(){}
+
     void init();
     void handleSig(const int sig);
     virtual Type getType() = 0;
