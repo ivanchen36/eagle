@@ -28,9 +28,9 @@ public:
     EagleTime();
     ~EagleTime();
 
-    void autoUpdate();
-     
     void update();
+    void autoUpdate();
+    void cancelUpdate();
 
     const char *getLogTime()
     {

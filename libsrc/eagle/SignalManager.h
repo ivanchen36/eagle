@@ -28,7 +28,10 @@ public:
 
     virtual ~SignalManager(){}
 
+    int block();
     void init();
+    void clean();
+    int unBlock();
     void handleSig(const int sig);
     virtual Type getType() = 0;
 

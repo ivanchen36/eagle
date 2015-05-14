@@ -71,6 +71,9 @@ int main ( int argc, char *argv[] )
     test1();
     sleep(5);
     test1();
+    EagleTimeI::instance().cancelUpdate();
+    sleep(5);
+    test1();
 
     return EXIT_SUCCESS;
 }

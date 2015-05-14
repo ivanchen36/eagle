@@ -4,6 +4,7 @@
 #include "Timer.h"
 #include "Thread.h"
 #include "EagleTime.h"
+#include "Define.h"
 #include "Log.h"
 
 namespace
@@ -103,17 +104,15 @@ void Timer::excute()
     TaskNode *next;
     uint64_t tmp;
     uint64_t startTime = (uint64_t)-1;
+    uint64_t curTime = EagleTimeI::instance().getMsec();
+
     LockGuard guard(m_lock);
     TaskMap::Iterator iter = m_taskMap.getMin();
 
-    if (EagleTimeI::instance().getMsec() > m_nextExcuteTime)
-    {
-        m_nextExcuteTime = EagleTimeI::instance().getMsec();
-    }
-
+    if (curTime < m_nextExcuteTime) curTime = m_nextExcuteTime;
     for (; iter != m_taskMap.end(); iter = m_taskMap.getMin())
     {
-        if (m_nextExcuteTime < iter->key) break;
+        if (curTime < iter->key) break;
 
         cur = iter->val;
         m_taskMap.erase(iter);
@@ -147,7 +146,12 @@ void Timer::excute()
         }
     }
 
-    if (iter->key < startTime) startTime = iter->key;
+    if (m_taskMap.end() == iter && -1 == startTime) return;
+
+    if (m_taskMap.end() != iter && iter->key < startTime)
+    {
+        startTime = iter->key;
+    }
     setTimer(startTime - m_nextExcuteTime);
     m_nextExcuteTime = startTime;
 }
@@ -165,15 +169,17 @@ int Timer::addTask(const char *name, const int msec,
         return -1;
     }
 
-    uint64_t startTime = EagleTimeI::instance().getMsec() + msec;
+    uint64_t curTime = EagleTimeI::instance().getMsec();
+    uint64_t startTime = curTime + msec;
 
+    startTime = ALIGN(startTime, msec);
     tmp = new TaskNode(name, msec, isAsync, times, cb);
     tmp->nextTask = m_taskListHead;
     m_taskListHead = tmp;
     addTimer(startTime, tmp);
     if (m_nextExcuteTime > startTime)
     {
-        setTimer(tmp->interval);
+        setTimer(startTime - curTime);
         m_nextExcuteTime = startTime;
     }
 

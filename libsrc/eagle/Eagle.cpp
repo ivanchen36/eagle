@@ -9,84 +9,95 @@
 #include "ProcessSem.h"
 #include "EagleTime.h"
 
-int g_isReceiveSigQuit = 0;
-
-Eagle::Eagle()
-{
-
-}
-
-Eagle::~Eagle()
-{
-
-}
-
-int Eagle::spawnChildProcess(const int processNum)
+int Eagle::spawnChildProcess()
 {
     int ret;
+    uint8_t *isStop;
+    int processNum = 4;
     ProcessSem sem(processNum + 1);
 
-    ret = ProcessManagerI::instance().spawnProcess(processNum);
+    isStop = (uint8_t *)ShareMemI::instance().calloc(1);
+    ret = ProcessManagerI::instance().spawn(processNum);
     if (ret == 0)
     {
         sem.wait();
+        if(*isStop) ret = -1;
+        ShareMemI::instance().free(isStop);
 
-        return 0;
+        return ret;
     }
 
-    if (ret > 0)
+    if (ret < 0) 
     {
-        EagleTimeI::instance().autoUpdate();
-        sem.op(processNum);
-
-        return 1;
+        *isStop = 1;
+        ERRORLOG("spawnprocess err");
     }
+    sem.op(processNum);
+    ShareMemI::instance().free(isStop);
 
-    //todo
-    return -1;
+    return ret;
 }
 
-void Eagle::init(const CallBack &notifyQuitCb)
+void Eagle::childInit(const CallBack &notifyQuitCb)
 {
-    pid_t pid;
-    int processNum = 4;
-    int ret = spawnChildProcess(processNum);
+    ChildSigManagerI::instance().init(notifyQuitCb);
+}
 
-    if (ret < 0)
-    {
-        ProcessManagerI::instance().quitAll(); 
+void Eagle::masterInit()
+{
 
-        //todo
-        return;
-    }
-
-    if (0 == ret)
-    {
-        ChildSigManagerI::instance().init(notifyQuitCb);
-        DEBUGLOG("start child");
-
-        return;
-    }
-
+    EagleTimeI::instance().autoUpdate();
     MasterSigManagerI::instance().init();
-    while (!g_isReceiveSigQuit)
-    {
-        DEBUGLOG("wait sigquit");
-        sleep(1);
-    }
+    MasterSigManagerI::instance().block();
+}
 
-    while (processNum > 0)
+void Eagle::masterClean()
+{
+    EagleTimeI::instance().cancelUpdate();
+    MasterSigManagerI::instance().unBlock();
+    MasterSigManagerI::instance().clean();
+}
+
+int Eagle::masterCycle()
+{
+    sigset_t set;
+    ProcessManager::Status status;
+
+    masterInit();
+    for (;;)
     {
-        pid = waitpid(-1, NULL, 0);
-        if (pid > 0)
+        sigsuspend(&set);
+        status = ProcessManagerI::instance().getStatus();
+
+        if (ProcessManager::QUIT == status)
         {
-            DEBUGLOG("child quit");
-            processNum--;
-        }else
+            ProcessManagerI::instance().waitQuit();
+
+            return -1;
+        }
+
+        if (ProcessManager::SPAWN == status)
         {
-            DEBUGLOG("wait quit");
-            sleep(1);
+            if (ProcessManagerI::instance().reSpawn() == 0)
+            {
+                masterClean();
+
+                return 0;
+            }
         }
     }
-    exit(0);
+}
+
+int Eagle::init(const CallBack &notifyQuitCb)
+{
+    pid_t pid;
+    int ret = spawnChildProcess();
+
+    if (ret > 0) ret = masterCycle();
+
+    if (ret < 0) return -1;
+
+    childInit(notifyQuitCb);
+
+    return 0;
 }

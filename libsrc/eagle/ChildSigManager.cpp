@@ -23,6 +23,5 @@ ChildSigManager::Type ChildSigManager::getType()
 
 void ChildSigManager::sigQuit()
 {
-    DEBUGLOG("child quit");
     m_notifyQuitCb.excute();
 }

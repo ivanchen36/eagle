@@ -38,12 +38,12 @@ int main ( int argc, char *argv[] )
         DEBUGLOG("redirectToOther err");
     }
     CallBack cb(notifyQuit);
-    EagleI::instance().init(cb);
+    EAGLE_INIT(cb);
 
     while (0 == g_waitQuit)
     {
         DEBUGLOG("child wait sigquit");
-        sleep(1);
+        sleep(10);
     }
 
     return EXIT_SUCCESS;

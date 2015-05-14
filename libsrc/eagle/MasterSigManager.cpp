@@ -2,11 +2,10 @@
 #include "ProcessManager.h"
 #include "Log.h"
 
-extern int g_isReceiveSigQuit;
-
 MasterSigManager::MasterSigManager()
 {
     m_handleMap[SIGQUIT] = (SaHandle)&MasterSigManager::sigQuit;  
+    m_handleMap[SIGCHLD] = (SaHandle)&MasterSigManager::sigChld;  
 }
 
 MasterSigManager::~MasterSigManager()
@@ -21,7 +20,10 @@ MasterSigManager::Type MasterSigManager::getType()
 
 void MasterSigManager::sigQuit()
 {
-    DEBUGLOG("master quit");
-    ProcessManagerI::instance().quitAll();
-    g_isReceiveSigQuit = 1;
+    ProcessManagerI::instance().quit();
+}
+
+void MasterSigManager::sigChld()
+{
+    ProcessManagerI::instance().check();
 }

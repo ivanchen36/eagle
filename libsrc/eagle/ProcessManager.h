@@ -20,15 +20,37 @@
 class ProcessManager
 {
 public:
+    enum Status
+    {
+        NORMAL,
+        SPAWN,
+        QUIT,
+    };
+
     ProcessManager();
     ~ProcessManager();
 
-    int spawnProcess(const int processNum);
-    int quit(const int pid);
-    void quitAll();
+    Status getStatus()
+    {
+        if (0 == m_processNum) return QUIT;
+
+        if (m_processList.size() == m_processNum)
+            return NORMAL;
+
+        return SPAWN;
+    }
+
+    void check();
+    void quit();
+    int stop(const int pid);
+    void waitQuit();
+    int spawn(int &processNum);
+    int reSpawn();
 
 private:
-    std::vector<pid_t> childList;
+    int m_processNum;
+    MutexLock m_lock;
+    std::vector<pid_t> m_processList;
 };
 
 typedef Singleton<ProcessManager> ProcessManagerI;

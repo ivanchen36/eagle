@@ -16,6 +16,48 @@ namespace
     }
 }
 
+int SignalManager::block()
+{
+    sigset_t set;
+
+    sigemptyset(&set);
+    for (SaHandleMap::const_iterator it = m_handleMap.begin(); 
+            it != m_handleMap.end(); ++it)
+    {
+        sigaddset(&set, it->first);
+    }
+
+    if (sigprocmask(SIG_BLOCK, &set, NULL) != 0)
+    {
+        ERRORLOG1("sigprocmask err, %d", strerror(errno));
+
+        return -1;
+    }
+
+    return 0;
+}
+
+int SignalManager::unBlock()
+{
+    sigset_t set;
+
+    sigemptyset(&set);
+    for (SaHandleMap::const_iterator it = m_handleMap.begin(); 
+            it != m_handleMap.end(); ++it)
+    {
+        sigaddset(&set, it->first);
+    }
+
+    if (sigprocmask(SIG_UNBLOCK, &set, NULL) != 0)
+    {
+        ERRORLOG1("sigprocmask err, %d", strerror(errno));
+
+        return -1;
+    }
+
+    return 0;
+}
+
 void SignalManager::init()
 {
     struct sigaction sa;
@@ -34,6 +76,16 @@ void SignalManager::init()
             ERRORLOG2("sigaction %d err, %s", 
                     it->first, strerror(errno));
         }
+    }
+}
+
+void SignalManager::clean()
+{
+    SaHandleMap::const_iterator it;
+
+    for (it = m_handleMap.begin(); it != m_handleMap.end(); ++it)
+    {
+        signal(it->first, SIG_DFL);
     }
 }
 

@@ -24,6 +24,7 @@ public:
 
     Type getType();
     void sigQuit();
+    void sigChld();
 };
 
 typedef Singleton<MasterSigManager> MasterSigManagerI;

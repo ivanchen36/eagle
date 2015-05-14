@@ -52,19 +52,11 @@ void test(SemaphorePtr &semPtr)
         {
             DEBUGLOG("post err");
         }
-        ret = waitpid(pid, &status, WNOHANG | WUNTRACED);
-        DEBUGLOG1("waitpid %d", ret);
-        while (!ret)
-        {
-            DEBUGLOG("parent wait status");
-            sleep(2);
-            semPtr->post();
-            ret = waitpid(pid, &status, WNOHANG | WUNTRACED);
-        }
-        if (WEXITSTATUS(status))
-        {
-            DEBUGLOG1("child status %d", status);
-        }
+        sleep(2);
+        semPtr->post();
+        sleep(2);
+        ret = waitpid(pid, NULL, 0);
+        DEBUGLOG1("child %d exit", ret);
         DEBUGLOG("parent exit");
     }
 }
@@ -105,19 +97,8 @@ void test1(SemaphorePtr &semPtr)
         {
             DEBUGLOG("post err");
         }
-        ret = waitpid(pid, &status, WNOHANG | WUNTRACED);
-        DEBUGLOG1("waitpid %d", ret);
-        while (!ret)
-        {
-            DEBUGLOG("parent wait status");
-            sleep(2);
-            semPtr->post();
-            ret = waitpid(pid, &status, WNOHANG | WUNTRACED);
-        }
-        if (WEXITSTATUS(status))
-        {
-            DEBUGLOG1("child status %d", status);
-        }
+        ret = waitpid(pid, NULL, 0);
+        DEBUGLOG1("child %d exit", ret);
         DEBUGLOG("parent exit");
     }
 }

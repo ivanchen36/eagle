@@ -24,6 +24,11 @@ EagleTime::~EagleTime()
     Log::setLogTime("1970-09-28 12:00:00");
 }
 
+void EagleTime::cancelUpdate()
+{
+    TimerI::instance().delTask("updatetime");
+}
+
 void EagleTime::autoUpdate()
 {
     CallBack cb(updateEagleTime);

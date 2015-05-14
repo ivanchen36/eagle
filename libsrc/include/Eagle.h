@@ -16,19 +16,24 @@
 
 #include "CallBack.h"
 #include "Singleton.h"
+#include "Singleton.h"
+
+#define EAGLE_INIT(cb) if (0 != EagleI::instance().init(cb)) return 0
 
 class Eagle
 {
 public:
-    void init(const CallBack &notifyQuitCb);
-    int spawnChildProcess(const int processNum);
+    int init(const CallBack &notifyQuitCb);
 
 private:
-    Eagle();
-    ~Eagle();
+    void childInit(const CallBack &notifyQuitCb);
+    void masterInit();
+    void masterClean();
+    int masterCycle();
+    int spawnChildProcess();
 
     friend class Singleton<Eagle>;
 };
-typedef Singleton<Eagle> EagleI;
 
+typedef Singleton<Eagle> EagleI;
 #endif   /* ----- #ifndef _EAGLE_H_  ----- */
