@@ -53,6 +53,8 @@ public:
     Timer();
     ~Timer();
 
+    void start();
+    void pause();
     void excute();
     int addTask(const char *name, const int msec,
             const CallBack &cb, const int isAsync = 0, 
@@ -67,6 +69,7 @@ private:
     TaskNode *find(const char *name);
     void delTask(TaskNode *task);
 
+    int m_isPause;
     uint64_t m_nextExcuteTime;
     TaskNode *m_taskListHead;
     MutexLock m_lock;

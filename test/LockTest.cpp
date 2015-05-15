@@ -33,7 +33,7 @@ void test(MutexLock &lock, int level)
     }
 }
 
-void dotest()
+void doTest()
 {
     MutexLock lock(1);
 
@@ -42,6 +42,28 @@ void dotest()
     MutexLock lock1;
 
     test(lock1, 4);
+}
+
+void test1(MutexLock &lock)
+{
+    pid_t pid=fork();
+    if(pid<0)
+    {
+        ERRORLOG("fork err");
+    }
+    if (pid == 0) return;
+
+    pid=fork();
+    if (pid == 0) return;
+
+    pid=fork();
+}
+
+void doTest1()
+{
+    MutexLock lock(0, 1);
+
+    test1(lock);
 }
 
 /**
@@ -55,7 +77,7 @@ int main ( int argc, char *argv[] )
     }
     EagleTimeI::instance().autoUpdate();
 
-    dotest();
+    doTest1();
 
     return EXIT_SUCCESS;
 }

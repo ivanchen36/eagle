@@ -4,56 +4,110 @@
 #include <sys/wait.h>
 
 #include "ProcessManager.h"
+#include "Eagle.h"
 #include "Log.h"
 
 ProcessManager::ProcessManager()
+    : m_processHead(NULL), m_aliveNum(0), 
+    m_processNum(0)
 {
 }
 
 ProcessManager::~ProcessManager()
 {
+    ProcessNode *process = NULL;
 
+    while (NULL != m_processHead)
+    {
+        process = m_processHead->next;
+        delete m_processHead;
+        m_processHead = process;
+    }
 }
 
 
 int ProcessManager::reSpawn()
 {
     int pid;
-    int num = m_processNum - m_processList.size();
+    int index = 0;
+    ProcessNode *process = m_processHead;
+    int num = m_processNum - m_aliveNum;
+
+    for (; NULL != process && 0 != process->pid; 
+            process = process->next);
+    if (NULL != process) index = process->index;
     while (--num >= 0 && (pid = fork()) > 0)
     {
-        m_processList.push_back(pid);
+        ++m_aliveNum;
+        if (NULL == process) 
+        {
+            ERRORLOG("can't find dead process index");
+            continue;
+        }
+
+        process->pid = pid;
+        for (; NULL != process && 0 != process->pid; 
+                process = process->next);
+        if (NULL != process) index = process->index;
     }
 
-    if (0 == pid) return 0;
+    if (0 == pid)
+    {
+        EagleAttr::index = index;
+
+        return 0;
+    }
 
     return 1;
 }
 
 int ProcessManager::spawn(int &processNum)
 {
-    int pid = 1;
-    int num = processNum;
+    int pid;
+    int num = 0;
+    ProcessNode *process = NULL;
 
-
-    while (--num >= 0 && (pid = fork()) > 0)
+    while (++num <= processNum && (pid = fork()) > 0)
     {
-        m_processList.push_back(pid);
+        process = new ProcessNode(num, pid, process);
+        ++m_aliveNum;
     }
 
-    if (0 == pid) return 0;
-
-    if (-1 == num) 
+    if (0 == pid)
     {
-        m_processNum = processNum;
+        EagleAttr::index = num;
+
+        return 0;
+    }
+
+    if (pid > 0) 
+    {
+        m_processHead = process;
+        m_processNum = m_aliveNum;
 
         return 1;
     }
 
     ERRORLOG1("fork err, %s", strerror(errno));
-    processNum = m_processList.size();
+    processNum = m_aliveNum;
 
     return -1;
+}
+
+void ProcessManager::deleteProcess(const int pid)
+{
+    ProcessNode *process = m_processHead;
+
+    for(; NULL != process; process = process->next)
+    {
+        if (pid == process->pid)
+        {
+            --m_aliveNum;
+            process->pid = 0;
+
+            return;
+        }
+    }
 }
 
 void ProcessManager::check()
@@ -61,12 +115,10 @@ void ProcessManager::check()
     int pid;
     int status;
 
-    while (m_processList.size() > 0 && 
-            (pid = waitpid(-1, &status, WNOHANG)) > 0)
+    while (m_aliveNum > 0 && (pid = waitpid(-1, &status, WNOHANG)) > 0)
     {
         INFOLOG1("process %d exit.", pid);
-        m_processList.erase(std::remove(m_processList.begin(), 
-                    m_processList.end(), pid));
+        deleteProcess(pid);
     }
 
     if (pid < 0) ERRORLOG1("waitpid err, %s", strerror(errno));
@@ -74,7 +126,7 @@ void ProcessManager::check()
 
 void ProcessManager::waitQuit()
 {
-    while (0 != m_processList.size())
+    while (0 != m_aliveNum)
     {
         if (sched_yield() != 0) 
             ERRORLOG1("sched_yield err, %s", strerror(errno));
@@ -92,12 +144,11 @@ int ProcessManager::stop(const int pid)
 
 void ProcessManager::quit()
 {
-    std::vector<pid_t>::const_iterator it;
+    ProcessNode *process = m_processHead;
 
     m_processNum = 0;
-    for(std::vector<pid_t>::const_iterator it = m_processList.begin(); 
-            it != m_processList.end(); ++it)
+    for(; NULL != process; process = process->next)
     {
-        stop(*it);
+        stop(process->pid);
     }
 }

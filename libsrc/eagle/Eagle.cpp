@@ -8,6 +8,10 @@
 #include "MasterSigManager.h"
 #include "ProcessSem.h"
 #include "EagleTime.h"
+#include "Timer.h"
+
+int EagleAttr::index = 0;
+int EagleAttr::status = 0;
 
 int Eagle::spawnChildProcess()
 {
@@ -45,7 +49,6 @@ void Eagle::childInit(const CallBack &notifyQuitCb)
 
 void Eagle::masterInit()
 {
-
     EagleTimeI::instance().autoUpdate();
     MasterSigManagerI::instance().init();
     MasterSigManagerI::instance().block();
@@ -53,7 +56,7 @@ void Eagle::masterInit()
 
 void Eagle::masterClean()
 {
-    EagleTimeI::instance().cancelUpdate();
+    TimerI::del();
     MasterSigManagerI::instance().unBlock();
     MasterSigManagerI::instance().clean();
 }
@@ -78,12 +81,14 @@ int Eagle::masterCycle()
 
         if (ProcessManager::SPAWN == status)
         {
+            TimerI::instance().pause();
             if (ProcessManagerI::instance().reSpawn() == 0)
             {
                 masterClean();
 
                 return 0;
             }
+            TimerI::instance().start();
         }
     }
 }

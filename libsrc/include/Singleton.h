@@ -33,6 +33,17 @@ public:
         s_instance = new T();
         return *s_instance;
     }
+
+    static void del()
+    {
+        if (NULL == s_instance) return;
+
+        LockGuard guard(g_singletonLock);
+        if (NULL == s_instance) return;
+
+        delete s_instance;
+        s_instance = 0;
+    }
     
 private:
     class SingletonCleaner

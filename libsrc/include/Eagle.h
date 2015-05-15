@@ -16,9 +16,14 @@
 
 #include "CallBack.h"
 #include "Singleton.h"
-#include "Singleton.h"
 
 #define EAGLE_INIT(cb) if (0 != EagleI::instance().init(cb)) return 0
+
+struct EagleAttr
+{
+    static int index;
+    static int status;
+};
 
 class Eagle
 {

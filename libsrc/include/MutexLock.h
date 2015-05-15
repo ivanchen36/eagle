@@ -21,7 +21,7 @@
 class MutexLock
 {
 public:
-    MutexLock(const int isRecursive = 0);
+    MutexLock(const int isRecursive = 0, const int isPshared = 0);
     ~MutexLock();
 
     int lock();

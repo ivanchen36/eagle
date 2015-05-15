@@ -1,7 +1,7 @@
 #include "MutexLock.h"
 #include "Log.h"
 
-MutexLock::MutexLock(const int isRecursive)
+MutexLock::MutexLock(const int isRecursive, const int isPshared)
 {
     int ret;
     pthread_mutexattr_t attr;
@@ -11,6 +11,11 @@ MutexLock::MutexLock(const int isRecursive)
     {
         ret = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
         if (ret != 0) ERRORLOG1("pthread_mutexattr_settype err, ret %d", ret);
+    }
+    if (isPshared)
+    {
+        ret = pthread_mutexattr_setpshared(&attr,PTHREAD_PROCESS_SHARED);
+        if (ret != 0) ERRORLOG1("pthread_mutexattr_setpshared err, ret %d", ret);
     }
     ret = pthread_mutex_init(&m_mutex, &attr);
     if (ret != 0) ERRORLOG1("pthread_mutex_init err, ret %d", ret);

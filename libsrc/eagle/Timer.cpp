@@ -15,10 +15,10 @@ void excuteTimer(union sigval val)
 }
 }
 
-Timer::Timer() : m_nextExcuteTime((uint64_t)-1), m_taskListHead(NULL)
+Timer::Timer() : m_nextExcuteTime((uint64_t)-1), 
+    m_taskListHead(NULL), m_isPause(0)
 { 
     struct sigevent evp;
-    struct sigaction sa;
 
     memset (&evp, 0, sizeof (evp));
     evp.sigev_value.sival_ptr = &m_timer;
@@ -27,10 +27,7 @@ Timer::Timer() : m_nextExcuteTime((uint64_t)-1), m_taskListHead(NULL)
 
     if (0 != timer_create(CLOCK_REALTIME, &evp, &m_timer))
     {
-        m_timer = 0;
         ERRORLOG1("timer_create err, %s", strerror(errno));
-
-        return;
     }
 }
 
@@ -40,7 +37,7 @@ Timer::~Timer()
     TaskNode *next;
     TaskMap::Iterator iter;
 
-    signal(SIGALRM, SIG_DFL);
+    pause();
     for (iter = m_taskMap.begin(); iter != m_taskMap.end(); ++iter)
     {
         cur = iter->val;
@@ -58,6 +55,7 @@ int Timer::setTimer(int msec)
 {
     struct itimerspec ts;
 
+    m_isPause = msec > 0 ? 0 : 1;
     ts.it_interval.tv_sec = 0;
     ts.it_interval.tv_nsec = 0;
     ts.it_value.tv_sec = msec / 1000;
@@ -68,6 +66,32 @@ int Timer::setTimer(int msec)
     ERRORLOG1("setitimer error: %s!", strerror(errno));
 
     return -1;
+}
+
+void Timer::start()
+{
+    uint64_t curTime = EagleTimeI::instance().getMsec();
+    LockGuard guard(m_lock);
+    if (m_taskMap.empty()) return;
+
+    if (m_nextExcuteTime > curTime)
+    {
+        setTimer(m_nextExcuteTime - curTime);
+    }else
+    {
+        setTimer(1);
+    }
+}
+
+void Timer::pause()
+{
+    LockGuard guard(m_lock);
+    if (m_isPause) return;
+    if (m_taskMap.empty()) return;
+
+    setTimer(0);
+    if (sched_yield() != 0) 
+        ERRORLOG1("sched_yield err, %s", strerror(errno));
 }
 
 Timer::TaskNode *Timer::find(const char *name)
@@ -133,7 +157,8 @@ void Timer::excute()
                 }
                 if (-1 == cur->times || --cur->times > 0)
                 {
-                    tmp = m_nextExcuteTime + cur->interval;
+                    tmp = curTime + 1;
+                    tmp = ALIGN(tmp, cur->interval);
                     addTimer(tmp, cur);
                     if (startTime > tmp) startTime = tmp;
                 }else
@@ -146,13 +171,18 @@ void Timer::excute()
         }
     }
 
-    if (m_taskMap.end() == iter && -1 == startTime) return;
+    if (m_taskMap.end() == iter && -1 == startTime)
+    {
+        m_isPause = 1;
+        
+        return;
+    }
 
     if (m_taskMap.end() != iter && iter->key < startTime)
     {
         startTime = iter->key;
     }
-    setTimer(startTime - m_nextExcuteTime);
+    setTimer(startTime - curTime);
     m_nextExcuteTime = startTime;
 }
 
@@ -170,7 +200,7 @@ int Timer::addTask(const char *name, const int msec,
     }
 
     uint64_t curTime = EagleTimeI::instance().getMsec();
-    uint64_t startTime = curTime + msec;
+    uint64_t startTime = curTime + 1;
 
     startTime = ALIGN(startTime, msec);
     tmp = new TaskNode(name, msec, isAsync, times, cb);
@@ -212,6 +242,7 @@ int Timer::delTask(const char *name)
     LockGuard guard(m_lock);
     TaskNode *tmp = m_taskListHead;   
 
+    if (NULL == tmp) return -1;
     if (0 == strcmp(name, tmp->name))
     {
         *(tmp->name) = 0;
@@ -230,8 +261,6 @@ int Timer::delTask(const char *name)
             return 0;
         }
     }
-
-    ERRORLOG1("not find timer TaskNode %s", name);
 
     return -1;
 }

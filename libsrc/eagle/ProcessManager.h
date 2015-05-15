@@ -27,6 +27,16 @@ public:
         QUIT,
     };
 
+    struct ProcessNode
+    {
+        int index;
+        int pid;
+        ProcessNode *next;
+
+        ProcessNode(int index, int pid, ProcessNode *next)
+            : index(index), pid(pid), next(next){};
+    };
+
     ProcessManager();
     ~ProcessManager();
 
@@ -34,7 +44,7 @@ public:
     {
         if (0 == m_processNum) return QUIT;
 
-        if (m_processList.size() == m_processNum)
+        if (m_aliveNum == m_processNum)
             return NORMAL;
 
         return SPAWN;
@@ -48,9 +58,12 @@ public:
     int reSpawn();
 
 private:
+    void deleteProcess(const int pid);
+
+    int m_aliveNum;
     int m_processNum;
     MutexLock m_lock;
-    std::vector<pid_t> m_processList;
+    ProcessNode *m_processHead;
 };
 
 typedef Singleton<ProcessManager> ProcessManagerI;

@@ -42,7 +42,7 @@ int main ( int argc, char *argv[] )
 
     while (0 == g_waitQuit)
     {
-        DEBUGLOG("child wait sigquit");
+        DEBUGLOG1("child %d wait sigquit", EagleAttr::index);
         sleep(10);
     }
 

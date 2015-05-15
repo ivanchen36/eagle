@@ -18,6 +18,7 @@
 #include <iostream>
 
 #include "Log.h"
+#include "Timer.h"
 #include "EagleTime.h"
 
 using namespace std;
@@ -70,6 +71,8 @@ int main ( int argc, char *argv[] )
     EagleTimeI::instance().autoUpdate();
     test1();
     sleep(5);
+    TimerI::del();
+    EagleTimeI::instance().autoUpdate();
     test1();
     EagleTimeI::instance().cancelUpdate();
     sleep(5);
