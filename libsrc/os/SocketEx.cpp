@@ -20,6 +20,7 @@ Socket::Socket(const char *path)
         return;
     }
 
+    setNonBlocking();
     if (convertAddr(path, addr) != EG_SUCCESS)
     {
         close();
@@ -46,6 +47,7 @@ Socket::Socket(const char *ip, int &port)
         return;
     }
 
+    setNonBlocking();
     convertAddr(ip, port, addr);
     ret = bind(addr);
     if (EG_SUCCESS == ret)
@@ -72,6 +74,7 @@ Socket::Socket(const char *path, const int isServer)
         return;
     }
 
+    setNonBlocking();
     if (convertAddr(path, addr) != EG_SUCCESS)
     {
         close();
@@ -106,6 +109,7 @@ Socket::Socket(const char *ip, int &port, const int isServer)
         return;
     }
 
+    setNonBlocking();
     if (isServer)
     {
         ret = bind(addr);
@@ -300,14 +304,11 @@ int Socket::connect(struct sockaddr_in &addr)
     return EG_SUCCESS;
 }
 
-int Socket::accept(int &fd, struct sockaddr_in &addr)
+int Socket::accept(int &fd, struct sockaddr *addr, socklen_t *addrLen)
 {
-    if (-1 == m_fd) return EG_INVAL;
-
-    socklen_t len = sizeof(addr);
     for (; ;)
     {
-        fd = ::accept(m_fd, (struct sockaddr *)&addr, &len);
+        fd = ::accept(m_fd, addr, addrLen);
         if (-1 != fd) return EG_SUCCESS;
 
         if (EINTR == errno) continue;
@@ -323,26 +324,22 @@ int Socket::accept(int &fd, struct sockaddr_in &addr)
     return EG_SUCCESS;
 }
 
+int Socket::accept(int &fd, struct sockaddr_in &addr)
+{
+    if (-1 == m_fd) return EG_INVAL;
+
+    socklen_t len[1] = { sizeof(addr) };
+
+    return accept(fd, (struct sockaddr *)&addr, len);
+}
+
 int Socket::accept(int &fd, struct sockaddr_un &addr)
 {
     if (-1 == m_fd) return EG_INVAL;
 
-    socklen_t len = sizeof(addr);
-    for (; ;)
-    {
-        fd = ::accept(m_fd, (struct sockaddr *)&addr, &len);
-        if (-1 != fd) return EG_SUCCESS;
+    socklen_t len[1] = { sizeof(addr) };
 
-        if (EINTR == errno) continue;
-
-        if (EAGAIN == errno || ECONNABORTED == errno)
-            return EG_AGAIN;
-
-        ERRORLOG1("accept err, %s", strerror(errno));
-        return EG_FAILED;
-    }
-
-    return EG_SUCCESS;
+    return accept(fd, (struct sockaddr *)&addr, len);
 }
 
 int Socket::send(const uint8_t *buf, int &len, 

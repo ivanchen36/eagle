@@ -61,6 +61,7 @@ private:
     void close();
     int listen();
     int setFl(int flag);
+    int accept(int &fd, struct sockaddr *addr, socklen_t *addrLen);
     int sendTo(const uint8_t *buf, int &len, const int flags, 
             const struct sockaddr *addr, socklen_t addrLen);
     int recvFrom(uint8_t *buf, int &len, const int flags, 
