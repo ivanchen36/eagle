@@ -88,9 +88,10 @@ int ProcessSem::op(const int val, const int sec)
         t.tv_nsec = 0;
         timeOut = &t;
     }
-    if (semtimedop(m_semId, &op, 1, timeOut) != 0)
+    while (semtimedop(m_semId, &op, 1, timeOut) != 0)
     {
-        if (IS_AGAIN()) return 1;
+        if (EAGAIN == errno || EINTR == errno || ERANGE == errno)
+            return EG_AGAIN;
 
         ERRORLOG1("semop err, %s", strerror(errno));
 

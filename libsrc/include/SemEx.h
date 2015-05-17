@@ -13,11 +13,8 @@
  */
 #ifndef  _SEMEX_H_
 #define  _SEMEX_H_
-
 #include "AutoPtr.h"
-
-#define IS_AGAIN() (ETIMEDOUT == errno || \
-        EAGAIN == errno || EINTR == errno)
+#include "Define.h"
 
 class Semaphore
 {

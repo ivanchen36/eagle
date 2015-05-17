@@ -10,5 +10,5 @@ INCLUDES = -I$(LIB_INCLUDE)
 
 noinst_LTLIBRARIES = libos.la
 libos_la_SOURCES = FileEx.cpp ProcessSem.cpp ThreadSem.cpp Thread.cpp \
-				   MutexLock.cpp ShareMem.cpp MmapFile.cpp
+				   MutexLock.cpp ShareMem.cpp MmapFile.cpp SocketEx.cpp
 libos_la_LDFLAGS  = -lrt

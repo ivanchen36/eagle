@@ -62,7 +62,8 @@ int ThreadSem::timedWait(const int sec)
     t.tv_sec += sec;
     if (sem_timedwait(&m_sem, &t) != 0)
     {
-        if (IS_AGAIN()) return 1;
+        if (EINTR == errno || EAGAIN == errno || ETIMEDOUT == errno)
+            return EG_AGAIN;
 
         ERRORLOG1("sem_timedwait failed, %s", strerror(errno));
 

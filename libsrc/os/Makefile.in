@@ -49,7 +49,7 @@ CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libos_la_LIBADD =
 am_libos_la_OBJECTS = FileEx.lo ProcessSem.lo ThreadSem.lo Thread.lo \
-	MutexLock.lo ShareMem.lo MmapFile.lo
+	MutexLock.lo ShareMem.lo MmapFile.lo SocketEx.lo
 libos_la_OBJECTS = $(am_libos_la_OBJECTS)
 libos_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -193,7 +193,7 @@ LIB_INCLUDE = $(top_srcdir)/libsrc/include
 INCLUDES = -I$(LIB_INCLUDE)
 noinst_LTLIBRARIES = libos.la
 libos_la_SOURCES = FileEx.cpp ProcessSem.cpp ThreadSem.cpp Thread.cpp \
-				   MutexLock.cpp ShareMem.cpp MmapFile.cpp
+				   MutexLock.cpp ShareMem.cpp MmapFile.cpp SocketEx.cpp
 
 libos_la_LDFLAGS = -lrt
 all: all-am
@@ -253,6 +253,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutexLock.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProcessSem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShareMem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SocketEx.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ThreadSem.Plo@am__quote@
 

@@ -87,7 +87,6 @@ void Timer::pause()
 {
     LockGuard guard(m_lock);
     if (m_isPause) return;
-    if (m_taskMap.empty()) return;
 
     setTimer(0);
     if (sched_yield() != 0) 
