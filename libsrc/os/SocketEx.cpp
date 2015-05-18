@@ -7,12 +7,18 @@
 #include "Define.h"
 #include "Log.h"
 
+Socket::Socket(const int fd) : m_fd(fd)
+{
+    if (-1 == m_fd) return;
+
+    init();
+}
 Socket::Socket(const char *path)
 {
     int ret;
     struct sockaddr_un addr;
 
-    m_fd = socket(AF_UNIX, SOCK_DGRAM, IPPROTO_UDP);
+    m_fd = socket(AF_UNIX, SOCK_DGRAM, 0);
     if (-1 == m_fd)
     {
         ERRORLOG1("socket err, %s", strerror(errno));
@@ -20,7 +26,6 @@ Socket::Socket(const char *path)
         return;
     }
 
-    setNonBlocking();
     if (convertAddr(path, addr) != EG_SUCCESS)
     {
         close();
@@ -29,9 +34,7 @@ Socket::Socket(const char *path)
     }
 
     ret = bind(addr);
-    if (EG_SUCCESS == ret) return;
-
-    close();
+    EG_SUCCESS == ret ? init() : close();
 }
 
 Socket::Socket(const char *ip, int &port)
@@ -39,7 +42,7 @@ Socket::Socket(const char *ip, int &port)
     int ret;
     struct sockaddr_in addr;
 
-    m_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    m_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (-1 == m_fd)
     {
         ERRORLOG1("socket err, %s", strerror(errno));
@@ -47,11 +50,11 @@ Socket::Socket(const char *ip, int &port)
         return;
     }
 
-    setNonBlocking();
     convertAddr(ip, port, addr);
     ret = bind(addr);
     if (EG_SUCCESS == ret)
     {
+        init();
         if (0 == port) port = ntohs(addr.sin_port);
 
         return;
@@ -60,13 +63,13 @@ Socket::Socket(const char *ip, int &port)
     close();
 }
 
-Socket::Socket(const char *path, const int isServer)
+Socket::Socket(const char *path, const bool isServer)
 {
     int ret;
     int oldUmask;
     struct sockaddr_un addr;
 
-    m_fd = socket(AF_UNIX, SOCK_STREAM, IPPROTO_TCP);
+    m_fd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (-1 == m_fd)
     {
         ERRORLOG1("socket err, %s", strerror(errno));
@@ -74,7 +77,6 @@ Socket::Socket(const char *path, const int isServer)
         return;
     }
 
-    setNonBlocking();
     if (convertAddr(path, addr) != EG_SUCCESS)
     {
         close();
@@ -90,18 +92,17 @@ Socket::Socket(const char *path, const int isServer)
     {
         ret = connect(addr);
     }
-    if (EG_SUCCESS == ret) return;
+    EG_SUCCESS == ret ? init() : close();
 
-    close();
 }
 
-Socket::Socket(const char *ip, int &port, const int isServer)
+Socket::Socket(const char *ip, int &port, const bool isServer)
 {
     int ret;
     int old_umask;
     struct sockaddr_in addr;
 
-    m_fd = socket(AF_UNIX, SOCK_STREAM, IPPROTO_TCP);
+    m_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (-1 == m_fd)
     {
         ERRORLOG1("socket err, %s", strerror(errno));
@@ -109,7 +110,7 @@ Socket::Socket(const char *ip, int &port, const int isServer)
         return;
     }
 
-    setNonBlocking();
+    convertAddr(ip, port, addr);
     if (isServer)
     {
         ret = bind(addr);
@@ -122,14 +123,33 @@ Socket::Socket(const char *ip, int &port, const int isServer)
     {
         ret = connect(addr);
     }
-    if (EG_SUCCESS == ret) return;
-
-    close();
+    EG_SUCCESS == ret ? init() : close();
 }
 
 Socket::~Socket()
 {
     close();
+}
+
+int Socket::pair(int fd[2])
+{
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, fd) != 0)
+    {
+        ERRORLOG1("socketpair err, %s", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    return EG_SUCCESS;
+}
+
+void Socket::init()
+{
+    int flag;
+
+    setNonBlocking();
+    flag = 1;
+    setsockopt(m_fd,SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag));
 }
 
 void Socket::close()
@@ -202,17 +222,17 @@ int Socket::setPid(pid_t pid)
 
 int Socket::convertAddr(const char *path, struct sockaddr_un &addr)
 {
+    addr.sun_family = AF_UNIX;
+    
     strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
     if (strcmp(addr.sun_path, path) != 0)
     {
         ERRORLOG1("path length overflow, %s", path);
 
-        return -1;
-    }
+        return EG_FAILED;
+    } 
 
-    addr.sun_family = AF_UNIX;
-
-    return 0;
+    return EG_SUCCESS;
 }
 
 void Socket::convertAddr(const char *ip, const int port, struct sockaddr_in &addr)
@@ -227,6 +247,13 @@ int Socket::bind(struct sockaddr_un &addr)
     if (-1 == m_fd) return EG_INVAL;
 
     int oldUmask;
+    struct stat tstat;
+
+    if (lstat(addr.sun_path, &tstat) == 0) 
+    {
+        if (S_ISSOCK(tstat.st_mode))
+            unlink(addr.sun_path);
+    }
 
     oldUmask = umask(~(0777));
     if (::bind(m_fd, (struct sockaddr *)&addr, sizeof(addr)) == 0)
@@ -264,6 +291,24 @@ int Socket::listen()
     ERRORLOG1("listen err, %s", strerror(errno));
 
     return EG_FAILED;
+}
+
+int Socket::connect(const char *path)
+{
+    struct sockaddr_un addr;
+
+    if (convertAddr(path, addr) == EG_FAILED) return EG_FAILED;
+
+    return connect(addr);
+}
+
+int Socket::connect(const char *ip, const int port)
+{
+    struct sockaddr_in addr;
+
+    convertAddr(ip, port, addr);
+
+    return connect(addr);
 }
 
 int Socket::connect(struct sockaddr_un &addr)
@@ -480,7 +525,6 @@ int Socket::recv(uint8_t *buf, int &len, const int flags)
         ret = ::recv(m_fd, (void *)buf, len, flags);
         if (ret >= 0)
         {
-            if(0 == ret) INFOLOG("the peer has shutdown");
             len = ret;
 
             return 0;
@@ -507,7 +551,6 @@ int Socket::recvFrom(uint8_t *buf, int &len, const int flags,
         ret = ::recvfrom(m_fd, (void *)buf, len, flags, addr, addrLen);
         if (ret >= 0)
         {
-            if(0 == ret) INFOLOG("the peer has shutdown");
             len = ret;
 
             return 0;
@@ -546,7 +589,7 @@ int Socket::recvFrom(uint8_t *buf, int &len,
             (struct sockaddr *)&addr, addrLen);
 }
 
-int Socket::recvmsg(int &fd, uint8_t *buf, int &len, 
+int Socket::recvMsg(int &fd, uint8_t *buf, int &len, 
         const int flags)
 {
     if (-1 == m_fd) return EG_INVAL;
@@ -574,7 +617,7 @@ int Socket::recvmsg(int &fd, uint8_t *buf, int &len,
         ret = ::recvmsg(m_fd, &msg, flags);
         if (ret >= 0)
         {
-            if(0 == ret) INFOLOG("the peer has shutdown");
+            memcpy(&fd, CMSG_DATA(&cmsg.cm), sizeof(int));
             len = ret;
 
             return 0;

@@ -24,11 +24,11 @@
 class Socket
 {
 public:
-	Socket(const int fd = -1) : m_fd(fd){};
+	Socket(const int fd = -1);
 	Socket(const char *path);
 	Socket(const char *ip, int &port);
-	Socket(const char *path, const int isServer);
-	Socket(const char *ip, int &port, const int isServer);
+	Socket(const char *path, const bool isServer);
+	Socket(const char *ip, int &port, const bool isServer);
 	virtual ~Socket();
 
     int isAvailable() {return -1 != m_fd;}
@@ -40,10 +40,8 @@ public:
     void convertAddr(const char *ip, const int port, struct sockaddr_in &addr);
     int accept(int &fd, struct sockaddr_in &addr);
     int accept(int &fd, struct sockaddr_un &addr);
-    int bind(struct sockaddr_in &addr);
-    int bind(struct sockaddr_un &addr);
-    int connect(struct sockaddr_in &addr);
-    int connect(struct sockaddr_un &addr);
+    int connect(const char *path);
+    int connect(const char *ip, const int port);
     int send(const uint8_t *buf, int &len, const int flags = 0);
     int sendTo(const uint8_t *buf, int &len, const struct sockaddr_in &addr, 
             const int flags = 0);
@@ -55,12 +53,18 @@ public:
             const int flags = 0);
     int recvFrom(uint8_t *buf, int &len, struct sockaddr_un &addr, 
             const int flags = 0);
-    int recvmsg(int &fd, uint8_t *buf, int &len, const int flags = 0);
+    int recvMsg(int &fd, uint8_t *buf, int &len, const int flags = 0);
+    static int pair(int fd[2]);
 
 private:
+    void init();
     void close();
     int listen();
     int setFl(int flag);
+    int connect(struct sockaddr_in &addr);
+    int connect(struct sockaddr_un &addr);
+    int bind(struct sockaddr_in &addr);
+    int bind(struct sockaddr_un &addr);
     int accept(int &fd, struct sockaddr *addr, socklen_t *addrLen);
     int sendTo(const uint8_t *buf, int &len, const int flags, 
             const struct sockaddr *addr, socklen_t addrLen);

@@ -11,7 +11,7 @@ LIB_INCLUDE = $(top_srcdir)/libsrc/include
 
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
 				  logtest psemtest threadtest shmtest mmaptest \
-				  eagletest rbtest locktest
+				  eagletest rbtest locktest sockettest
 
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE)
 
@@ -47,3 +47,6 @@ rbtest_LDFLAGS = $(TEST_LD)
 
 locktest_SOURCES = LockTest.cpp
 locktest_LDFLAGS = $(TEST_LD)
+
+sockettest_SOURCES = SocketTest.cpp
+sockettest_LDFLAGS = $(TEST_LD)

@@ -37,7 +37,8 @@ host_triplet = @host@
 noinst_PROGRAMS = autoptrtest$(EXEEXT) timestatstest$(EXEEXT) \
 	singletontest$(EXEEXT) logtest$(EXEEXT) psemtest$(EXEEXT) \
 	threadtest$(EXEEXT) shmtest$(EXEEXT) mmaptest$(EXEEXT) \
-	eagletest$(EXEEXT) rbtest$(EXEEXT) locktest$(EXEEXT)
+	eagletest$(EXEEXT) rbtest$(EXEEXT) locktest$(EXEEXT) \
+	sockettest$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -103,6 +104,12 @@ singletontest_LDADD = $(LDADD)
 singletontest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(singletontest_LDFLAGS) $(LDFLAGS) -o $@
+am_sockettest_OBJECTS = SocketTest.$(OBJEXT)
+sockettest_OBJECTS = $(am_sockettest_OBJECTS)
+sockettest_LDADD = $(LDADD)
+sockettest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(sockettest_LDFLAGS) $(LDFLAGS) -o $@
 am_threadtest_OBJECTS = ThreadTest.$(OBJEXT)
 threadtest_OBJECTS = $(am_threadtest_OBJECTS)
 threadtest_LDADD = $(LDADD)
@@ -131,13 +138,13 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 SOURCES = $(autoptrtest_SOURCES) $(eagletest_SOURCES) \
 	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
 	$(psemtest_SOURCES) $(rbtest_SOURCES) $(shmtest_SOURCES) \
-	$(singletontest_SOURCES) $(threadtest_SOURCES) \
-	$(timestatstest_SOURCES)
+	$(singletontest_SOURCES) $(sockettest_SOURCES) \
+	$(threadtest_SOURCES) $(timestatstest_SOURCES)
 DIST_SOURCES = $(autoptrtest_SOURCES) $(eagletest_SOURCES) \
 	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
 	$(psemtest_SOURCES) $(rbtest_SOURCES) $(shmtest_SOURCES) \
-	$(singletontest_SOURCES) $(threadtest_SOURCES) \
-	$(timestatstest_SOURCES)
+	$(singletontest_SOURCES) $(sockettest_SOURCES) \
+	$(threadtest_SOURCES) $(timestatstest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -288,6 +295,8 @@ rbtest_SOURCES = RbTest.cpp
 rbtest_LDFLAGS = $(TEST_LD)
 locktest_SOURCES = LockTest.cpp
 locktest_LDFLAGS = $(TEST_LD)
+sockettest_SOURCES = SocketTest.cpp
+sockettest_LDFLAGS = $(TEST_LD)
 all: all-am
 
 .SUFFIXES:
@@ -358,6 +367,9 @@ shmtest$(EXEEXT): $(shmtest_OBJECTS) $(shmtest_DEPENDENCIES)
 singletontest$(EXEEXT): $(singletontest_OBJECTS) $(singletontest_DEPENDENCIES) 
 	@rm -f singletontest$(EXEEXT)
 	$(singletontest_LINK) $(singletontest_OBJECTS) $(singletontest_LDADD) $(LIBS)
+sockettest$(EXEEXT): $(sockettest_OBJECTS) $(sockettest_DEPENDENCIES) 
+	@rm -f sockettest$(EXEEXT)
+	$(sockettest_LINK) $(sockettest_OBJECTS) $(sockettest_LDADD) $(LIBS)
 threadtest$(EXEEXT): $(threadtest_OBJECTS) $(threadtest_DEPENDENCIES) 
 	@rm -f threadtest$(EXEEXT)
 	$(threadtest_LINK) $(threadtest_OBJECTS) $(threadtest_LDADD) $(LIBS)
@@ -380,6 +392,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RbTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShmTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingletonTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SocketTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ThreadTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeStatsTest.Po@am__quote@
 
