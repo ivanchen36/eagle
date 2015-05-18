@@ -24,7 +24,7 @@
 class Socket
 {
 public:
-	Socket(const int fd = -1);
+	Socket(const int fd);
 	Socket(const char *path);
 	Socket(const char *ip, int &port);
 	Socket(const char *path, const bool isServer);

@@ -52,12 +52,9 @@ public:
     static int setSize(const int fd, const int size);
 
 private:
-    FileEx():m_file(NULL), m_fileName(NULL){};
     int m_mode;
     FILE *m_file;
     char *m_fileName;
-
-    friend class AutoPtr<FileEx>;
 };
 
 typedef AutoPtr<FileEx> FileExPtr;

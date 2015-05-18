@@ -116,14 +116,10 @@ public:
     static void setLogTime(const char *logTime);
 
 private:
-    Log();
     void write(int level, const char *format, va_list args);
 
     int m_level; 
     FileEx m_file;
-
-
-    friend class AutoPtr<Log>;
 };
 
 typedef AutoPtr<Log> LogPtr;

@@ -21,21 +21,22 @@ template<class T> class AutoPtr
 public:
     AutoPtr()
     {
-        m_ptr = new T();
-        m_ref = new int(1); 
+        m_ptr = NULL;
+        m_ref = NULL; 
     }
 
     AutoPtr(T *ptr)
     {
         m_ptr = ptr;
-        if (NULL == m_ptr) m_ptr = new T();
-        m_ref = new int(1); 
+        m_ref = NULL == m_ptr ? NULL : new int(1);
     }
 
     AutoPtr(const AutoPtr &r)
     {
         m_ptr = r.m_ptr;
         m_ref = r.m_ref;
+        if (NULL == m_ptr) return;
+
         __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
     }
 
@@ -43,11 +44,15 @@ public:
     {
         m_ptr = r.m_ptr;
         m_ref = r.m_ref;
+        if (NULL == m_ptr) return;
+
         __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
     }
 
     ~AutoPtr()
     {
+        if (NULL == m_ptr) return;
+
         if (__sync_bool_compare_and_swap(const_cast<volatile int *>(m_ref), 1, 0))
         {
             delete m_ref;
@@ -71,7 +76,7 @@ public:
 
     operator bool() const
     {
-        return m_ptr ? true : false;
+        return m_ptr == NULL ? false : true;
     }
 
     void swap(AutoPtr &r)
@@ -81,48 +86,72 @@ public:
 
     AutoPtr& operator=(T *p)
     {
-        __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
-        if (0 == *m_ref)
+        if (NULL != m_ptr)
         {
-            delete m_ref;
-            delete m_ptr;
+            if (__sync_bool_compare_and_swap(const_cast<volatile int *>(m_ref), 1, 0))
+            {
+                delete m_ref;
+                delete m_ptr;
+            }else
+            {
+                __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
+            }
         }
 
         m_ptr = p;
-        if (NULL == m_ptr) m_ptr = new T();
-        m_ref = new int(1); 
+        m_ref = NULL == m_ptr ? NULL : new int(1);
+
+        return *this;
     }
 
     template<class Y> AutoPtr& operator=(const AutoPtr<Y> &r)
     {
-        if (m_ptr == r.m_ptr) return;
+        if (m_ptr == r.m_ptr) return *this;
 
-        __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
-        if (0 == *m_ref)
+        if (NULL != m_ptr)
         {
-            delete m_ref;
-            delete m_ptr;
+            if (__sync_bool_compare_and_swap(const_cast<volatile int *>(m_ref), 1, 0))
+            {
+                delete m_ref;
+                delete m_ptr;
+            }else
+            {
+                __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
+            }
         }
 
         m_ptr = r.m_ptr;
         m_ref = r.m_ref;
+        if (NULL == m_ptr) return *this;
+
         __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
+
+        return *this;
     }
 
     AutoPtr& operator=(const AutoPtr& r)
     {
-        if (m_ptr == r.m_ptr) return;
+        if (m_ptr == r.m_ptr) return *this;
 
-        __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
-        if (0 == *m_ref)
+        if (NULL != m_ptr)
         {
-            delete m_ref;
-            delete m_ptr;
+            if (__sync_bool_compare_and_swap(const_cast<volatile int *>(m_ref), 1, 0))
+            {
+                delete m_ref;
+                delete m_ptr;
+            }else
+            {
+                __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
+            }
         }
 
         m_ptr = r.m_ptr;
         m_ref = r.m_ref;
+        if (NULL == m_ptr) return *this;
+
         __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
+
+        return *this;
     }
 
     template<class Y> AutoPtr dynamicCast(const AutoPtr<Y> &r)

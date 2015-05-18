@@ -5,7 +5,7 @@
 
 ShareMem::~ShareMem()
 {
-    std::map<uintptr_t, int>::iterator it;
+    ShareMemMap::iterator it;
 
     for (it = m_shmMap.begin(); it != m_shmMap.end();)
     {
@@ -75,7 +75,7 @@ void ShareMem::free(void *ptr)
 {
     if (NULL == ptr) return;
 
-    std::map<uintptr_t, int>::iterator iter = m_shmMap.find((uintptr_t)ptr);
+    ShareMemMap::iterator iter = m_shmMap.find((uintptr_t)ptr);
     if (iter == m_shmMap.end()) return;
 
     free(ptr, iter->second);

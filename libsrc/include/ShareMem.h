@@ -15,7 +15,7 @@
 #define  _SHAREMEM_H_
 
 #include <stdint.h>
-#include <map>
+#include <tr1/unordered_map>
 
 #include "AutoPtr.h"
 #include "Singleton.h"
@@ -30,10 +30,12 @@ public:
     void free(void *ptr);
 
 private:
+    typedef std::tr1::unordered_map<uintptr_t, int> ShareMemMap;
+
     ShareMem(){};
     void free(void *ptr, int id);
 
-    std::map<uintptr_t, int> m_shmMap;
+    ShareMemMap m_shmMap;
 
     friend class Singleton<ShareMem>;
 };

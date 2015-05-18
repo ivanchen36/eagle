@@ -11,10 +11,10 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <tr1/unordered_map>
 
 #include "AutoPtr.h"
 
@@ -45,16 +45,14 @@ public:
         cout << "print"  << " " << m_name << endl;
     }
  
-private:
     AutoPtrTest()
     {
         m_name = "test";
         cout << "constructor" << " " << m_name << endl;
     }
 
+protected:
     string m_name;
-    friend class AutoPtr<AutoPtrTest>;
-    friend class AutoPtrTestChild;
 };
 
 class AutoPtrTestChild : public AutoPtrTest
@@ -73,10 +71,7 @@ public:
 
 typedef AutoPtr<AutoPtrTest> APTestPtr;
 
-/**
- * @brief main 
- */
-int main ( int argc, char *argv[] )
+void doTest()
 {
     APTestPtr child = new AutoPtrTestChild("");
     APTestPtr ptr = new AutoPtrTest("test1");
@@ -85,6 +80,29 @@ int main ( int argc, char *argv[] )
     ptr1->print();
     ptr = new AutoPtrTest("test2");
     ptr->print();
+}
+
+void doTest1()
+{
+    tr1::unordered_map<int, APTestPtr> map;
+    APTestPtr child = new AutoPtrTestChild("");
+    map[1] = child;
+}
+
+void doTest2()
+{
+    tr1::unordered_map<int, APTestPtr> map;
+    APTestPtr child = new AutoPtrTestChild("");
+    map[1] = child;
+    map.erase(1);
+}
+
+/**
+ * @brief main 
+ */
+int main ( int argc, char *argv[] )
+{
+    doTest();
 
     return EXIT_SUCCESS;
 }

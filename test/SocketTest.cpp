@@ -54,15 +54,14 @@ void client(void *param)
     const char *dialog;
     int port = 17801;
     int isLocal = *(int *)param;
-    Socket *s;
+    SocketPtr socket;
     if (isLocal)
     {
-        s = new Socket("./test17801", 0);
+        socket = new Socket("./test17801", 0);
     }else
     {
-        s = new Socket("127.0.0.1", port, 0);
+        socket = new Socket("127.0.0.1", port, 0);
     }
-    SocketPtr socket = s;
 
     for (; !socket->isAvailable(); --tryTime)
     {
@@ -200,15 +199,14 @@ void server(int isLocal)
     CallBack cb(client, &isLocal);
     struct sockaddr_in addr;
     int port = 17801;
-    Socket *s;
+    SocketPtr socket;
     if (isLocal)
     {
-        s = new Socket("./test17801", 1);
+        socket = new Socket("./test17801", 1);
     }else
     {
-        s = new Socket("127.0.0.1", port, 1);
+        socket = new Socket("127.0.0.1", port, 1);
     }
-    SocketPtr socket = s;    
     if (!socket->isAvailable())
     {
         ERRORLOG("new socket err, quit");
@@ -249,15 +247,14 @@ void client1(void *param)
     const char *dialog;
     int port = 17802;
     int isLocal = *(int *)param;
-    Socket *s;
+    SocketPtr socket;
     if (isLocal)
     {
-        s = new Socket("./test17802");
+        socket = new Socket("./test17802");
     }else
     {
-        s = new Socket("127.0.0.1", port);
+        socket = new Socket("127.0.0.1", port);
     }
-    SocketPtr socket = s;
 
     if (isLocal)
     {
@@ -383,16 +380,15 @@ void server1(int isLocal)
     int clientFd;
     CallBack cb(client1, &isLocal);
     int port = 17801;
-    Socket *s;
+    SocketPtr socket;
     if (isLocal)
     {
-        s = new Socket("./test17801");
+        socket = new Socket("./test17801");
     }else
     {
-        s = new Socket("127.0.0.1", port);
+        socket = new Socket("127.0.0.1", port);
     }
 
-    SocketPtr socket = s;    
     Thread clientThread(cb); 
     for (; ret == -1; sleep(1))
     {
@@ -666,16 +662,16 @@ void server2(int isLocal)
     int ret = -1;
     int clientFd;
     int port = 17801;
-    Socket *s;
+    SocketPtr socket;
+
     if (isLocal)
     {
-        s = new Socket("./test17801");
+        socket = new Socket("./test17801");
     }else
     {
-        s = new Socket("127.0.0.1", port);
+        socket = new Socket("127.0.0.1", port);
     }
 
-    SocketPtr socket = s;    
     if (!socket->isAvailable())
     {
         ERRORLOG("new socket err, quit");

@@ -26,19 +26,10 @@ public:
     ~Task();
 
     const char *getName();
-    virtual int excute()
-    {
-        ERRORLOG("task object has destructed");
-    }
+    virtual int excute() = 0;
 
 private:
-    Task()
-    {
-        ERRORLOG("err constructor");
-    }
     char *m_name;
-
-    friend class AutoPtr<Task>;
 };
 
 typedef AutoPtr<Task> TaskPtr;
@@ -65,16 +56,9 @@ public:
     virtual void run();
 
 private:
-    TaskThread()
-    {
-        ERRORLOG("err constructor");
-    }
-
     Status m_status;
     SemaphorePtr m_sem; 
     TaskPtr m_task;
-
-    friend class AutoPtr<TaskThread>;
 };
 
 typedef AutoPtr<TaskThread> TaskThreadPtr;

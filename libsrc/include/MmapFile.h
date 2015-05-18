@@ -41,10 +41,6 @@ public:
     int write(const uint8_t *buf, const int len, const int offset);
 
 private:
-    MmapFile()
-    {
-        ERRORLOG("err constructor");
-    }
     int mapByOffset(const int startOffset);
     int unmap();
     void closeFile();
@@ -58,8 +54,6 @@ private:
     int m_isShm;
     uint8_t *m_ptr;
     char *m_fileName;
-
-    friend class AutoPtr<MmapFile>;
 };
 
 typedef AutoPtr<MmapFile> MmapFilePtr;

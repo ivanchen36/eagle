@@ -20,12 +20,6 @@ __attribute((constructor)) void init()
 }
 }
 
-Log::Log()
-    : m_file("./debug", FileEx::RDWR_CREATE_APPEND)
-{
-    m_level = DEBUG_LOG;
-}
-
 Log::Log(const char *fileName, int level)
     : m_file(fileName, FileEx::RDWR_CREATE_APPEND)
 {

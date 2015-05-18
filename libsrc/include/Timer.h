@@ -74,9 +74,10 @@ private:
     TaskNode *m_taskListHead;
     MutexLock m_lock;
     TaskMap m_taskMap;
-    timer_t m_timer;
 
-    friend class StartTimer;
+#ifdef _TEST_
+    timer_t m_timer;
+#endif
 };
 
 typedef Singleton<Timer> TimerI;

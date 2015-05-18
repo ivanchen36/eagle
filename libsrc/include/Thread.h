@@ -21,7 +21,8 @@
 class Thread
 {
 public:
-    Thread(const CallBack &cb, const int isDetach = 1, const int stackSize = 0);
+    Thread(const CallBack &cb, const int isDetach = 1, 
+            const int stackSize = 0);
     Thread(const int stackSize = 0);
     virtual ~Thread();
 
@@ -37,8 +38,6 @@ private:
     int m_isDetach;
     pthread_t m_id;
     CallBack m_cb;
-
-    friend class AutoPtr<Thread>;
 };
 
 typedef AutoPtr<Thread> ThreadPtr;

@@ -13,6 +13,7 @@
  */
 #ifndef  _CALLBACK_H_
 #define  _CALLBACK_H_
+#include "AutoPtr.h"
 
 typedef void (*CallBackFunc)(void *param);
 class CallBack
@@ -35,4 +36,5 @@ private:
     CallBackFunc m_cbFunc;
 };
 
+typedef AutoPtr<CallBack> CallBackPtr;
 #endif   /* ----- #ifndef _CALLBACK_H_  ----- */
