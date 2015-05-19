@@ -19,16 +19,27 @@ typedef void (*CallBackFunc)(void *param);
 class CallBack
 {
 public:
-    CallBack() : m_cbFunc(0){}
+    CallBack(){}
+    CallBack(const CallBack &cb) 
+        : m_cbFunc(cb.m_cbFunc), m_cbParam(cb.m_cbParam){}
     CallBack(CallBackFunc func, void *param = 0) 
         : m_cbParam(param), m_cbFunc(func){}
 
     int excute()
     {
-        if (0 == m_cbFunc) return -1;
         (*m_cbFunc)(m_cbParam);
 
         return 0;
+    }
+
+    CallBackFunc getCbFunc()
+    {
+        return m_cbFunc;
+    }
+
+    void *getCbParam()
+    {
+        return m_cbParam;
     }
 
 private:

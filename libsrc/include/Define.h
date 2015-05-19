@@ -17,6 +17,8 @@
 #define ALIGN(d, a) ((((d) - 1) / (a) + 1) * (a))
 #define MUL_TWO_ALIGN(d, a) (((d) + ((a) - 1)) & ~((a) - 1))
 
+#define MIN_TIMER_INTERVAL 50
+
 #define EG_LISTEN_BACKLOG 1024
 
 #define EG_AGAIN 1

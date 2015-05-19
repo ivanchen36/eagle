@@ -65,15 +65,15 @@ int ProcessSem::init(int val)
     {
         ERRORLOG1("semctl err, %s", strerror(errno));
 
-        return -1;
+        return EG_FAILED;
     }
 
-    return 0;
+    return EG_SUCCESS;
 }
 
 int ProcessSem::op(const int val, const int sec)
 {
-    if (-1 == m_semId) return -1;
+    if (-1 == m_semId) return EG_INVAL;
 
     struct sembuf op;
     struct timespec t;
@@ -88,17 +88,20 @@ int ProcessSem::op(const int val, const int sec)
         t.tv_nsec = 0;
         timeOut = &t;
     }
-    while (semtimedop(m_semId, &op, 1, timeOut) != 0)
+    for (; ;)
     {
-        if (EAGAIN == errno || EINTR == errno || ERANGE == errno)
-            return EG_AGAIN;
+        if (semtimedop(m_semId, &op, 1, timeOut) == 0) return EG_SUCCESS;
+
+        if (EINTR == errno) continue;
+
+        if (EAGAIN == errno || ERANGE == errno) return EG_AGAIN;
 
         ERRORLOG1("semop err, %s", strerror(errno));
 
-        return -1;
+        return EG_FAILED;
     }
 
-    return 0;
+    return EG_SUCCESS;
 }
 
 int ProcessSem::post()

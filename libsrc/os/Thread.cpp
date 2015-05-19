@@ -5,21 +5,31 @@ void *threadStart(void *arg)
 {
     Thread *thread = (Thread *)arg;
     thread->run();
+
+    return NULL;
+}
+
+void *threadStart1(void *arg)
+{
+    CallBack *cb = (CallBack *)arg;
+    cb->excute();
+    delete cb;
+
+    return NULL;
+}
+
+Thread::Thread(const int stackSize) : m_isDetach(0), m_id(0)
+{
+    init(stackSize, threadStart, (void *)this);
 }
 
 Thread::Thread(const CallBack &cb, const int isDetach, const int stackSize)
-    : m_isDetach(isDetach), m_cb(cb), m_id(0)
+    : m_isDetach(isDetach), m_id(0)
 {
-    init(stackSize);
+    init(stackSize, threadStart1, (void *)new CallBack(cb));
 }
 
-Thread::Thread(const int stackSize) 
-    : m_isDetach(0), m_id(0)
-{
-    init(stackSize);
-}
-
-void Thread::init(const int stackSize) 
+void Thread::init(const int stackSize, void *(*cbFunc)(void *), void *cbParam) 
 {
     pthread_attr_t attr;
     int ret = pthread_attr_init(&attr);
@@ -41,7 +51,7 @@ void Thread::init(const int stackSize)
         pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
     }
 
-    ret = pthread_create(&m_id, &attr, threadStart, (void *)this);
+    ret = pthread_create(&m_id, &attr, cbFunc, cbParam);
     if (ret != 0)
     {
         m_id = 0;
@@ -52,14 +62,6 @@ void Thread::init(const int stackSize)
 
     ret = pthread_attr_destroy(&attr);
     if (ret != 0) ERRORLOG1("pthread_attr_destroy err, ret %d", ret);
-}
-
-void Thread::run()
-{
-    if (m_cb.excute())
-    {
-        ERRORLOG("cb is NULL or thread object has destructed");
-    }
 }
 
 Thread::~Thread()

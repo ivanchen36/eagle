@@ -25,50 +25,55 @@ ThreadSem::~ThreadSem()
 
 int ThreadSem::post()
 {
-    if (!m_isInit) return -1;
+    if (!m_isInit) return EG_INVAL;
 
     if (sem_post(&m_sem) != 0)
     {
         ERRORLOG1("sem_post failed, %s", strerror(errno));
 
-        return -1;
+        return EG_FAILED;
     } 
 
-    return 0;
+    return EG_SUCCESS;
 }
 
 int ThreadSem::wait()
 {
-    if (!m_isInit) return -1;
+    if (!m_isInit) return EG_INVAL;
 
     if (sem_wait(&m_sem) != 0)
     {
         ERRORLOG1("sem_wait failed, %s", strerror(errno));
 
-        return -1;
+        return EG_FAILED;
     } 
 
-    return 0;
+    return EG_SUCCESS;
 }
 
 int ThreadSem::timedWait(const int sec)
 {
-    if (!m_isInit) return -1;
+    if (!m_isInit) return EG_INVAL;
 
+    int ret;
     struct timespec t;
 
-    t.tv_sec = EagleTimeI::instance().getSec();
+    t.tv_sec = EagleTimeI::instance().getSec() + sec;
     t.tv_nsec = 0;
     t.tv_sec += sec;
-    if (sem_timedwait(&m_sem, &t) != 0)
+    for (; ;)
     {
-        if (EINTR == errno || EAGAIN == errno || ETIMEDOUT == errno)
-            return EG_AGAIN;
+        ret = sem_timedwait(&m_sem, &t);
+        if (ret == 0) return EG_SUCCESS;
+
+        if (EINTR == errno) continue;
+
+        if (ETIMEDOUT == errno) return EG_AGAIN;
 
         ERRORLOG1("sem_timedwait failed, %s", strerror(errno));
 
-        return -1;
+        return EG_FAILED;
     }
 
-    return 0;
+    return EG_SUCCESS;
 }

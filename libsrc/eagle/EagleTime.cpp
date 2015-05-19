@@ -32,7 +32,7 @@ void EagleTime::cancelUpdate()
 void EagleTime::autoUpdate()
 {
     CallBack cb(updateEagleTime);
-    TimerI::instance().addTask("updatetime", UPDATE_TIME_INTERVAL, cb);
+    TimerI::instance().addTask("updatetime", MIN_TIMER_INTERVAL, cb);
 }
 
 void EagleTime::update()

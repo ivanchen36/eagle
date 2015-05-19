@@ -21,23 +21,22 @@
 class Thread
 {
 public:
+    Thread(const int stackSize = 0);
     Thread(const CallBack &cb, const int isDetach = 1, 
             const int stackSize = 0);
-    Thread(const int stackSize = 0);
     virtual ~Thread();
 
-    virtual void run();
+    virtual void run(){};
     int isDetach()
     {
         return m_isDetach != 0;
     }
 
 private:
-    void init(const int stackSize);
+    void init(const int stackSize, void *(*cbFunc)(void *), void *cbParam);
 
     int m_isDetach;
     pthread_t m_id;
-    CallBack m_cb;
 };
 
 typedef AutoPtr<Thread> ThreadPtr;
