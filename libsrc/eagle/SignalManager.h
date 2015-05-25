@@ -23,7 +23,7 @@ public:
     {
         MASTER,
         CHILD,
-        UNKNOWN,
+        UNKNOWN
     };
 
     virtual ~SignalManager(){}

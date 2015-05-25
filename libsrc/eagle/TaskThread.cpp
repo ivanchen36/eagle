@@ -17,8 +17,8 @@ const char *Task::getName()
     return m_name;
 }
 
-TaskThread::TaskThread(TaskPtr &task, const int stackSize) 
-: Thread(stackSize), m_sem(new ThreadSem()), m_task(task), m_status(WAIT)
+TaskThread::TaskThread(const TaskPtr &task, const int stackSize) 
+: Thread(stackSize), m_status(WAIT), m_sem(new ThreadSem()), m_task(task)
 {
 }
 
@@ -29,52 +29,74 @@ TaskThread::~TaskThread()
 
 int TaskThread::isStop()
 {
-   return STOP == m_status;
+    LockGuard guard(m_lock);
+
+    return STOP == m_status;
 }
 
 int TaskThread::isWait()
 {
-   return WAIT == m_status;
+    LockGuard guard(m_lock);
+
+    return WAIT == m_status;
 }
 
 int TaskThread::isRun()
 {
+    LockGuard guard(m_lock);
+
     return RUN == m_status;
 }
 
 int TaskThread::start()
 {
-    if (STOP == m_status) return -1;
+    LockGuard guard(m_lock);
+
+    if (STOP == m_status) return EG_FAILED;
 
     if (WAIT == m_status) m_status = RUN;
     m_sem->post();
+
+    return EG_SUCCESS;
 }
 
 int TaskThread::pause()
 {
-    if (WAIT == m_status) return 0;
-    if (STOP == m_status) return -1;
+    LockGuard guard(m_lock);
+
+    if (WAIT == m_status) return EG_SUCCESS;
+    if (STOP == m_status) return EG_FAILED;
 
     m_status = WAIT;
+
+    return EG_SUCCESS;
 }
 
 int TaskThread::stop()
 {
-    if (STOP == m_status) return 0;
+    LockGuard guard(m_lock);
 
-    int ret;
+    if (STOP == m_status) return EG_SUCCESS;
 
     m_status = STOP;
     m_sem->post();
+
+    return EG_SUCCESS;
 }
 
 void TaskThread::run()
 {
     int ret;
 
-    while (STOP != m_status)
+    for (; ;)
     {
-        ret = m_sem->timedWait(30);
+        {
+            LockGuard guard(m_lock);
+            if (STOP == m_status) return;
+
+            if (WAIT != m_status) m_status = WAIT;
+        }
+        ret = m_sem->wait();
         if (ret < 0)
         {
             ERRORLOG1("sem wait err, %s task stop", m_task->getName());    
@@ -82,15 +104,7 @@ void TaskThread::run()
 
             return;
         }
-        if (WAIT == m_status)
-        {
-            INFOLOG1("%s task ...", m_task->getName());
-            continue;
-        }
 
-        while (RUN == m_status && !m_task->excute());
-        if (STOP == m_status) return;
-
-        if (WAIT != m_status) m_status = WAIT;
+        while (RUN == m_status && m_task->excute() == EG_SUCCESS);
     }
 }

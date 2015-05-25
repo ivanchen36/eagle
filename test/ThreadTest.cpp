@@ -14,6 +14,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <sys/epoll.h>
+#include <sys/types.h>
+#include <signal.h>
 
 #include "Log.h"
 #include "TaskThread.h"
@@ -129,6 +132,63 @@ void test2()
     sleep(2);
 }
 
+void epollTest(void *param)
+{
+#define MAX_EVENT 12
+
+    int events;
+    int fd = *(int *)param;
+    struct epoll_event epollEvents[MAX_EVENT];
+
+    for (; ;)
+    {
+        DEBUGLOG("epoll_wait");
+        events = epoll_wait(fd, epollEvents, EG_EPOLL_MAX_EVENT, -1);
+        if (events == -1)
+        {
+            ERRORLOG1("epoll_wait err, %s", strerror(errno));
+
+            return;
+        }
+
+        DEBUGLOG1("epoll_wait %d", events);
+        DEBUGLOG1("epoll_wait data %d", epollEvents[0].data.ptr);
+
+        return;
+    }
+}
+
+void sigHandler(const int sig)
+{
+    DEBUGLOG1("sigHandler %d", sig);
+}
+
+void doEpollTest()
+{
+    int fd = epoll_create(1);
+    
+    {
+        CallBack cb(epollTest, &fd);
+        Thread thread(cb);
+    }
+
+    int pipeFd[2];
+    epoll_event ev;
+
+    ev.events = EPOLLIN | EPOLLET;
+    ev.data.ptr = NULL;
+    pipe(pipeFd);
+    if (epoll_ctl(fd, EPOLL_CTL_ADD, pipeFd[0], &ev) != 0)
+    {
+        ERRORLOG1("epoll_ctl err, %s", strerror(errno));
+    }
+
+    sleep(1);
+    write(pipeFd[1], "", 1);
+    close(fd);
+    sleep(1);
+}
+
 /**
  * @brief main 
  */
@@ -139,7 +199,7 @@ int main ( int argc, char *argv[] )
         DEBUGLOG("redirectToLog err");
     }
 
-    test2(); 
+    doEpollTest(); 
     
     return EXIT_SUCCESS;
 }

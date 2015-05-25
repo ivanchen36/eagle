@@ -38,7 +38,7 @@ noinst_PROGRAMS = autoptrtest$(EXEEXT) timestatstest$(EXEEXT) \
 	singletontest$(EXEEXT) logtest$(EXEEXT) psemtest$(EXEEXT) \
 	threadtest$(EXEEXT) shmtest$(EXEEXT) mmaptest$(EXEEXT) \
 	eagletest$(EXEEXT) rbtest$(EXEEXT) locktest$(EXEEXT) \
-	sockettest$(EXEEXT)
+	sockettest$(EXEEXT) queuetest$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -86,6 +86,12 @@ psemtest_LDADD = $(LDADD)
 psemtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(psemtest_LDFLAGS) $(LDFLAGS) -o $@
+am_queuetest_OBJECTS = CyQueueTest.$(OBJEXT)
+queuetest_OBJECTS = $(am_queuetest_OBJECTS)
+queuetest_LDADD = $(LDADD)
+queuetest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(queuetest_LDFLAGS) $(LDFLAGS) -o $@
 am_rbtest_OBJECTS = RbTest.$(OBJEXT)
 rbtest_OBJECTS = $(am_rbtest_OBJECTS)
 rbtest_LDADD = $(LDADD)
@@ -137,14 +143,16 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(autoptrtest_SOURCES) $(eagletest_SOURCES) \
 	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
-	$(psemtest_SOURCES) $(rbtest_SOURCES) $(shmtest_SOURCES) \
-	$(singletontest_SOURCES) $(sockettest_SOURCES) \
-	$(threadtest_SOURCES) $(timestatstest_SOURCES)
+	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
+	$(shmtest_SOURCES) $(singletontest_SOURCES) \
+	$(sockettest_SOURCES) $(threadtest_SOURCES) \
+	$(timestatstest_SOURCES)
 DIST_SOURCES = $(autoptrtest_SOURCES) $(eagletest_SOURCES) \
 	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
-	$(psemtest_SOURCES) $(rbtest_SOURCES) $(shmtest_SOURCES) \
-	$(singletontest_SOURCES) $(sockettest_SOURCES) \
-	$(threadtest_SOURCES) $(timestatstest_SOURCES)
+	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
+	$(shmtest_SOURCES) $(singletontest_SOURCES) \
+	$(sockettest_SOURCES) $(threadtest_SOURCES) \
+	$(timestatstest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -272,7 +280,8 @@ TEST_SRC = $(top_srcdir)/test
 LIB_PATH = $(top_srcdir)/libsrc/eagle/.libs
 TEST_LD = -L$(LIB_PATH) -leagle #-ltcmalloc
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
-INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE)
+LIBI_INCLUDE = $(top_srcdir)/libsrc/eagle
+INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBI_INCLUDE)
 autoptrtest_SOURCES = AutoPtrTest.cpp
 autoptrtest_LDFLAGS = $(TEST_LD)
 timestatstest_SOURCES = TimeStatsTest.cpp
@@ -297,6 +306,8 @@ locktest_SOURCES = LockTest.cpp
 locktest_LDFLAGS = $(TEST_LD)
 sockettest_SOURCES = SocketTest.cpp
 sockettest_LDFLAGS = $(TEST_LD)
+queuetest_SOURCES = CyQueueTest.cpp
+queuetest_LDFLAGS = $(TEST_LD)
 all: all-am
 
 .SUFFIXES:
@@ -358,6 +369,9 @@ mmaptest$(EXEEXT): $(mmaptest_OBJECTS) $(mmaptest_DEPENDENCIES)
 psemtest$(EXEEXT): $(psemtest_OBJECTS) $(psemtest_DEPENDENCIES) 
 	@rm -f psemtest$(EXEEXT)
 	$(psemtest_LINK) $(psemtest_OBJECTS) $(psemtest_LDADD) $(LIBS)
+queuetest$(EXEEXT): $(queuetest_OBJECTS) $(queuetest_DEPENDENCIES) 
+	@rm -f queuetest$(EXEEXT)
+	$(queuetest_LINK) $(queuetest_OBJECTS) $(queuetest_LDADD) $(LIBS)
 rbtest$(EXEEXT): $(rbtest_OBJECTS) $(rbtest_DEPENDENCIES) 
 	@rm -f rbtest$(EXEEXT)
 	$(rbtest_LINK) $(rbtest_OBJECTS) $(rbtest_LDADD) $(LIBS)
@@ -384,6 +398,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AutoPtrTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CyQueueTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EagleTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LockTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LogTest.Po@am__quote@

@@ -8,12 +8,13 @@ TEST_SRC = $(top_srcdir)/test
 LIB_PATH = $(top_srcdir)/libsrc/eagle/.libs
 TEST_LD = -L$(LIB_PATH) -leagle #-ltcmalloc
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
+LIBI_INCLUDE = $(top_srcdir)/libsrc/eagle
 
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
 				  logtest psemtest threadtest shmtest mmaptest \
-				  eagletest rbtest locktest sockettest
+				  eagletest rbtest locktest sockettest queuetest
 
-INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE)
+INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBI_INCLUDE)
 
 autoptrtest_SOURCES = AutoPtrTest.cpp
 autoptrtest_LDFLAGS = $(TEST_LD)
@@ -50,3 +51,6 @@ locktest_LDFLAGS = $(TEST_LD)
 
 sockettest_SOURCES = SocketTest.cpp
 sockettest_LDFLAGS = $(TEST_LD)
+
+queuetest_SOURCES = CyQueueTest.cpp
+queuetest_LDFLAGS = $(TEST_LD)

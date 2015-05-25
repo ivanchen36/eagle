@@ -32,6 +32,7 @@ public:
 	virtual ~Socket();
 
     int isAvailable() {return -1 != m_fd;}
+    int getFd() { return m_fd; }
 	int setAsync();
 	int setPid(pid_t pid);
     int setCloseOnexe();

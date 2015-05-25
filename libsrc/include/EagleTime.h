@@ -54,7 +54,7 @@ public:
 
     void operator delete(void* ptr)
     {
-        return ShareMemI::instance().free(ptr);
+        ShareMemI::instance().free(ptr);
     }
 
 private:

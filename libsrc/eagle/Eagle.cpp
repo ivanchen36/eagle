@@ -95,7 +95,6 @@ int Eagle::masterCycle()
 
 int Eagle::init(const CallBack &notifyQuitCb)
 {
-    pid_t pid;
     int ret = spawnChildProcess();
 
     if (ret > 0) ret = masterCycle();

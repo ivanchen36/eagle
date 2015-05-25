@@ -25,7 +25,7 @@ int FileEx::getSize(const int fd)
     return st.st_size;
 }
 
-int FileEx::setSize(const int fd, const int size)
+int FileEx::setSize(const int fd, const unsigned int size)
 {
     struct statvfs vfs;
 

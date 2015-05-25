@@ -27,10 +27,6 @@ public:
     virtual ~Thread();
 
     virtual void run(){};
-    int isDetach()
-    {
-        return m_isDetach != 0;
-    }
 
 private:
     void init(const int stackSize, void *(*cbFunc)(void *), void *cbParam);

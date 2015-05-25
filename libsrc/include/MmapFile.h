@@ -25,7 +25,7 @@ public:
     {
         RDONLY = 0,
         WRONLY,
-        RDWR,
+        RDWR
     };
 
     MmapFile(const char *fileName, const int isShm = 0,

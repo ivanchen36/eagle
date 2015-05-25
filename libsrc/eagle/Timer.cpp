@@ -19,8 +19,8 @@ void excuteTimer(int sig)
 }
 }
 
-Timer::Timer() : m_nextExcuteTime((uint64_t)-1), 
-    m_taskListHead(NULL), m_isPause(0)
+Timer::Timer() : m_isPause(0), m_nextExcuteTime((uint64_t)-1), 
+    m_taskListHead(NULL)
 { 
 #ifdef _TEST_
     struct sigevent evp;
@@ -137,7 +137,7 @@ Timer::TaskNode *Timer::find(const char *name)
     return NULL;
 }
 
-int Timer::addTimer(const uint64_t startTime, TaskNode *task)
+void Timer::addTimer(const uint64_t startTime, TaskNode *task)
 {
     TaskMap::Iterator iter = m_taskMap.find(startTime);
 
@@ -201,7 +201,7 @@ void Timer::excute()
         }
     }
 
-    if (m_taskMap.end() == iter && -1 == startTime)
+    if (m_taskMap.end() == iter && (uint64_t)-1 == startTime)
     {
         m_isPause = 1;
         

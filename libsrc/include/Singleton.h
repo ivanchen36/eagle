@@ -29,7 +29,6 @@ public:
         LockGuard guard(g_singletonLock);
         if (NULL != s_instance) return *s_instance;
 
-        s_cleaner;
         s_instance = new T();
         return *s_instance;
     }

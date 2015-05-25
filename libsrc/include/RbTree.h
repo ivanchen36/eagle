@@ -205,7 +205,7 @@ private:
     enum Color
     {
         RED,
-        BLACK,
+        BLACK
     };
 
     struct Node
@@ -293,8 +293,6 @@ private:
 
     void erase(Node *n)
     {
-        Node *next;
-
         n = deleteNode(n);
         if (n->itPrev)
         {
@@ -364,7 +362,6 @@ private:
     Node *findNode(const K &key)
     {
         Node *tmp;
-        int rs;
 
         tmp = m_root;
         while (tmp)

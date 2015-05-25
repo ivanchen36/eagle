@@ -13,7 +13,7 @@ void updateEagleTime(void *param)
     EagleTimeI::instance().update();
 }
 
-EagleTime::EagleTime() : m_msec(0), m_sec(0)
+EagleTime::EagleTime() : m_sec(0), m_msec(0)
 {
     update();
     Log::setLogTime(m_logTime);

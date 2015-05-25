@@ -66,7 +66,6 @@ Socket::Socket(const char *ip, int &port)
 Socket::Socket(const char *path, const bool isServer)
 {
     int ret;
-    int oldUmask;
     struct sockaddr_un addr;
 
     m_fd = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -99,7 +98,6 @@ Socket::Socket(const char *path, const bool isServer)
 Socket::Socket(const char *ip, int &port, const bool isServer)
 {
     int ret;
-    int old_umask;
     struct sockaddr_in addr;
 
     m_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -398,10 +396,9 @@ int Socket::send(const uint8_t *buf, int &len,
         ret = ::send(m_fd, (const void *)buf, len, flags);
         if (ret >= 0)
         {
-            if(0 == ret) ERRORLOG("send() returned zero");
             len = ret;
 
-            return 0;
+            return EG_SUCCESS;
         }
         if (EINTR == errno) continue;
 
@@ -424,10 +421,9 @@ int Socket::sendTo(const uint8_t *buf, int &len, const int flags,
         ret = ::sendto(m_fd, buf, len, flags, addr, addrLen);
         if (ret >= 0)
         {
-            if(0 == ret) ERRORLOG("sendto() returned zero");
             len = ret;
 
-            return 0;
+            return EG_SUCCESS;
         }
         if (EINTR == errno) continue;
 
@@ -501,7 +497,7 @@ int Socket::sendMsg(const int fd, const uint8_t *buf, int &len,
             if(0 == ret) ERRORLOG("sendmsg() returned zero");
             len = ret;
 
-            return 0;
+            return EG_SUCCESS;
         }
         if (EINTR == errno) continue;
 
@@ -527,7 +523,7 @@ int Socket::recv(uint8_t *buf, int &len, const int flags)
         {
             len = ret;
 
-            return 0;
+            return EG_SUCCESS;
         }
         if (EINTR == errno) continue;
 
@@ -553,7 +549,7 @@ int Socket::recvFrom(uint8_t *buf, int &len, const int flags,
         {
             len = ret;
 
-            return 0;
+            return EG_SUCCESS;
         }
         if (EINTR == errno) continue;
 
@@ -620,7 +616,7 @@ int Socket::recvMsg(int &fd, uint8_t *buf, int &len,
             memcpy(&fd, CMSG_DATA(&cmsg.cm), sizeof(int));
             len = ret;
 
-            return 0;
+            return EG_SUCCESS;
         }
         if (EINTR == errno) continue;
 

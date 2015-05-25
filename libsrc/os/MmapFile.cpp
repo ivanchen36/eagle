@@ -12,8 +12,8 @@ const int M_MODE[] = {PROT_READ, PROT_WRITE, PROT_READ | PROT_WRITE};
 
 MmapFile::MmapFile(const char *fileName, const int isShm, 
         const Mode mode, const int pageSize)
-    : m_fileName(NULL), m_ptr(NULL), m_isShm(isShm),
-    m_startOffset(0), m_endOffset(0)
+    : m_startOffset(0), m_endOffset(0), m_isShm(isShm), 
+    m_ptr(NULL), m_fileName(NULL)
 {
     int sysPageSize = getpagesize();
 

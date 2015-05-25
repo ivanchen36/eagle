@@ -64,7 +64,7 @@ public:
     {
         USEC = 1,
         MSEC = 1000,
-        SEC = 1000000,
+        SEC = 1000000
     };
 
     TimeStats();

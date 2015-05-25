@@ -30,7 +30,7 @@ public:
         WRONLY_CREATE_RESET,
         RDWR_CREATE_RESET,
         WRONLY_CREATE_APPEND,
-        RDWR_CREATE_APPEND,
+        RDWR_CREATE_APPEND
     };
     FileEx(const char *fileName, const Mode mode);
     ~FileEx();
@@ -49,7 +49,7 @@ public:
     int writeByOffset(uint8_t *buf, const int len, const int offset);
 
     static int getSize(int fd);
-    static int setSize(const int fd, const int size);
+    static int setSize(const int fd, const unsigned int size);
 
 private:
     int m_mode;

@@ -41,9 +41,8 @@ ProcessSem::~ProcessSem()
 
     if (NULL != m_ref)
     {
-        if (!__sync_bool_compare_and_swap(const_cast<volatile int *>(m_ref), 1, 0))
+        if (__sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1) == 0)
         {
-            __sync_fetch_and_sub(const_cast<volatile int *>(m_ref), 1);
             isDelete = 0;
         }
         ShareMemI::instance().free(m_ref);
@@ -75,13 +74,13 @@ int ProcessSem::op(const int val, const int sec)
 {
     if (-1 == m_semId) return EG_INVAL;
 
-    struct sembuf op;
+    struct sembuf buf;
     struct timespec t;
     struct timespec *timeOut = NULL;
 
-    op.sem_num = 0;
-    op.sem_op = val;
-    op.sem_flg = SEM_UNDO;
+    buf.sem_num = 0;
+    buf.sem_op = val;
+    buf.sem_flg = SEM_UNDO;
     if (sec > 0)
     {
         t.tv_sec = sec;
@@ -90,7 +89,7 @@ int ProcessSem::op(const int val, const int sec)
     }
     for (; ;)
     {
-        if (semtimedop(m_semId, &op, 1, timeOut) == 0) return EG_SUCCESS;
+        if (semtimedop(m_semId, &buf, 1, timeOut) == 0) return EG_SUCCESS;
 
         if (EINTR == errno) continue;
 

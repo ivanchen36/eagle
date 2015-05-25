@@ -35,13 +35,12 @@ public:
         TaskNode *nextTask;
         TaskNode *nextTimer;
 
-        TaskNode(const char *name, const int msec, 
-                const int isAsync, const int times, const CallBack &cb)
-            : interval(msec), isAsync(isAsync), times(times), cb(cb)
+        TaskNode(const char *n, const int m, 
+                const int i, const int t, const CallBack &c)
+            : interval(m), times(t), isAsync(i), cb(c)
         {
-            int len = strlen(name);
-            this->name = new char[strlen(name) + 1];
-            strcpy(this->name, name);
+            this->name = new char[strlen(n) + 1];
+            strcpy(this->name, n);
         }
 
         ~TaskNode()
@@ -65,14 +64,14 @@ private:
     typedef RbTree<uint64_t, Timer::TaskNode *> TaskMap;
 
     int setTimer(int msec);
-    int addTimer(const uint64_t startTime, TaskNode *task);
+    void addTimer(const uint64_t startTime, TaskNode *task);
     TaskNode *find(const char *name);
     void delTask(TaskNode *task);
 
     int m_isPause;
+    MutexLock m_lock;
     uint64_t m_nextExcuteTime;
     TaskNode *m_taskListHead;
-    MutexLock m_lock;
     TaskMap m_taskMap;
 
 #ifdef _TEST_

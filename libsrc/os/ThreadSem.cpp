@@ -41,12 +41,19 @@ int ThreadSem::wait()
 {
     if (!m_isInit) return EG_INVAL;
 
-    if (sem_wait(&m_sem) != 0)
+    for (; ;)
     {
-        ERRORLOG1("sem_wait failed, %s", strerror(errno));
+        if (sem_wait(&m_sem) != 0)
+        {
+            if (EINTR == errno) continue;
 
-        return EG_FAILED;
-    } 
+            ERRORLOG1("sem_wait failed, %s", strerror(errno));
+
+            return EG_FAILED;
+        }
+
+        return EG_SUCCESS;
+    }
 
     return EG_SUCCESS;
 }

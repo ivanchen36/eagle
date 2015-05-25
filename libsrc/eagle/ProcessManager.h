@@ -24,7 +24,7 @@ public:
     {
         NORMAL,
         SPAWN,
-        QUIT,
+        QUIT
     };
 
     struct ProcessNode
@@ -33,8 +33,8 @@ public:
         int pid;
         ProcessNode *next;
 
-        ProcessNode(int index, int pid, ProcessNode *next)
-            : index(index), pid(pid), next(next){};
+        ProcessNode(int i, int p, ProcessNode *n)
+            : index(i), pid(p), next(n){};
     };
 
     ProcessManager();

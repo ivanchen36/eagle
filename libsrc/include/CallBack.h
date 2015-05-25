@@ -20,9 +20,11 @@ class CallBack
 {
 public:
     CallBack(){}
+
     CallBack(const CallBack &cb) 
-        : m_cbFunc(cb.m_cbFunc), m_cbParam(cb.m_cbParam){}
-    CallBack(CallBackFunc func, void *param = 0) 
+        : m_cbParam(cb.m_cbParam), m_cbFunc(cb.m_cbFunc) {}
+
+    CallBack(CallBackFunc func, void *param = NULL) 
         : m_cbParam(param), m_cbFunc(func){}
 
     int excute()

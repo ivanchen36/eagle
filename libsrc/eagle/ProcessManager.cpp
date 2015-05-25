@@ -8,8 +8,7 @@
 #include "Log.h"
 
 ProcessManager::ProcessManager()
-    : m_processHead(NULL), m_aliveNum(0), 
-    m_processNum(0)
+    :  m_aliveNum(0), m_processNum(0), m_processHead(NULL)
 {
 }
 
