@@ -73,7 +73,8 @@ libeagle_la_DEPENDENCIES = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la
 am_libeagle_la_OBJECTS = Eagle.lo TaskThread.lo SignalManager.lo \
 	MasterSigManager.lo ChildSigManager.lo ProcessManager.lo \
 	EagleTime.lo Timer.lo EpollManager.lo EventHandler.lo \
-	EventManager.lo EventWorker.lo SelectManager.lo
+	EventManager.lo EventWorker.lo SelectManager.lo \
+	AcceptHandler.lo ReceiveHandler.lo MessageHandlerFactory.lo
 libeagle_la_OBJECTS = $(am_libeagle_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -108,7 +109,7 @@ CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
-CXXFLAGS = -g -O0 -pedantic -Wall -Werror -Wfloat-equal -Wshadow -D_TEST_
+CXXFLAGS = -g -O0 -pedantic -Wall -Werror -Wfloat-equal -Wshadow -Wno-invalid-offsetof -D_TEST_
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -218,7 +219,8 @@ libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
 					  MasterSigManager.cpp ChildSigManager.cpp \
 					  ProcessManager.cpp EagleTime.cpp Timer.cpp \
 					  EpollManager.cpp EventHandler.cpp EventManager.cpp \
-					  EventWorker.cpp SelectManager.cpp
+					  EventWorker.cpp SelectManager.cpp AcceptHandler.cpp \
+					  ReceiveHandler.cpp MessageHandlerFactory.cpp
 
 libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la
 all: all-am
@@ -295,6 +297,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AcceptHandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChildSigManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Eagle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EagleTime.Plo@am__quote@
@@ -303,7 +306,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EventManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EventWorker.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MasterSigManager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageHandlerFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProcessManager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReceiveHandler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SelectManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SignalManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TaskThread.Plo@am__quote@

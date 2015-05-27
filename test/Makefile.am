@@ -12,7 +12,8 @@ LIBI_INCLUDE = $(top_srcdir)/libsrc/eagle
 
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
 				  logtest psemtest threadtest shmtest mmaptest \
-				  eagletest rbtest locktest sockettest queuetest
+				  eagletest rbtest locktest sockettest queuetest \
+				  classtest
 
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBI_INCLUDE)
 
@@ -54,3 +55,6 @@ sockettest_LDFLAGS = $(TEST_LD)
 
 queuetest_SOURCES = CyQueueTest.cpp
 queuetest_LDFLAGS = $(TEST_LD)
+
+classtest_SOURCES = ClassTest.cpp
+classtest_LDFLAGS = $(TEST_LD)

@@ -13,7 +13,7 @@ namespace
 const char *g_logTime = "1970-09-28 12:00:00";
 const char *LOG_LEVEL_STR[] = {"debug", "info", "warn", "error"};
 
-__attribute((constructor)) void init()  
+__attribute__((constructor)) void initLog()  
 { 
     ShareMemI::instance();
     EagleTimeI::instance().getLogTime();

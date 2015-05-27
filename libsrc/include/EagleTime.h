@@ -25,7 +25,6 @@
 class EagleTime
 {
 public:
-    EagleTime();
     ~EagleTime();
 
     void update();
@@ -58,10 +57,14 @@ public:
     }
 
 private:
+    EagleTime();
+
     time_t m_sec;
     uint64_t m_msec;
     char m_logTime[LOGTIMELEN];
     char m_iso8601[ISO8601LEN];
+
+    friend class Singleton<EagleTime>;
 };
 
 typedef Singleton<EagleTime> EagleTimeI;

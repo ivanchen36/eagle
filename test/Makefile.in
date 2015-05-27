@@ -38,7 +38,7 @@ noinst_PROGRAMS = autoptrtest$(EXEEXT) timestatstest$(EXEEXT) \
 	singletontest$(EXEEXT) logtest$(EXEEXT) psemtest$(EXEEXT) \
 	threadtest$(EXEEXT) shmtest$(EXEEXT) mmaptest$(EXEEXT) \
 	eagletest$(EXEEXT) rbtest$(EXEEXT) locktest$(EXEEXT) \
-	sockettest$(EXEEXT) queuetest$(EXEEXT)
+	sockettest$(EXEEXT) queuetest$(EXEEXT) classtest$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -56,6 +56,12 @@ autoptrtest_LDADD = $(LDADD)
 autoptrtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(autoptrtest_LDFLAGS) $(LDFLAGS) -o $@
+am_classtest_OBJECTS = ClassTest.$(OBJEXT)
+classtest_OBJECTS = $(am_classtest_OBJECTS)
+classtest_LDADD = $(LDADD)
+classtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(classtest_LDFLAGS) $(LDFLAGS) -o $@
 am_eagletest_OBJECTS = EagleTest.$(OBJEXT)
 eagletest_OBJECTS = $(am_eagletest_OBJECTS)
 eagletest_LDADD = $(LDADD)
@@ -141,16 +147,16 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(autoptrtest_SOURCES) $(eagletest_SOURCES) \
-	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
-	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
-	$(shmtest_SOURCES) $(singletontest_SOURCES) \
+SOURCES = $(autoptrtest_SOURCES) $(classtest_SOURCES) \
+	$(eagletest_SOURCES) $(locktest_SOURCES) $(logtest_SOURCES) \
+	$(mmaptest_SOURCES) $(psemtest_SOURCES) $(queuetest_SOURCES) \
+	$(rbtest_SOURCES) $(shmtest_SOURCES) $(singletontest_SOURCES) \
 	$(sockettest_SOURCES) $(threadtest_SOURCES) \
 	$(timestatstest_SOURCES)
-DIST_SOURCES = $(autoptrtest_SOURCES) $(eagletest_SOURCES) \
-	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
-	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
-	$(shmtest_SOURCES) $(singletontest_SOURCES) \
+DIST_SOURCES = $(autoptrtest_SOURCES) $(classtest_SOURCES) \
+	$(eagletest_SOURCES) $(locktest_SOURCES) $(logtest_SOURCES) \
+	$(mmaptest_SOURCES) $(psemtest_SOURCES) $(queuetest_SOURCES) \
+	$(rbtest_SOURCES) $(shmtest_SOURCES) $(singletontest_SOURCES) \
 	$(sockettest_SOURCES) $(threadtest_SOURCES) \
 	$(timestatstest_SOURCES)
 ETAGS = etags
@@ -308,6 +314,8 @@ sockettest_SOURCES = SocketTest.cpp
 sockettest_LDFLAGS = $(TEST_LD)
 queuetest_SOURCES = CyQueueTest.cpp
 queuetest_LDFLAGS = $(TEST_LD)
+classtest_SOURCES = ClassTest.cpp
+classtest_LDFLAGS = $(TEST_LD)
 all: all-am
 
 .SUFFIXES:
@@ -354,6 +362,9 @@ clean-noinstPROGRAMS:
 autoptrtest$(EXEEXT): $(autoptrtest_OBJECTS) $(autoptrtest_DEPENDENCIES) 
 	@rm -f autoptrtest$(EXEEXT)
 	$(autoptrtest_LINK) $(autoptrtest_OBJECTS) $(autoptrtest_LDADD) $(LIBS)
+classtest$(EXEEXT): $(classtest_OBJECTS) $(classtest_DEPENDENCIES) 
+	@rm -f classtest$(EXEEXT)
+	$(classtest_LINK) $(classtest_OBJECTS) $(classtest_LDADD) $(LIBS)
 eagletest$(EXEEXT): $(eagletest_OBJECTS) $(eagletest_DEPENDENCIES) 
 	@rm -f eagletest$(EXEEXT)
 	$(eagletest_LINK) $(eagletest_OBJECTS) $(eagletest_LDADD) $(LIBS)
@@ -398,6 +409,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AutoPtrTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClassTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CyQueueTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EagleTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LockTest.Po@am__quote@

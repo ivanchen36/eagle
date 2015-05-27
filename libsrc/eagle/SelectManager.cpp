@@ -69,6 +69,7 @@ void SelectManager::flushSelectEvent()
 int SelectManager::registerEvent(int event, EventHandlerPtr &handler)
 {
     int &reEvent = handler->getRegisterEvent();
+    LockGuard guard(m_lock);
 
     if (NONE == reEvent)
     {
@@ -93,6 +94,7 @@ int SelectManager::registerEvent(int event, EventHandlerPtr &handler)
 int SelectManager::unregisterEvent(int event, EventHandlerPtr &handler)
 {
     int &reEvent = handler->getRegisterEvent();
+    LockGuard guard(m_lock);
 
     reEvent &= ~event;
     if (NONE != reEvent)

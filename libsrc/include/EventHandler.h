@@ -14,6 +14,8 @@
 #ifndef  _EVENTHANDLER_H_
 #define  _EVENTHANDLER_H_
 
+#include <sched.h>
+
 #include "AutoPtr1.h"
 #include "Define.h"
 #include "SocketEx.h"
@@ -32,8 +34,48 @@ struct IoBuffer
 {
     IoBuffer *next;
     uint16_t cur;
+    char ref;
+    char mutex;
     uint8_t buf[1];
     const static uint16_t size;
+
+    IoBuffer()
+    {
+        ref = 0;
+        mutex = 0;
+    }
+
+    void inc()
+    {
+        __sync_fetch_and_add(const_cast<volatile char *>(&ref), 1);
+    }
+
+    int dec()
+    {
+        return __sync_sub_and_fetch(const_cast<volatile char *>(&ref), 1);
+    }
+
+    void lock()
+    {
+        for(; ;)
+        {
+            if (__sync_bool_compare_and_swap(
+                        const_cast<volatile char *>(&mutex), '\0', '\1')) return;
+
+            sched_yield();
+        }
+    }
+
+    void unlock()
+    {
+        for(; ;)
+        {
+            if (__sync_bool_compare_and_swap(
+                        const_cast<volatile char *>(&mutex), '\1', '\0')) return;
+
+            sched_yield();
+        }
+    }
 
     void *operator new(size_t s)
     {
@@ -46,11 +88,17 @@ struct IoBuffer
     }
 };
 
+class MessageHandler
+{
+public:
+    virtual int handle(IoBuffer *buf);
+};
+
 class EventHandler : public Reference
 {
 public:
-    EventHandler(const EventManager *manager, const int fd);
-    EventHandler(const EventManager *manager, SocketPtr &socket);
+    EventHandler(EventManager *const manager, const int fd);
+    EventHandler(EventManager *const manager, SocketPtr &socket);
 
     void activateRead()
     {
@@ -99,7 +147,7 @@ protected:
     int m_event;
     int m_registerEvent;
     SocketPtr m_socket;
-    const EventManager *m_manager;
+    EventManager *const m_manager;
 };
 
 typedef AutoPtr1<EventHandler> EventHandlerPtr;

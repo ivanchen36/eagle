@@ -36,6 +36,7 @@ protected:
     int m_workerNum;
     int m_curWorker;
     int m_isStop;
+    MutexLock m_lock;
     EventWorker *m_workers;
 };
 

@@ -48,7 +48,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libutil_la_LIBADD =
-am_libutil_la_OBJECTS = TimeStats.lo Singleton.lo Log.lo
+am_libutil_la_OBJECTS = TimeStats.lo Singleton.lo Log.lo \
+	ClassFactory.lo
 libutil_la_OBJECTS = $(am_libutil_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -188,7 +189,7 @@ LIBSRC_PATH = $(top_srcdir)/libsrc
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
 INCLUDES = -I$(LIB_INCLUDE) -I$(UTIL_INCLUDE)
 noinst_LTLIBRARIES = libutil.la
-libutil_la_SOURCES = TimeStats.cpp Singleton.cpp Log.cpp
+libutil_la_SOURCES = TimeStats.cpp Singleton.cpp Log.cpp ClassFactory.cpp 
 all: all-am
 
 .SUFFIXES:
@@ -241,6 +242,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClassFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Log.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Singleton.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeStats.Plo@am__quote@
