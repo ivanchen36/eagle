@@ -16,6 +16,7 @@
 
 #include <sched.h>
 
+#include "AutoPtr.h"
 #include "AutoPtr1.h"
 #include "Define.h"
 #include "SocketEx.h"
@@ -91,7 +92,7 @@ struct IoBuffer
 class MessageHandler
 {
 public:
-    virtual int handle(IoBuffer *buf);
+    virtual int handle(IoBuffer *buf) = 0;
 };
 
 class EventHandler : public Reference

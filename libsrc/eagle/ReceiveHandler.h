@@ -19,12 +19,16 @@
 class ReceiveHandler : public EventHandler
 {
 public:
-    ReceiveHandler(EventManager *const manager, const int fd);
-    ReceiveHandler(EventManager *const manager, SocketPtr &socket);
+    ReceiveHandler(EventManager *const manager, const int fd, 
+            MessageHandler *handler);
+    ReceiveHandler(EventManager *const manager, SocketPtr &socket, 
+            MessageHandler *handler);
     ~ReceiveHandler();
    
     virtual int read();
     virtual int write();   
+
 private:
+    MessageHandler *m_handler;
 };
 #endif   /* ----- #ifndef _RECEIVEHANDLER_H_  ----- */
