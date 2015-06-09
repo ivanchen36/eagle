@@ -27,7 +27,7 @@ AC_C_INLINE
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([memset strcasecmp])
 
-AC_CONFIG_FILES([Makefile libsrc/Makefile test/Makefile
-                 libsrc/os/Makefile libsrc/util/Makefile
-                 libsrc/eagle/Makefile])
+AC_CONFIG_FILES([Makefile libeagle/Makefile test/Makefile
+                 libeagle/os/Makefile libeagle/util/Makefile
+                 libeagle/eagle/Makefile])
 AC_OUTPUT

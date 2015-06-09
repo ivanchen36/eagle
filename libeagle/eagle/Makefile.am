@@ -2,9 +2,9 @@
 
 CXXFLAGS = -g -O0 -pedantic -Wall -Werror -Wfloat-equal -Wshadow -Wno-invalid-offsetof #-D_TEST_
 
-LIB_INCLUDE = $(top_srcdir)/libsrc/include
-OS_PATH = $(top_srcdir)/libsrc/os
-UTIL_PATH = $(top_srcdir)/libsrc/util
+LIB_INCLUDE = $(top_srcdir)/libeagle/include
+OS_PATH = $(top_srcdir)/libeagle/os
+UTIL_PATH = $(top_srcdir)/libeagle/util
 
 INCLUDES = -I$(LIB_INCLUDE) -I.
 

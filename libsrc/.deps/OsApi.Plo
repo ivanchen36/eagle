@@ -1,3 +1,0 @@
-OsApi.lo: ../libsrc/os/src/OsApi.cpp ../libsrc/include/OsApi.h
-
-../libsrc/include/OsApi.h:

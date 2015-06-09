@@ -3,4 +3,4 @@
 AUTOMAKE_OPTIONS = foreign
 CXXFLAGS = -g -O0
 
-SUBDIRS = libsrc test
+SUBDIRS = libeagle test

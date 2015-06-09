@@ -628,9 +628,9 @@ m4trace:configure.in:28: -1- AH_OUTPUT([HAVE_MEMSET], [/* Define to 1 if you hav
 @%:@undef HAVE_MEMSET])
 m4trace:configure.in:28: -1- AH_OUTPUT([HAVE_STRCASECMP], [/* Define to 1 if you have the `strcasecmp\' function. */
 @%:@undef HAVE_STRCASECMP])
-m4trace:configure.in:30: -1- AC_CONFIG_FILES([Makefile libsrc/Makefile test/Makefile
-                 libsrc/os/Makefile libsrc/util/Makefile
-                 libsrc/eagle/Makefile])
+m4trace:configure.in:30: -1- AC_CONFIG_FILES([Makefile libeagle/Makefile test/Makefile
+                 libeagle/os/Makefile libeagle/util/Makefile
+                 libeagle/eagle/Makefile])
 m4trace:configure.in:33: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
 m4trace:configure.in:33: -1- AC_SUBST_TRACE([LIB@&t@OBJS])
 m4trace:configure.in:33: -1- m4_pattern_allow([^LIB@&t@OBJS$])

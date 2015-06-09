@@ -5,10 +5,10 @@ CXXFLAGS = -g -O0
 
 TEST_INCLUDE = $(top_srcdir)/test
 TEST_SRC = $(top_srcdir)/test
-LIB_PATH = $(top_srcdir)/libsrc/eagle/.libs
+LIB_PATH = $(top_srcdir)/libeagle/eagle/.libs
 TEST_LD = -L$(LIB_PATH) -leagle #-ltcmalloc
-LIB_INCLUDE = $(top_srcdir)/libsrc/include
-LIBI_INCLUDE = $(top_srcdir)/libsrc/eagle
+LIB_INCLUDE = $(top_srcdir)/libeagle/include
+LIBI_INCLUDE = $(top_srcdir)/libeagle/eagle
 
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
 				  logtest psemtest threadtest shmtest mmaptest \
