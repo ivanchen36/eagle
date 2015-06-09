@@ -16,17 +16,31 @@
 
 #include "EventHandler.h"
 #include "EventWorker.h"
+#include "Pool.h"
 
 class EventManager
 {
 public:
     EventManager(const int workerNum);
-    ~EventManager();
+    virtual ~EventManager();
 
     void stopLoop();
     virtual void loop() = 0;
-    virtual int registerEvent(int event, EventHandlerPtr &handler) = 0;
-    virtual int unregisterEvent(int event, EventHandlerPtr &handler) = 0;
+    virtual int registerEvent(int event, EventHandler *handler) = 0;
+    virtual int unregisterEvent(int event, EventHandler *handler) = 0;
+
+    IoBuffer *getBuf()
+    {
+        IoBuffer *tmp = (IoBuffer *)m_bufPool.pop();
+
+        tmp->reset();
+        return tmp;
+    }
+
+    void releaseBuf(IoBuffer *buf)
+    {
+        return m_bufPool.push((IoBufferUnion *)buf);
+    }
 
 protected:
     void handleEvent(EventHandler *event);
@@ -38,6 +52,7 @@ protected:
     int m_isStop;
     MutexLock m_lock;
     EventWorker *m_workers;
+    Pool<IoBufferUnion> m_bufPool;
 };
 
 typedef AutoPtr<EventManager> EventManagerPtr;

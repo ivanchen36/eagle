@@ -1,13 +1,14 @@
 #include "EventManager.h"
 
 EventManager::EventManager(const int workerNum)
-    : m_workerNum(workerNum), m_curWorker(-1), m_isStop(0)
+    : m_workerNum(workerNum), m_curWorker(-1), m_isStop(0),
+    m_bufPool(EG_MAX_EVENTHANDLER)
 {
     int pipeFd[2];
     m_workers = (EventWorker *)new char[sizeof(EventWorker) * m_workerNum];
     for (int i = 0; i < m_workerNum; ++i)
     {
-        new(&m_workers[i]) EventWorker(EG_MAX_EVENTHANDLER);
+        new(&m_workers[i]) EventWorker(EG_MAX_EVENTHANDLER / workerNum);
     }
 
     if (pipe(pipeFd) == -1)
@@ -25,6 +26,11 @@ EventManager::EventManager(const int workerNum)
 
 EventManager::~EventManager()
 {
+    stopLoop();
+    sched_yield();
+
+    while (2 != m_isStop) sched_yield();
+
     for (int i = 0; i < m_workerNum; ++i)
     {
         m_workers[i].~EventWorker();
@@ -49,14 +55,15 @@ void EventManager::stopLoop()
 
 void EventManager::handleEvent(EventHandler *event)
 {
-    if (m_curWorker >= m_workerNum) m_curWorker %= m_workerNum;
-    for (; ;)
+    int i;
+    for (; !m_isStop;)
     {
-        for (int i = 0; i < m_workerNum; ++i)
+        for (i = 0; i < m_workerNum; ++i)
         {
-            if (!m_workers[m_curWorker++].isBusy())
+            m_curWorker = ++m_curWorker % m_workerNum;
+            if (!m_workers[m_curWorker].isBusy())
             {
-                m_workers[m_curWorker++].addEvent(event);
+                m_workers[m_curWorker].addEvent(event);
 
                 return;
             }

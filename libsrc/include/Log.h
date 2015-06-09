@@ -29,8 +29,8 @@ extern AutoPtr<Log> g_sysLog;
 #define DEBUGLOG1(format, arg1) g_sysLog->debug("[%s:%d] "format, __FILE__, __LINE__, arg1)
 #define DEBUGLOG2(format, arg1, arg2) g_sysLog->debug("[%s:%d] "format, __FILE__, __LINE__, arg1, arg2)
 #define DEBUGLOG3(format, arg1, arg2, arg3) g_sysLog->debug("[%s:%d] "format, __FILE__, __LINE__, arg1, arg2, arg3)
-#define DEBUGLOG4(format, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) \
-    g_sysLog->debug("[%s:%d] "format, __FILE__, __LINE__, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
+#define DEBUGLOG4(format, arg1, arg2, arg3, arg4) \
+    g_sysLog->debug("[%s:%d] "format, __FILE__, __LINE__, arg1, arg2, arg3, arg4)
 #define DEBUGLOG5(format, arg1, arg2, arg3, arg4, arg5) \
     g_sysLog->debug("[%s:%d] "format, __FILE__, __LINE__, arg1, arg2, arg3, arg4, arg5)
 #define DEBUGLOG6(format, arg1, arg2, arg3, arg4, arg5, arg6) \

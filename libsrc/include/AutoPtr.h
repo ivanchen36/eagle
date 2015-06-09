@@ -38,7 +38,17 @@ public:
         m_ref = r.m_ref;
         if (NULL == m_ptr) return;
 
+        inc();
+    }
+
+    void inc()
+    {
         __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
+    }
+
+    int dec()
+    {
+        return __sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1);
     }
 
     template<class Y> AutoPtr(const AutoPtr<Y> &r)
@@ -47,7 +57,7 @@ public:
         m_ref = r.m_ref;
         if (NULL == m_ptr) return;
 
-        __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
+        inc();
     }
 
     T *ptr()
@@ -59,7 +69,7 @@ public:
     {
         if (NULL == m_ptr) return;
 
-        if (__sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1) == 0)
+        if (dec() == 0)
         {
             delete m_ref;
             delete m_ptr;
@@ -90,7 +100,7 @@ public:
     {
         if (NULL != m_ptr)
         {
-            if (__sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1) == 0)
+            if (dec() == 0)
             {
                 delete m_ref;
                 delete m_ptr;
@@ -109,7 +119,7 @@ public:
 
         if (NULL != m_ptr)
         {
-            if (__sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1) == 0)
+            if (dec() == 0)
             {
                 delete m_ref;
                 delete m_ptr;
@@ -120,7 +130,7 @@ public:
         m_ref = r.m_ref;
         if (NULL == m_ptr) return *this;
 
-        __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
+        inc();
 
         return *this;
     }
@@ -131,7 +141,7 @@ public:
 
         if (NULL != m_ptr)
         {
-            if (__sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1) == 0)
+            if (dec() == 0)
             {
                 delete m_ref;
                 delete m_ptr;
@@ -142,7 +152,7 @@ public:
         m_ref = r.m_ref;
         if (NULL == m_ptr) return *this;
 
-        __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
+        inc();
 
         return *this;
     }

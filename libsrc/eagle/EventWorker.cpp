@@ -21,6 +21,12 @@ int EventWorker::excute()
         return EG_SUCCESS;
 
     m_status = FREE;
+    sched_yield();
+    if (handleEvent() == EG_SUCCESS)
+    {
+        m_status = NORMAL;
+        return EG_SUCCESS;
+    }
 
     return EG_AGAIN;
 }
@@ -43,31 +49,25 @@ int EventWorker::handleEvent()
         handler->inactivateWrite();
         handler->write();
     }
-    if (handler->dec()) delete handler;
+    if (handler->dec() == 0) delete handler;
 
     return EG_SUCCESS;
 }
 
-
 int EventWorker::addEvent(EventHandler *handler)
 {
-    if (m_queue.full())
-    {
-        m_status = BUSY;
-
-        return EG_FAILED;
-    }
-
     m_queue.push(handler);
     handler->inc();
 
     if (m_queue.full())
     {
         m_status = BUSY;
+
+        return EG_SUCCESS;
     }else if (FREE == m_status)
     {
-        m_thread->start();
         m_status = NORMAL;
+        m_thread->start();
     }
 
     return EG_SUCCESS;

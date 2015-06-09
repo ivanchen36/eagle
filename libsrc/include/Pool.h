@@ -54,7 +54,6 @@ public:
 
         Node *n = (Node *)val;
 
-        val->reset();
         n->next = m_head;
         m_head = n;
         ++m_size;
@@ -82,7 +81,6 @@ private:
         bt->node = new Node[m_capacity];
         m_head = bt->node;
         initNodeList(bt->node, m_capacity);
-        (bt->node + m_capacity - 1)->next = NULL;
 
         m_size = m_capacity;
         m_capacity += m_capacity;
@@ -95,6 +93,7 @@ private:
         {
             (arr + i)->next = arr + i + 1;
         }
+        (arr + len)->next = NULL;
     }
 
     int m_size;

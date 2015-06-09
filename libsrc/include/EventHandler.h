@@ -20,6 +20,7 @@
 #include "AutoPtr1.h"
 #include "Define.h"
 #include "SocketEx.h"
+#include "Log.h"
 
 class EventManager;
 
@@ -34,48 +35,23 @@ enum Event
 struct IoBuffer
 {
     IoBuffer *next;
+    uint16_t offset;
     uint16_t cur;
-    char ref;
-    char mutex;
     uint8_t buf[1];
     const static uint16_t size;
 
     IoBuffer()
     {
-        ref = 0;
-        mutex = 0;
+        cur = 0;
+        offset = 0;
+        next = NULL;
     }
 
-    void inc()
+    void reset()
     {
-        __sync_fetch_and_add(const_cast<volatile char *>(&ref), 1);
-    }
-
-    int dec()
-    {
-        return __sync_sub_and_fetch(const_cast<volatile char *>(&ref), 1);
-    }
-
-    void lock()
-    {
-        for(; ;)
-        {
-            if (__sync_bool_compare_and_swap(
-                        const_cast<volatile char *>(&mutex), '\0', '\1')) return;
-
-            sched_yield();
-        }
-    }
-
-    void unlock()
-    {
-        for(; ;)
-        {
-            if (__sync_bool_compare_and_swap(
-                        const_cast<volatile char *>(&mutex), '\1', '\0')) return;
-
-            sched_yield();
-        }
+        cur = 0;
+        offset = 0;
+        next = NULL;
     }
 
     void *operator new(size_t s)
@@ -89,17 +65,24 @@ struct IoBuffer
     }
 };
 
-class MessageHandler
+union IoBufferUnion
 {
-public:
-    virtual int handle(IoBuffer *buf) = 0;
+    struct BufStruct
+    {
+        BufStruct *next;
+        uint16_t offset;
+        uint16_t cur;
+        uint8_t buf[1];
+    } ioBuf;
+    char buf[EG_IO_BUF_SIZE];
 };
 
 class EventHandler : public Reference
 {
 public:
     EventHandler(EventManager *const manager, const int fd);
-    EventHandler(EventManager *const manager, SocketPtr &socket);
+    EventHandler(EventManager *const manager, Socket *socket);
+    ~EventHandler();
 
     void activateRead()
     {
@@ -142,14 +125,44 @@ public:
     }
 
     virtual int read() = 0;
-    virtual int write() = 0;
+    virtual int write()
+    {
+        ERRORLOG("need override");
+
+        return EG_FAILED;
+    }
+
+    virtual int write(const uint8_t *buf, int size) 
+    {
+        ERRORLOG("need override");
+
+        return EG_FAILED;
+    }
 
 protected:    
+    void releaseBuf();
+
     int m_event;
     int m_registerEvent;
-    SocketPtr m_socket;
+    Socket *m_socket;
+    IoBuffer *m_readBuf;
+    IoBuffer *m_writeBuf;
     EventManager *const m_manager;
 };
 
 typedef AutoPtr1<EventHandler> EventHandlerPtr;
+
+class MessageHandler
+{
+public:
+    virtual IoBuffer *handle(IoBuffer *ioBuf) = 0;
+
+    void setEventHandler(EventHandler *eventHandler)
+    {
+       m_eventHandler = eventHandler;
+    }
+
+protected:
+    EventHandlerPtr m_eventHandler;
+};
 #endif   /* ----- #ifndef _EVENTHANDLER_H_  ----- */

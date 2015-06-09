@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/tcp.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -7,12 +8,13 @@
 #include "Define.h"
 #include "Log.h"
 
-Socket::Socket(const int fd) : m_fd(fd)
+Socket::Socket(const int fd, const int isUinx) : m_fd(fd)
 {
     if (-1 == m_fd) return;
 
-    init();
+    init(0, isUinx);
 }
+
 Socket::Socket(const char *path)
 {
     int ret;
@@ -34,7 +36,7 @@ Socket::Socket(const char *path)
     }
 
     ret = bind(addr);
-    EG_SUCCESS == ret ? init() : close();
+    EG_SUCCESS == ret ? init(0, 1) : close();
 }
 
 Socket::Socket(const char *ip, int &port)
@@ -91,7 +93,7 @@ Socket::Socket(const char *path, const bool isServer)
     {
         ret = connect(addr);
     }
-    EG_SUCCESS == ret ? init() : close();
+    EG_SUCCESS == ret ? init(isServer, 1) : close();
 
 }
 
@@ -121,7 +123,7 @@ Socket::Socket(const char *ip, int &port, const bool isServer)
     {
         ret = connect(addr);
     }
-    EG_SUCCESS == ret ? init() : close();
+    EG_SUCCESS == ret ? init(isServer) : close();
 }
 
 Socket::~Socket()
@@ -131,7 +133,7 @@ Socket::~Socket()
 
 int Socket::pair(int fd[2])
 {
-    if (socketpair(AF_UNIX, SOCK_STREAM, 0, fd) != 0)
+    if (socketpair(AF_LOCAL, SOCK_STREAM, 0, fd) != 0)
     {
         ERRORLOG1("socketpair err, %s", strerror(errno));
 
@@ -141,13 +143,132 @@ int Socket::pair(int fd[2])
     return EG_SUCCESS;
 }
 
-void Socket::init()
+void Socket::init(const int isServer, const int isUinx)
 {
-    int flag;
-
     setNonBlocking();
-    flag = 1;
-    setsockopt(m_fd,SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag));
+    setReUseAddr();
+    setNotLinger();
+    isServer ? initAccept(isUinx) : initSndRcv(isUinx);
+}
+
+void Socket::initSndRcv(const int isUinx)
+{
+    setKeepAlive();
+    setNoBuf();
+    if (isUinx) return;
+
+    setNodelay();
+}
+
+void Socket::initAccept(const int isUinx)
+{
+    if (isUinx) return;
+
+    setDeferAccept();
+}
+
+int Socket::setCork()
+{
+    int flag = 1;
+
+    if (setsockopt(m_fd, IPPROTO_TCP, TCP_CORK, &flag, sizeof(flag)) != 0)
+    {
+        ERRORLOG1("setsockopt TCP_CORK err, %s", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    return EG_SUCCESS;
+}
+
+int Socket::setNodelay()
+{
+    int flag = 1;
+
+    if (setsockopt(m_fd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag)) != 0)
+    {
+        ERRORLOG1("setsockopt TCP_NODELAY err, %s", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    return EG_SUCCESS;
+}
+
+int Socket::setReUseAddr()
+{
+    int flag = 1;
+
+    if (setsockopt(m_fd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) != 0)
+    {
+        ERRORLOG1("setsockopt SO_REUSEADDR err, %s", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    return EG_SUCCESS;
+}
+
+int Socket::setNotLinger()
+{
+    struct linger ling = {0, 0};
+
+    if (setsockopt(m_fd, SOL_SOCKET, SO_LINGER, &ling, sizeof(ling)) != 0)
+    {
+        ERRORLOG1("setsockopt SO_LINGER err, %s", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    return EG_SUCCESS;
+}
+
+int Socket::setKeepAlive()
+{
+    int flag = 1;
+    if (setsockopt(m_fd, SOL_SOCKET, SO_KEEPALIVE, &flag, sizeof(flag)) != 0)
+    {
+        ERRORLOG1("setsockopt SO_KEEPALIVE err, %s", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    return EG_SUCCESS;
+}
+
+int Socket::setNoBuf()
+{
+    int size = 0;
+
+    if (setsockopt (m_fd, SOL_SOCKET,SO_SNDBUF, &size, sizeof(size)) != 0)
+    {
+        ERRORLOG1("setsockopt SO_SNDBUF err, %s", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    if (setsockopt (m_fd, SOL_SOCKET,SO_RCVBUF, &size, sizeof(size)) != 0)
+    {
+        ERRORLOG1("setsockopt SO_RCVBUF err, %s", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    return EG_SUCCESS;
+}
+
+int Socket::setDeferAccept()
+{
+    int timeOut = EG_DEFER_ACCEPT_TIMEOUT;
+
+    if (setsockopt(m_fd, IPPROTO_TCP, TCP_DEFER_ACCEPT, &timeOut, sizeof(timeOut)) != 0)
+    {
+        ERRORLOG1("setsockopt TCP_DEFER_ACCEPT err, %s", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    return EG_SUCCESS;
 }
 
 void Socket::close()

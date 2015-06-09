@@ -30,7 +30,6 @@ public:
         m_head = m_nodeHead;
         m_tail = m_head;
         initNodeList(m_nodeHead, m_size);
-        (m_nodeHead + m_size - 1)->next = m_nodeHead;
     }
 
     ~CycleQueue()
@@ -107,13 +106,14 @@ private:
         Node *next;
     };
 
-    void initNodeList(Node *arr, const int s)
+    void initNodeList(Node *arr, const int arrLen)
     {
-        int len = s - 1;
+        int len = arrLen - 1;
         for(int i = 0; i < len; ++i)
         {
             (arr + i)->next = arr + i + 1;
         }
+        (arr + len)->next = arr;
     }
 
     int m_size;

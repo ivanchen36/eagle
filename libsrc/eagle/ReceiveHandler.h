@@ -21,14 +21,24 @@ class ReceiveHandler : public EventHandler
 public:
     ReceiveHandler(EventManager *const manager, const int fd, 
             MessageHandler *handler);
-    ReceiveHandler(EventManager *const manager, SocketPtr &socket, 
+    ReceiveHandler(EventManager *const manager, Socket *socket, 
             MessageHandler *handler);
     ~ReceiveHandler();
    
     virtual int read();
     virtual int write();   
+    int write(const uint8_t *buf, int size);
 
 private:
-    MessageHandler *m_handler;
+    void waitWrite(const uint8_t *buf, int size);
+
+    void readLock();
+    void readUnlock();
+    void writeLock();
+    void writeUnlock();
+
+    char m_readMutex;
+    char m_writeMutex;
+    MessageHandler *m_messageHandler;
 };
 #endif   /* ----- #ifndef _RECEIVEHANDLER_H_  ----- */

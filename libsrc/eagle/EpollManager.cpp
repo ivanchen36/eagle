@@ -25,10 +25,7 @@ EpollManager::EpollManager(const int workerNum)
 }
 
 EpollManager::~EpollManager()
-{
-    
-    sched_yield();
-
+{ 
     if (-1 != m_fd) close(m_fd);
 }
 
@@ -43,12 +40,13 @@ void EpollManager::loop()
 
     int i;
     int events;
+    int eventNum;
     EventHandler *handler;
 
     for (; !m_isStop;)
     {
-        events = epoll_wait(m_fd, m_epollEvents, EG_EPOLL_MAX_EVENT, -1);
-        if (-1 == events)
+        eventNum = epoll_wait(m_fd, m_epollEvents, EG_EPOLL_MAX_EVENT, -1);
+        if (-1 == eventNum)
         {
             if (EINTR == errno)
             {
@@ -58,16 +56,16 @@ void EpollManager::loop()
 
             ERRORLOG1("epoll_wait err, %s", strerror(errno));
 
-            return;
+            break;
         }
-        if (0 == events)
+        if (0 == eventNum)
         {
             ERRORLOG("epoll_wait return 0, exit");
 
-            return;
+            break;
         }
 
-        for (i = 0; i < events; ++i)            
+        for (i = 0; i < eventNum; ++i)            
         {
             handler = (EventHandler *)m_epollEvents[i].data.ptr;
 
@@ -76,12 +74,12 @@ void EpollManager::loop()
                 m_isStop = 1;
                 INFOLOG("recv exit notify, exit loop");
 
-                continue;
+                break;
             }
 
             /* bug : when handler delete by unregisterEvent at the same time */
             handler->inc(); 
-            events = m_epollEvents[events].events;
+            events = m_epollEvents[i].events;
 
             if ((events & (EPOLLERR | EPOLLHUP))
                     && (events & (EPOLLIN | EPOLLOUT)) ==0)
@@ -91,17 +89,19 @@ void EpollManager::loop()
             if (events & EPOLLIN)
             {
                 handler->activateRead();
-            }else if (events & EPOLLOUT)
+            }
+            if (events & EPOLLOUT)
             {
                 handler->activateWrite();
             }
             handleEvent(handler);
-            if (handler->dec()) delete handler;
+            if (handler->dec() == 0) delete handler;
         }
     }
+    m_isStop = 2;
 }
 
-int EpollManager::registerEvent(int event, EventHandlerPtr &handler)
+int EpollManager::registerEvent(int event, EventHandler *handler)
 {
     if (-1 == m_fd) return EG_INVAL;
 
@@ -112,17 +112,17 @@ int EpollManager::registerEvent(int event, EventHandlerPtr &handler)
     {
         reEvent = event;
 
-        return addEvent(event, handler.ptr());
+        return addEvent(event, handler);
     }
 
     event |= reEvent;
     if (event == reEvent) return EG_SUCCESS;
 
     reEvent = event;
-    return modifyEvent(event, handler.ptr());
+    return modifyEvent(event, handler);
 }
 
-int EpollManager::unregisterEvent(int event, EventHandlerPtr &handler)
+int EpollManager::unregisterEvent(int event, EventHandler *handler)
 {
     if (-1 == m_fd) return EG_INVAL;
 
@@ -130,9 +130,9 @@ int EpollManager::unregisterEvent(int event, EventHandlerPtr &handler)
     LockGuard guard(m_lock);
 
     reEvent &= ~event;
-    if (NONE == reEvent) return delEvent(event, handler.ptr());
+    if (NONE == reEvent) return delEvent(event, handler);
 
-    return modifyEvent(reEvent, handler.ptr());
+    return modifyEvent(reEvent, handler);
 }
 
 int EpollManager::addEvent(int event, EventHandler *handler)
@@ -141,8 +141,8 @@ int EpollManager::addEvent(int event, EventHandler *handler)
     int fd = handler->getFd();
 
     ev.events = EPOLLET;
-    if (READ & event) ev.events = EPOLLIN;
-    if (WRITE & event) ev.events = EPOLLOUT;
+    if (READ & event) ev.events |= EPOLLIN;
+    if (WRITE & event) ev.events |= EPOLLOUT;
     ev.data.ptr = (void *)handler;
 
     if (epoll_ctl(m_fd, EPOLL_CTL_ADD, fd, &ev) != 0)

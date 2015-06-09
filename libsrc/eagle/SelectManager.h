@@ -22,11 +22,11 @@ class SelectManager : public EventManager
 {
 public:
     SelectManager(const int workerNum);
-    ~SelectManager();
+    virtual ~SelectManager();
 
     virtual void loop();
-    virtual int registerEvent(int event, EventHandlerPtr &handler);
-    virtual int unregisterEvent(int event, EventHandlerPtr &handler);
+    virtual int registerEvent(int event, EventHandler *handler);
+    virtual int unregisterEvent(int event, EventHandler *handler);
 
 private:
     typedef std::tr1::unordered_map<int, EventHandler *> EventMap;

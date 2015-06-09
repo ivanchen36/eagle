@@ -28,6 +28,11 @@ public:
 
     virtual void run(){};
 
+    pthread_t getId()
+    {
+        return m_id;
+    }
+
 private:
     void init(const int stackSize, void *(*cbFunc)(void *), void *cbParam);
 

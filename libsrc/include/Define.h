@@ -22,7 +22,14 @@
 #define EG_MAX_EVENTHANDLER 1024
 #define EG_EPOLL_MAX_EVENT 512
 #define EG_LISTEN_BACKLOG 1024
-#define EG_IO_BUF_SIZE 1024
+
+#ifdef __x86_64__
+#define EG_IO_BUF_SIZE 1016
+#elif __i386__
+#define EG_IO_BUF_SIZE 1020
+#endif
+
+#define EG_DEFER_ACCEPT_TIMEOUT 5
 
 #define EG_AGAIN 1
 #define EG_SUCCESS 0

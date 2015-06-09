@@ -17,7 +17,7 @@ const char *Task::getName()
     return m_name;
 }
 
-TaskThread::TaskThread(const TaskPtr &task, const int stackSize) 
+TaskThread::TaskThread(Task *task, const int stackSize) 
 : Thread(stackSize), m_status(WAIT), m_sem(new ThreadSem()), m_task(task)
 {
 }
@@ -25,34 +25,27 @@ TaskThread::TaskThread(const TaskPtr &task, const int stackSize)
 TaskThread::~TaskThread()
 {
     stop();
+    while (EXIT != m_status) sched_yield();
 }
 
 int TaskThread::isStop()
 {
-    LockGuard guard(m_lock);
-
     return STOP == m_status;
 }
 
 int TaskThread::isWait()
 {
-    LockGuard guard(m_lock);
-
     return WAIT == m_status;
 }
 
 int TaskThread::isRun()
 {
-    LockGuard guard(m_lock);
-
     return RUN == m_status;
 }
 
 int TaskThread::start()
 {
-    LockGuard guard(m_lock);
-
-    if (STOP == m_status) return EG_FAILED;
+    if (STOP == m_status || EXIT == m_status) return EG_FAILED;
 
     if (WAIT == m_status) m_status = RUN;
     m_sem->post();
@@ -62,10 +55,8 @@ int TaskThread::start()
 
 int TaskThread::pause()
 {
-    LockGuard guard(m_lock);
-
     if (WAIT == m_status) return EG_SUCCESS;
-    if (STOP == m_status) return EG_FAILED;
+    if (STOP == m_status || EXIT == m_status) return EG_FAILED;
 
     m_status = WAIT;
 
@@ -74,12 +65,11 @@ int TaskThread::pause()
 
 int TaskThread::stop()
 {
-    LockGuard guard(m_lock);
-
-    if (STOP == m_status) return EG_SUCCESS;
+    if (STOP == m_status || EXIT == m_status) return EG_SUCCESS;
 
     m_status = STOP;
     m_sem->post();
+    sched_yield();
 
     return EG_SUCCESS;
 }
@@ -90,21 +80,19 @@ void TaskThread::run()
 
     for (; ;)
     {
-        {
-            LockGuard guard(m_lock);
-            if (STOP == m_status) return;
+        if (STOP == m_status) break;
 
-            if (WAIT != m_status) m_status = WAIT;
-        }
+        if (WAIT != m_status) m_status = WAIT;
         ret = m_sem->wait();
         if (ret < 0)
         {
             ERRORLOG1("sem wait err, %s task stop", m_task->getName());    
             m_status = STOP;
 
-            return;
+            break;
         }
 
         while (RUN == m_status && m_task->excute() == EG_SUCCESS);
     }
+    m_status = EXIT;
 }

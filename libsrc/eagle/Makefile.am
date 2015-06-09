@@ -1,6 +1,6 @@
 # Process this file with automake to produce Makefile.in
 
-CXXFLAGS = -g -O0 -pedantic -Wall -Werror -Wfloat-equal -Wshadow -Wno-invalid-offsetof -D_TEST_
+CXXFLAGS = -g -O0 -pedantic -Wall -Werror -Wfloat-equal -Wshadow -Wno-invalid-offsetof #-D_TEST_
 
 LIB_INCLUDE = $(top_srcdir)/libsrc/include
 OS_PATH = $(top_srcdir)/libsrc/os

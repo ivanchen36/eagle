@@ -24,7 +24,7 @@
 class Socket
 {
 public:
-	Socket(const int fd);
+	Socket(const int fd, const int isUinx = 0);
 	Socket(const char *path);
 	Socket(const char *ip, int &port);
 	Socket(const char *path, const bool isServer);
@@ -37,6 +37,13 @@ public:
 	int setPid(pid_t pid);
     int setCloseOnexe();
 	int setNonBlocking();
+    int setCork();
+    int setNodelay();
+    int setReUseAddr();
+    int setNotLinger();
+    int setKeepAlive();
+    int setNoBuf();
+    int setDeferAccept();
     int convertAddr(const char *path, struct sockaddr_un &addr);
     void convertAddr(const char *ip, const int port, struct sockaddr_in &addr);
     int accept(int &fd, struct sockaddr_in &addr);
@@ -58,7 +65,9 @@ public:
     static int pair(int fd[2]);
 
 private:
-    void init();
+    void init(const int isServer = 0, const int isUinx = 0);
+    void initSndRcv(const int isUinx);
+    void initAccept(const int isUinx);
     void close();
     int listen();
     int setFl(int flag);

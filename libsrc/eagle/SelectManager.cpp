@@ -56,6 +56,7 @@ void SelectManager::loop()
         }
         handleFdSet();
     }
+    m_isStop = 2;
 }
 
 void SelectManager::flushSelectEvent()
@@ -66,7 +67,7 @@ void SelectManager::flushSelectEvent()
     }
 }
 
-int SelectManager::registerEvent(int event, EventHandlerPtr &handler)
+int SelectManager::registerEvent(int event, EventHandler *handler)
 {
     int &reEvent = handler->getRegisterEvent();
     LockGuard guard(m_lock);
@@ -75,7 +76,7 @@ int SelectManager::registerEvent(int event, EventHandlerPtr &handler)
     {
         reEvent = event;
         handler->inc();
-        m_eventMap[handler->getFd()] = handler.ptr();
+        m_eventMap[handler->getFd()] = handler;
         flushSelectEvent();
 
         return EG_SUCCESS;
@@ -91,7 +92,7 @@ int SelectManager::registerEvent(int event, EventHandlerPtr &handler)
     return EG_SUCCESS;
 }
 
-int SelectManager::unregisterEvent(int event, EventHandlerPtr &handler)
+int SelectManager::unregisterEvent(int event, EventHandler *handler)
 {
     int &reEvent = handler->getRegisterEvent();
     LockGuard guard(m_lock);

@@ -77,7 +77,7 @@ void test()
     TaskPtr task = new HelloTask ("say hello");
 
     DEBUGLOG("create thread");
-    TaskThreadPtr thread = new TaskThread(task);
+    TaskThreadPtr thread = new TaskThread(task.ptr());
 
     DEBUGLOG("start thread");
     thread->start();

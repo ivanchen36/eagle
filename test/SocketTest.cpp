@@ -131,7 +131,7 @@ void client(void *param)
     }
 }
 
-void hanlerClient(int fd)
+void hanlerClient(int fd, const int isLocal)
 {
     int ret;
     int isRecv;
@@ -139,7 +139,7 @@ void hanlerClient(int fd)
     int len;
     int line = 0;
     const char *dialog;
-    SocketPtr socket = new Socket(fd);
+    SocketPtr socket = new Socket(fd, isLocal);
     
     isRecv = 1;
     for (; ; sleep(1))
@@ -228,10 +228,10 @@ void server(int isLocal)
         break;
     }
 
-    hanlerClient(clientFd);
+    hanlerClient(clientFd, isLocal);
 }
 
-void dotest()
+void doTcpTest()
 {
     server(1);
 }
@@ -403,7 +403,7 @@ void server1(int isLocal)
     hanlerClient1(socket);
 }
 
-void dotest1()
+void doUdpTest()
 {
     server1(0);
 }
@@ -692,7 +692,7 @@ void server2(int isLocal)
     
 }
 
-void dotest2()
+void doUdpTest1()
 {
     server2(1);
 }
@@ -703,7 +703,7 @@ void child(int fd)
     int file;
     char buf[48];
     int len = sizeof(buf);
-    SocketPtr socket = new Socket(fd);
+    SocketPtr socket = new Socket(fd, 1);
     for (; ret != 0;)
     {
         ret = socket->recvMsg(file, (uint8_t *)buf, len);
@@ -720,14 +720,14 @@ void child(int fd)
 void parent(int fd)
 {
     const char *str = "it's a file\n";
-    SocketPtr socket = new Socket(fd);
+    SocketPtr socket = new Socket(fd, 1);
     int len = strlen(str);
     socket->sendMsg(STDOUT_FILENO, (const uint8_t *)str, len);
     DEBUGLOG("sendmsg");
     waitpid(-1, NULL, 0);
 }
 
-void dotest3()
+void doPaireTest()
 {
     int fd[2];
     Socket::pair(fd);
@@ -761,7 +761,7 @@ int main ( int argc, char *argv[] )
         DEBUGLOG("redirectToOther err");
     }
 
-    dotest3();
+    doTcpTest();
 
     return EXIT_SUCCESS;
 }
