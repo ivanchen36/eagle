@@ -92,20 +92,20 @@ int ReceiveHandler::read()
     for (; ;)
     {
         ret = m_socket->recv(ib->buf + ib->cur, recv);
-        if (EG_FAILED == ret) 
-        {
-            m_manager->unregisterEvent(m_registerEvent, this);
-
-            readUnlock();
-            return EG_FAILED;
-        }
-
         if (EG_AGAIN == ret)
         {
             if (readSuccess) break;
 
             readUnlock();
             return EG_SUCCESS;
+        }
+
+        if (EG_FAILED == ret || 0 == recv) 
+        {
+            m_manager->unregisterEvent(m_registerEvent, this);
+
+            readUnlock();
+            return EG_FAILED;
         }
 
         readSuccess = 1;

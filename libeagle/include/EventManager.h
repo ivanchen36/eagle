@@ -43,6 +43,7 @@ public:
     }
 
 protected:
+    void stop();
     void handleEvent(EventHandler *event);
 
     int m_sendNotifyFd;

@@ -147,12 +147,12 @@ void Socket::init(const int isServer, const int isUinx)
 {
     setNonBlocking();
     setReUseAddr();
-    setNotLinger();
     isServer ? initAccept(isUinx) : initSndRcv(isUinx);
 }
 
 void Socket::initSndRcv(const int isUinx)
 {
+    setNotLinger();
     setKeepAlive();
     setNoBuf();
     if (isUinx) return;
@@ -525,7 +525,8 @@ int Socket::send(const uint8_t *buf, int &len,
 
         if (EAGAIN == errno) return EG_AGAIN;
 
-        ERRORLOG1("send err, %s", strerror(errno));
+        if (errno != ECONNRESET) 
+            ERRORLOG1("send err, %s", strerror(errno));
 
         return EG_FAILED;
     }
@@ -650,7 +651,8 @@ int Socket::recv(uint8_t *buf, int &len, const int flags)
 
         if (EAGAIN == errno) return EG_AGAIN;
 
-        ERRORLOG1("recv err, %s", strerror(errno));
+        if (errno != ECONNRESET) 
+            ERRORLOG1("recv err, %s", strerror(errno));
 
         return EG_FAILED;
     }

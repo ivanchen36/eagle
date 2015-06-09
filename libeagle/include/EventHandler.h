@@ -82,7 +82,7 @@ class EventHandler : public Reference
 public:
     EventHandler(EventManager *const manager, const int fd);
     EventHandler(EventManager *const manager, Socket *socket);
-    ~EventHandler();
+    virtual ~EventHandler();
 
     void activateRead()
     {
@@ -106,12 +106,12 @@ public:
 
     int hasRead()
     {
-        return m_event &= READ;
+        return m_event & READ;
     }
 
     int hasWrite()
     {
-        return m_event &= WRITE;
+        return m_event & WRITE;
     }
 
     int getFd()
@@ -163,6 +163,6 @@ public:
     }
 
 protected:
-    EventHandlerPtr m_eventHandler;
+    EventHandler *m_eventHandler;
 };
 #endif   /* ----- #ifndef _EVENTHANDLER_H_  ----- */

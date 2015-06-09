@@ -19,7 +19,6 @@ int AcceptHandler::read()
     int ret = EG_SUCCESS;
     struct sockaddr_in addr;
     MessageHandler *message;
-    EventHandler *event;
 
     for (; ;)
     {
@@ -28,8 +27,8 @@ int AcceptHandler::read()
         if (MessageHandlerFactoryI::instance().createHandler(
                     m_port, message) != EG_SUCCESS) continue;
 
-        event = new ReceiveHandler(m_manager, fd, message);
-        m_manager->registerEvent(READ, event);
+        m_manager->registerEvent(READ, new ReceiveHandler(
+                    m_manager, fd, message));
     }
 
     if (EG_FAILED == ret) return EG_FAILED;
@@ -43,4 +42,3 @@ int AcceptHandler::write()
 
     return EG_SUCCESS;
 }
-

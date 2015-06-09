@@ -17,6 +17,8 @@
 #include <algorithm>
 #include <stdio.h>
 
+#include "Log.h"
+
 class Reference
 {
 public:

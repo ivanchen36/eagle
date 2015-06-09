@@ -21,7 +21,7 @@ class AcceptHandler : public EventHandler
 public:
     AcceptHandler(EventManager *const manager, Socket *socket, 
             const int port);
-    ~AcceptHandler();
+    virtual ~AcceptHandler();
    
     virtual int read();
     virtual int write();

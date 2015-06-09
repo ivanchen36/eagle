@@ -23,7 +23,7 @@ public:
             MessageHandler *handler);
     ReceiveHandler(EventManager *const manager, Socket *socket, 
             MessageHandler *handler);
-    ~ReceiveHandler();
+    virtual ~ReceiveHandler();
    
     virtual int read();
     virtual int write();   

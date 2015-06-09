@@ -23,7 +23,7 @@ class Task
 {
 public:
     Task(const char *name);
-    ~Task();
+    virtual ~Task();
 
     const char *getName();
     virtual int excute() = 0;
@@ -46,7 +46,7 @@ public:
     };
 
     TaskThread(Task *task, const int stackSize = 0);
-    ~TaskThread();
+    virtual ~TaskThread();
 
     int start();
     int pause();

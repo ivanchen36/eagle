@@ -41,13 +41,13 @@ int EventWorker::handleEvent()
     m_queue.pop(handler);
     if (handler->hasRead()) 
     {
-        handler->inactivateRead();
         handler->read();
+        handler->inactivateRead();
     }
     if (handler->hasWrite())
     {
-        handler->inactivateWrite();
         handler->write();
+        handler->inactivateWrite();
     }
     if (handler->dec() == 0) delete handler;
 

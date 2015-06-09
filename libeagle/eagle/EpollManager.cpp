@@ -26,6 +26,7 @@ EpollManager::EpollManager(const int workerNum)
 
 EpollManager::~EpollManager()
 { 
+    stop();
     if (-1 != m_fd) close(m_fd);
 }
 
@@ -182,7 +183,7 @@ int EpollManager::delEvent(int event, EventHandler *handler)
     int fd = handler->getFd();
 
     ret = epoll_ctl(m_fd, EPOLL_CTL_DEL, fd, NULL);
-    handler->dec();
+    if (handler->dec() == 0) delete handler;
     if (0 == ret) return EG_SUCCESS;
 
     ERRORLOG1("epoll_ctl err, %s", strerror(errno));

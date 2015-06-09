@@ -117,6 +117,55 @@ void startClient(EventManager *clientEpoll)
     socket->send((const uint8_t *)clientContent, len);
 }
 
+void startClient1(void *param)
+{
+    char buf[48];
+    int len;
+    int ret;
+    SocketPtr socket;
+    int *isStop = (int *)param;
+
+    for (int i = 0; !*isStop && i < 100000; ++i)
+    {
+        socket = new Socket("127.0.0.1", g_helloPort, 0);
+
+        if (!socket->isAvailable())
+        {
+            ERRORLOG("connect socket err");
+
+            return;
+        }
+
+        len = clientLen;
+        for (; !*isStop; )
+        {
+            ret = socket->send((const uint8_t *)clientContent, len);
+            if (ret == -1) ERRORLOG("send err");
+
+            if (ret != 1) break;
+
+            sched_yield();
+        }
+        for (; !*isStop; )
+        {
+            len = sizeof(buf);
+            ret = socket->recv((uint8_t *)buf, len);
+            if (ret == -1) ERRORLOG("recv err");
+
+            if (ret != 1) break;
+
+            sched_yield();
+        }
+        if (0 == ret)
+        {
+            if (strncmp(buf, clientContent, clientLen) != 0)
+            {
+                ERRORLOG("proto err");
+            }
+        }
+    }
+}
+
 void startServer(void *param)
 {
     if (NULL == param)
@@ -131,6 +180,7 @@ void startServer(void *param)
 void test()
 {
     int testPort = 13312;
+    int isStop = 0;
     Socket *socket = new Socket("127.0.0.1", g_helloPort, 1);
     if (!socket->isAvailable())
     {
@@ -150,15 +200,19 @@ void test()
 
 
     sleep(1);
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 50; ++i)
     {
-        startClient(receiveEpoll);
+        CallBack cb(startClient1, (void *)&isStop);
+        Thread thread(cb);
     }
 
-    for (int i = 0; i < 100; ++i)
+    for (int i = 0; i < 1000; ++i)
     {
         sleep(1);
     }
+    DEBUGLOG("stop test");
+    isStop = 1;
+    sleep(1);
 
     delete accpetEpoll;
     delete receiveEpoll;

@@ -26,6 +26,17 @@ EventManager::EventManager(const int workerNum)
 
 EventManager::~EventManager()
 {
+    delete [] (char *)m_workers;
+
+    if (-1 != m_sendNotifyFd)
+    {
+        close(m_sendNotifyFd);
+        close(m_recvNotifyFd);
+    }
+}
+
+void EventManager::stop()
+{
     stopLoop();
     sched_yield();
 
@@ -34,13 +45,6 @@ EventManager::~EventManager()
     for (int i = 0; i < m_workerNum; ++i)
     {
         m_workers[i].~EventWorker();
-    }
-    delete [] (char *)m_workers;
-
-    if (-1 != m_sendNotifyFd)
-    {
-        close(m_sendNotifyFd);
-        close(m_recvNotifyFd);
     }
 }
 

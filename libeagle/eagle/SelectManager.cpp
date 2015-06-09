@@ -9,6 +9,7 @@ SelectManager::SelectManager(const int workerNum)
 
 SelectManager::~SelectManager()
 {
+    stop();
     FD_ZERO(&m_readSet);
     FD_ZERO(&m_writeSet);
 }
@@ -31,12 +32,14 @@ void SelectManager::loop()
             }
 
             ERRORLOG1("select err, %s", strerror(errno));
+            m_isStop = 2;
 
             return;
         }
         if (0 == ret)
         {
             ERRORLOG("select return 0");
+            m_isStop = 2;
 
             return;
         }
@@ -95,17 +98,9 @@ int SelectManager::registerEvent(int event, EventHandler *handler)
 int SelectManager::unregisterEvent(int event, EventHandler *handler)
 {
     int &reEvent = handler->getRegisterEvent();
-    LockGuard guard(m_lock);
 
     reEvent &= ~event;
-    if (NONE != reEvent)
-    {
-        flushSelectEvent();
-    }else
-    {
-        handler->dec();
-        m_eventMap.erase(handler->getFd());
-    }
+    flushSelectEvent();
 
     return EG_SUCCESS;
 }
@@ -114,6 +109,7 @@ void SelectManager::initFdSet()
 {
     int fd;
     int event;
+    EventHandler *handler;
     EventMap::const_iterator iter;
 
     FD_ZERO(&m_readSet);
@@ -123,7 +119,8 @@ void SelectManager::initFdSet()
     for (iter = m_eventMap.begin(); iter != m_eventMap.end(); ++iter)
     {
         fd = iter->first;
-        event = iter->second->getRegisterEvent();
+        handler = iter->second;
+        event = handler->getRegisterEvent();
 
         if (m_maxFd < fd) m_maxFd = fd;
         if (READ & event) FD_SET(fd, &m_readSet);
@@ -137,25 +134,33 @@ void SelectManager::handleFdSet()
     int hasEvent;
     EventHandler *handler;
     EventMap::const_iterator iter;
+    LockGuard guard(m_lock);
 
-    for (iter = m_eventMap.begin(); iter != m_eventMap.end(); ++iter)
+    for (iter = m_eventMap.begin(); iter != m_eventMap.end(); )
     {
         hasEvent = 0;
         fd = iter->first;
-        handler = m_eventMap[fd];
-        handler->inc();
-        if (FD_ISSET(fd, &m_readSet))
+        handler = iter->second;
+        if (handler->getRegisterEvent() == NONE)
+        {
+            if (handler->dec() == 0) delete handler;
+            iter = m_eventMap.erase(iter);
+
+            continue;
+        }
+
+        if (!handler->hasRead() && FD_ISSET(fd, &m_readSet))
         {
             hasEvent = 1;
             handler->activateRead();
         }
-        if (FD_ISSET(fd, &m_writeSet))
+        if (!handler->hasWrite() && FD_ISSET(fd, &m_writeSet))
         {
             hasEvent = 1;
             handler->activateWrite();
         }
 
         if (hasEvent) handleEvent(handler);
-        handler->dec();
+        ++iter;
     }
 }
