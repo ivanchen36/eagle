@@ -73,10 +73,10 @@ void SelectManager::flushSelectEvent()
 int SelectManager::registerEvent(int event, EventHandler *handler)
 {
     int &reEvent = handler->getRegisterEvent();
-    LockGuard guard(m_lock);
 
     if (NONE == reEvent)
     {
+        LockGuard guard(m_lock);
         reEvent = event;
         handler->inc();
         m_eventMap[handler->getFd()] = handler;
@@ -134,7 +134,6 @@ void SelectManager::handleFdSet()
     int hasEvent;
     EventHandler *handler;
     EventMap::const_iterator iter;
-    LockGuard guard(m_lock);
 
     for (iter = m_eventMap.begin(); iter != m_eventMap.end(); )
     {
@@ -143,6 +142,7 @@ void SelectManager::handleFdSet()
         handler = iter->second;
         if (handler->getRegisterEvent() == NONE)
         {
+            LockGuard guard(m_lock);
             if (handler->dec() == 0) delete handler;
             iter = m_eventMap.erase(iter);
 
