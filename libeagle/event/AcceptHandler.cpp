@@ -2,19 +2,32 @@
 #include "ReceiveHandler.h"
 #include "EventManager.h"
 #include "MessageHandlerFactory.h"
+#include "ShareMem.h"
 #include "Log.h"
 
 AcceptHandler::AcceptHandler(EventManager *const manager, Socket *socket,
         const int port) : EventHandler(manager, socket), m_port(port)
 {
+    m_lock = (char *)ShareMemI::instance().alloc(1, port);
+    if (NULL == m_lock)
+    {
+        ERRORLOG("alloc accept lock err");
+    }else
+    {
+        *m_lock = 0;
+    }
 }
 
 AcceptHandler::~AcceptHandler()
 {
+    if (NULL != m_lock) ShareMemI::instance().free(m_lock);
 }
 
 int AcceptHandler::read()
 {
+    if (tryLock() == EG_FAILED)
+        return EG_SUCCESS;
+
     int fd;
     int ret = EG_SUCCESS;
     struct sockaddr_in addr;
@@ -31,6 +44,7 @@ int AcceptHandler::read()
                     m_manager, fd, message));
     }
 
+    unlock();
     if (EG_FAILED == ret) return EG_FAILED;
 
     return EG_SUCCESS;

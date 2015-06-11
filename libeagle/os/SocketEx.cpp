@@ -156,8 +156,6 @@ void Socket::initSndRcv(const int isUinx)
     setKeepAlive();
     setNoBuf();
     if (isUinx) return;
-
-    setNodelay();
 }
 
 void Socket::initAccept(const int isUinx)

@@ -9,9 +9,7 @@ EVENT_PATH = $(top_srcdir)/libeagle/event
 
 INCLUDES = -I$(LIB_INCLUDE)
 
-lib_LTLIBRARIES = libeagle.la
-libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
-					  MasterSigManager.cpp ChildSigManager.cpp \
-					  ProcessManager.cpp EagleTime.cpp Timer.cpp
-libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
-					 $(EVENT_PATH)/libevent.la
+noinst_LTLIBRARIES = libevent.la
+libevent_la_SOURCES = EpollManager.cpp EventHandler.cpp EventManager.cpp \
+					  EventWorker.cpp SelectManager.cpp AcceptHandler.cpp \
+					  ReceiveHandler.cpp MessageHandlerFactory.cpp

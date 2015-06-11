@@ -23,10 +23,27 @@ public:
             const int port);
     virtual ~AcceptHandler();
    
+    int tryLock()
+    {
+        if (__sync_bool_compare_and_swap(
+                    const_cast<volatile char *>(m_lock), '\0', '\1')) 
+            return EG_SUCCESS;
+
+        return EG_FAILED;
+    }
+
+    void unlock()
+    {
+        __sync_bool_compare_and_swap(
+                const_cast<volatile char *>(m_lock), '\1', '\0');
+
+    }
+
     virtual int read();
     virtual int write();
 
 private:
+    char *m_lock;
     const int m_port;
 };
 #endif   /* ----- #ifndef _ACCEPTHANDLER_H_  ----- */

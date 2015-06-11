@@ -24,50 +24,6 @@ ReceiveHandler::~ReceiveHandler()
     if (NULL != m_messageHandler) delete m_messageHandler;
 }
 
-void ReceiveHandler::readLock()
-{
-    for(; ;)
-    {
-        if (__sync_bool_compare_and_swap(
-                    const_cast<volatile char *>(&m_readMutex), '\0', '\1')) return;
-
-        sched_yield();
-    }
-}
-
-void ReceiveHandler::readUnlock()
-{
-    for(; ;)
-    {
-        if (__sync_bool_compare_and_swap(
-                    const_cast<volatile char *>(&m_readMutex), '\1', '\0')) return;
-
-        sched_yield();
-    }
-}
-
-void ReceiveHandler::writeLock()
-{
-    for(; ;)
-    {
-        if (__sync_bool_compare_and_swap(
-                    const_cast<volatile char *>(&m_writeMutex), '\0', '\1')) return;
-
-        sched_yield();
-    }
-}
-
-void ReceiveHandler::writeUnlock()
-{
-    for(; ;)
-    {
-        if (__sync_bool_compare_and_swap(
-                    const_cast<volatile char *>(&m_writeMutex), '\1', '\0')) return;
-
-        sched_yield();
-    }
-}
-
 int ReceiveHandler::read()
 {
     int ret;

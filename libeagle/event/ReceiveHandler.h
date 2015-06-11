@@ -32,10 +32,41 @@ public:
 private:
     void waitWrite(const uint8_t *buf, int size);
 
-    void readLock();
-    void readUnlock();
-    void writeLock();
-    void writeUnlock();
+    void readLock()
+    {
+        for(; ;)
+        {
+            if (__sync_bool_compare_and_swap(
+                        const_cast<volatile char *>(&m_readMutex), '\0', '\1')) return;
+
+            sched_yield();
+        }
+    }
+
+    void readUnlock()
+    {
+        __sync_bool_compare_and_swap(
+                const_cast<volatile char *>(&m_readMutex), '\1', '\0');
+
+    }
+
+    void writeLock()
+    {
+        for(; ;)
+        {
+            if (__sync_bool_compare_and_swap(
+                        const_cast<volatile char *>(&m_writeMutex), '\0', '\1')) return;
+
+            sched_yield();
+        }
+    }
+
+    void writeUnlock()
+    {
+        __sync_bool_compare_and_swap(
+                    const_cast<volatile char *>(&m_writeMutex), '\1', '\0');
+
+    }
 
     char m_readMutex;
     char m_writeMutex;

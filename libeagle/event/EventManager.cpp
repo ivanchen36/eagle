@@ -72,6 +72,7 @@ void EventManager::handleEvent(EventHandler *event)
                 return;
             }
         }
+        ERRORLOG("system over load.");
         sched_yield();
     }
 }

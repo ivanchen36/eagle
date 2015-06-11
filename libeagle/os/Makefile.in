@@ -188,7 +188,6 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-libeagle_PATH = $(top_srcdir)/libeagle
 LIB_INCLUDE = $(top_srcdir)/libeagle/include
 INCLUDES = -I$(LIB_INCLUDE)
 noinst_LTLIBRARIES = libos.la

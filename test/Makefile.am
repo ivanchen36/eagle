@@ -8,14 +8,16 @@ TEST_SRC = $(top_srcdir)/test
 LIB_PATH = $(top_srcdir)/libeagle/eagle/.libs
 TEST_LD = -L$(LIB_PATH) -leagle #-ltcmalloc
 LIB_INCLUDE = $(top_srcdir)/libeagle/include
-LIBI_INCLUDE = $(top_srcdir)/libeagle/eagle
+LIBEAGLE_INCLUDE = $(top_srcdir)/libeagle/eagle
+LIBEVENT_INCLUDE = $(top_srcdir)/libeagle/event
 
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
 				  logtest psemtest threadtest shmtest mmaptest \
 				  eagletest rbtest locktest sockettest queuetest \
 				  classtest eventtest
 
-INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBI_INCLUDE)
+INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBEAGLE_INCLUDE) \
+		   -I$(LIBEVENT_INCLUDE)
 
 autoptrtest_SOURCES = AutoPtrTest.cpp
 autoptrtest_LDFLAGS = $(TEST_LD)

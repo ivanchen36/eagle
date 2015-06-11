@@ -6,5 +6,5 @@ LIB_INCLUDE = $(top_srcdir)/libeagle/include
 
 INCLUDES = -I$(LIB_INCLUDE)
 
-noinst_LTLIBRARIES = libutil.la
-libutil_la_SOURCES = TimeStats.cpp Singleton.cpp Log.cpp ClassFactory.cpp Xml.cpp
+noinst_LTLIBRARIES = libopen.la
+libopen_la_SOURCES = tinyxml2.cpp

@@ -2,8 +2,6 @@
 
 CXXFLAGS = -g -O0 -pedantic -Wall -Werror -Wfloat-equal -Wshadow
 
-libeagle_PATH = $(top_srcdir)/libeagle
-
 LIB_INCLUDE = $(top_srcdir)/libeagle/include
 
 INCLUDES = -I$(LIB_INCLUDE)
