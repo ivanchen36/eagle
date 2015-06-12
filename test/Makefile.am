@@ -10,14 +10,15 @@ TEST_LD = -L$(LIB_PATH) -leagle #-ltcmalloc
 LIB_INCLUDE = $(top_srcdir)/libeagle/include
 LIBEAGLE_INCLUDE = $(top_srcdir)/libeagle/eagle
 LIBEVENT_INCLUDE = $(top_srcdir)/libeagle/event
+LIBNODE_INCLUDE = $(top_srcdir)/libeagle/node
 
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
 				  logtest psemtest threadtest shmtest mmaptest \
 				  eagletest rbtest locktest sockettest queuetest \
-				  classtest eventtest
+				  classtest eventtest proptest
 
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBEAGLE_INCLUDE) \
-		   -I$(LIBEVENT_INCLUDE)
+		   -I$(LIBEVENT_INCLUDE) -I$(LIBNODE_INCLUDE)
 
 autoptrtest_SOURCES = AutoPtrTest.cpp
 autoptrtest_LDFLAGS = $(TEST_LD)
@@ -63,3 +64,6 @@ classtest_LDFLAGS = $(TEST_LD)
 
 eventtest_SOURCES = EventTest.cpp
 eventtest_LDFLAGS = $(TEST_LD)
+
+proptest_SOURCES = PropertiesTest.cpp
+proptest_LDFLAGS = $(TEST_LD)

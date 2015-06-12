@@ -58,7 +58,7 @@ public:
 
 private:
     Status m_status;
-    SemaphorePtr m_sem; 
+    Semaphore *m_sem; 
     Task *m_task;
 };
 

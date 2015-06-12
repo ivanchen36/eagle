@@ -26,6 +26,7 @@ TaskThread::~TaskThread()
 {
     stop();
     while (EXIT != m_status) sched_yield();
+    if (NULL != m_sem) delete m_sem;
 }
 
 int TaskThread::isStop()

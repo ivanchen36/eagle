@@ -48,15 +48,11 @@ private:
     class SingletonCleaner
     {
     public:
-       SingletonCleaner(){}; 
        ~SingletonCleaner()
        {
            if (NULL != s_instance) delete s_instance;
        }
     };
-
-    Singleton(){};
-    ~Singleton(){};
 
     static T *s_instance;
     static SingletonCleaner s_cleaner;

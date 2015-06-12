@@ -1,0 +1,4 @@
+<hello ver="1.0">
+    <property name="times" type="int" value="1">
+    <property name="content" type="string" value="say hello">
+</hello>

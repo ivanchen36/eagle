@@ -49,7 +49,7 @@ CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libutil_la_LIBADD =
 am_libutil_la_OBJECTS = TimeStats.lo Singleton.lo Log.lo \
-	ClassFactory.lo Xml.lo
+	ClassFactory.lo StrUtil.lo
 libutil_la_OBJECTS = $(am_libutil_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -188,7 +188,9 @@ top_srcdir = @top_srcdir@
 LIB_INCLUDE = $(top_srcdir)/libeagle/include
 INCLUDES = -I$(LIB_INCLUDE)
 noinst_LTLIBRARIES = libutil.la
-libutil_la_SOURCES = TimeStats.cpp Singleton.cpp Log.cpp ClassFactory.cpp Xml.cpp
+libutil_la_SOURCES = TimeStats.cpp Singleton.cpp Log.cpp ClassFactory.cpp \
+					 StrUtil.cpp
+
 all: all-am
 
 .SUFFIXES:
@@ -244,8 +246,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClassFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Log.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Singleton.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StrUtil.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeStats.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Xml.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

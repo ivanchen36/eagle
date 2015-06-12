@@ -15,6 +15,8 @@
 
 @SET_MAKE@
 
+# Process this file with automake to produce Makefile.in
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -34,13 +36,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = autoptrtest$(EXEEXT) timestatstest$(EXEEXT) \
-	singletontest$(EXEEXT) logtest$(EXEEXT) psemtest$(EXEEXT) \
-	threadtest$(EXEEXT) shmtest$(EXEEXT) mmaptest$(EXEEXT) \
-	eagletest$(EXEEXT) rbtest$(EXEEXT) locktest$(EXEEXT) \
-	sockettest$(EXEEXT) queuetest$(EXEEXT) classtest$(EXEEXT) \
-	eventtest$(EXEEXT) proptest$(EXEEXT)
-subdir = test
+subdir = libeagle/opensource
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
@@ -50,103 +46,10 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-PROGRAMS = $(noinst_PROGRAMS)
-am_autoptrtest_OBJECTS = AutoPtrTest.$(OBJEXT)
-autoptrtest_OBJECTS = $(am_autoptrtest_OBJECTS)
-autoptrtest_LDADD = $(LDADD)
-autoptrtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(autoptrtest_LDFLAGS) $(LDFLAGS) -o $@
-am_classtest_OBJECTS = ClassTest.$(OBJEXT)
-classtest_OBJECTS = $(am_classtest_OBJECTS)
-classtest_LDADD = $(LDADD)
-classtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(classtest_LDFLAGS) $(LDFLAGS) -o $@
-am_eagletest_OBJECTS = EagleTest.$(OBJEXT)
-eagletest_OBJECTS = $(am_eagletest_OBJECTS)
-eagletest_LDADD = $(LDADD)
-eagletest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(eagletest_LDFLAGS) $(LDFLAGS) -o $@
-am_eventtest_OBJECTS = EventTest.$(OBJEXT)
-eventtest_OBJECTS = $(am_eventtest_OBJECTS)
-eventtest_LDADD = $(LDADD)
-eventtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(eventtest_LDFLAGS) $(LDFLAGS) -o $@
-am_locktest_OBJECTS = LockTest.$(OBJEXT)
-locktest_OBJECTS = $(am_locktest_OBJECTS)
-locktest_LDADD = $(LDADD)
-locktest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(locktest_LDFLAGS) $(LDFLAGS) -o $@
-am_logtest_OBJECTS = LogTest.$(OBJEXT)
-logtest_OBJECTS = $(am_logtest_OBJECTS)
-logtest_LDADD = $(LDADD)
-logtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(logtest_LDFLAGS) $(LDFLAGS) -o $@
-am_mmaptest_OBJECTS = MmapTest.$(OBJEXT)
-mmaptest_OBJECTS = $(am_mmaptest_OBJECTS)
-mmaptest_LDADD = $(LDADD)
-mmaptest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(mmaptest_LDFLAGS) $(LDFLAGS) -o $@
-am_proptest_OBJECTS = PropertiesTest.$(OBJEXT)
-proptest_OBJECTS = $(am_proptest_OBJECTS)
-proptest_LDADD = $(LDADD)
-proptest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(proptest_LDFLAGS) $(LDFLAGS) -o $@
-am_psemtest_OBJECTS = PSemTest.$(OBJEXT)
-psemtest_OBJECTS = $(am_psemtest_OBJECTS)
-psemtest_LDADD = $(LDADD)
-psemtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(psemtest_LDFLAGS) $(LDFLAGS) -o $@
-am_queuetest_OBJECTS = CyQueueTest.$(OBJEXT)
-queuetest_OBJECTS = $(am_queuetest_OBJECTS)
-queuetest_LDADD = $(LDADD)
-queuetest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(queuetest_LDFLAGS) $(LDFLAGS) -o $@
-am_rbtest_OBJECTS = RbTest.$(OBJEXT)
-rbtest_OBJECTS = $(am_rbtest_OBJECTS)
-rbtest_LDADD = $(LDADD)
-rbtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(rbtest_LDFLAGS) $(LDFLAGS) -o $@
-am_shmtest_OBJECTS = ShmTest.$(OBJEXT)
-shmtest_OBJECTS = $(am_shmtest_OBJECTS)
-shmtest_LDADD = $(LDADD)
-shmtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(shmtest_LDFLAGS) $(LDFLAGS) -o $@
-am_singletontest_OBJECTS = SingletonTest.$(OBJEXT)
-singletontest_OBJECTS = $(am_singletontest_OBJECTS)
-singletontest_LDADD = $(LDADD)
-singletontest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(singletontest_LDFLAGS) $(LDFLAGS) -o $@
-am_sockettest_OBJECTS = SocketTest.$(OBJEXT)
-sockettest_OBJECTS = $(am_sockettest_OBJECTS)
-sockettest_LDADD = $(LDADD)
-sockettest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(sockettest_LDFLAGS) $(LDFLAGS) -o $@
-am_threadtest_OBJECTS = ThreadTest.$(OBJEXT)
-threadtest_OBJECTS = $(am_threadtest_OBJECTS)
-threadtest_LDADD = $(LDADD)
-threadtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(threadtest_LDFLAGS) $(LDFLAGS) -o $@
-am_timestatstest_OBJECTS = TimeStatsTest.$(OBJEXT)
-timestatstest_OBJECTS = $(am_timestatstest_OBJECTS)
-timestatstest_LDADD = $(LDADD)
-timestatstest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(timestatstest_LDFLAGS) $(LDFLAGS) -o $@
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libopen_la_LIBADD =
+am_libopen_la_OBJECTS = tinyxml2.lo
+libopen_la_OBJECTS = $(am_libopen_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -160,20 +63,8 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(autoptrtest_SOURCES) $(classtest_SOURCES) \
-	$(eagletest_SOURCES) $(eventtest_SOURCES) $(locktest_SOURCES) \
-	$(logtest_SOURCES) $(mmaptest_SOURCES) $(proptest_SOURCES) \
-	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
-	$(shmtest_SOURCES) $(singletontest_SOURCES) \
-	$(sockettest_SOURCES) $(threadtest_SOURCES) \
-	$(timestatstest_SOURCES)
-DIST_SOURCES = $(autoptrtest_SOURCES) $(classtest_SOURCES) \
-	$(eagletest_SOURCES) $(eventtest_SOURCES) $(locktest_SOURCES) \
-	$(logtest_SOURCES) $(mmaptest_SOURCES) $(proptest_SOURCES) \
-	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
-	$(shmtest_SOURCES) $(singletontest_SOURCES) \
-	$(sockettest_SOURCES) $(threadtest_SOURCES) \
-	$(timestatstest_SOURCES)
+SOURCES = $(libopen_la_SOURCES)
+DIST_SOURCES = $(libopen_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -192,7 +83,7 @@ CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
-CXXFLAGS = -g -O0
+CXXFLAGS = -g -O0 -pedantic -Wall -Werror -Wfloat-equal -Wshadow 
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -293,52 +184,10 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-
-# Process this file with automake to produce Makefile.in
-AUTOMAKE_OPTIONS = foreign
-TEST_INCLUDE = $(top_srcdir)/test
-TEST_SRC = $(top_srcdir)/test
-LIB_PATH = $(top_srcdir)/libeagle/eagle/.libs
-TEST_LD = -L$(LIB_PATH) -leagle #-ltcmalloc
 LIB_INCLUDE = $(top_srcdir)/libeagle/include
-LIBEAGLE_INCLUDE = $(top_srcdir)/libeagle/eagle
-LIBEVENT_INCLUDE = $(top_srcdir)/libeagle/event
-LIBNODE_INCLUDE = $(top_srcdir)/libeagle/node
-INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBEAGLE_INCLUDE) \
-		   -I$(LIBEVENT_INCLUDE) -I$(LIBNODE_INCLUDE)
-
-autoptrtest_SOURCES = AutoPtrTest.cpp
-autoptrtest_LDFLAGS = $(TEST_LD)
-timestatstest_SOURCES = TimeStatsTest.cpp
-timestatstest_LDFLAGS = $(TEST_LD)
-singletontest_SOURCES = SingletonTest.cpp
-singletontest_LDFLAGS = $(TEST_LD)
-logtest_SOURCES = LogTest.cpp
-logtest_LDFLAGS = $(TEST_LD)
-psemtest_SOURCES = PSemTest.cpp
-psemtest_LDFLAGS = $(TEST_LD)
-threadtest_SOURCES = ThreadTest.cpp
-threadtest_LDFLAGS = $(TEST_LD)
-shmtest_SOURCES = ShmTest.cpp
-shmtest_LDFLAGS = $(TEST_LD)
-mmaptest_SOURCES = MmapTest.cpp
-mmaptest_LDFLAGS = $(TEST_LD)
-eagletest_SOURCES = EagleTest.cpp
-eagletest_LDFLAGS = $(TEST_LD)
-rbtest_SOURCES = RbTest.cpp
-rbtest_LDFLAGS = $(TEST_LD)
-locktest_SOURCES = LockTest.cpp
-locktest_LDFLAGS = $(TEST_LD)
-sockettest_SOURCES = SocketTest.cpp
-sockettest_LDFLAGS = $(TEST_LD)
-queuetest_SOURCES = CyQueueTest.cpp
-queuetest_LDFLAGS = $(TEST_LD)
-classtest_SOURCES = ClassTest.cpp
-classtest_LDFLAGS = $(TEST_LD)
-eventtest_SOURCES = EventTest.cpp
-eventtest_LDFLAGS = $(TEST_LD)
-proptest_SOURCES = PropertiesTest.cpp
-proptest_LDFLAGS = $(TEST_LD)
+INCLUDES = -I$(LIB_INCLUDE)
+noinst_LTLIBRARIES = libopen.la
+libopen_la_SOURCES = tinyxml2.cpp
 all: all-am
 
 .SUFFIXES:
@@ -352,9 +201,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign test/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign libeagle/opensource/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign test/Makefile
+	  $(AUTOMAKE) --foreign libeagle/opensource/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -374,62 +223,16 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
-clean-noinstPROGRAMS:
-	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
-	echo " rm -f" $$list; \
-	rm -f $$list || exit $$?; \
-	test -n "$(EXEEXT)" || exit 0; \
-	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
-	echo " rm -f" $$list; \
-	rm -f $$list
-autoptrtest$(EXEEXT): $(autoptrtest_OBJECTS) $(autoptrtest_DEPENDENCIES) 
-	@rm -f autoptrtest$(EXEEXT)
-	$(autoptrtest_LINK) $(autoptrtest_OBJECTS) $(autoptrtest_LDADD) $(LIBS)
-classtest$(EXEEXT): $(classtest_OBJECTS) $(classtest_DEPENDENCIES) 
-	@rm -f classtest$(EXEEXT)
-	$(classtest_LINK) $(classtest_OBJECTS) $(classtest_LDADD) $(LIBS)
-eagletest$(EXEEXT): $(eagletest_OBJECTS) $(eagletest_DEPENDENCIES) 
-	@rm -f eagletest$(EXEEXT)
-	$(eagletest_LINK) $(eagletest_OBJECTS) $(eagletest_LDADD) $(LIBS)
-eventtest$(EXEEXT): $(eventtest_OBJECTS) $(eventtest_DEPENDENCIES) 
-	@rm -f eventtest$(EXEEXT)
-	$(eventtest_LINK) $(eventtest_OBJECTS) $(eventtest_LDADD) $(LIBS)
-locktest$(EXEEXT): $(locktest_OBJECTS) $(locktest_DEPENDENCIES) 
-	@rm -f locktest$(EXEEXT)
-	$(locktest_LINK) $(locktest_OBJECTS) $(locktest_LDADD) $(LIBS)
-logtest$(EXEEXT): $(logtest_OBJECTS) $(logtest_DEPENDENCIES) 
-	@rm -f logtest$(EXEEXT)
-	$(logtest_LINK) $(logtest_OBJECTS) $(logtest_LDADD) $(LIBS)
-mmaptest$(EXEEXT): $(mmaptest_OBJECTS) $(mmaptest_DEPENDENCIES) 
-	@rm -f mmaptest$(EXEEXT)
-	$(mmaptest_LINK) $(mmaptest_OBJECTS) $(mmaptest_LDADD) $(LIBS)
-proptest$(EXEEXT): $(proptest_OBJECTS) $(proptest_DEPENDENCIES) 
-	@rm -f proptest$(EXEEXT)
-	$(proptest_LINK) $(proptest_OBJECTS) $(proptest_LDADD) $(LIBS)
-psemtest$(EXEEXT): $(psemtest_OBJECTS) $(psemtest_DEPENDENCIES) 
-	@rm -f psemtest$(EXEEXT)
-	$(psemtest_LINK) $(psemtest_OBJECTS) $(psemtest_LDADD) $(LIBS)
-queuetest$(EXEEXT): $(queuetest_OBJECTS) $(queuetest_DEPENDENCIES) 
-	@rm -f queuetest$(EXEEXT)
-	$(queuetest_LINK) $(queuetest_OBJECTS) $(queuetest_LDADD) $(LIBS)
-rbtest$(EXEEXT): $(rbtest_OBJECTS) $(rbtest_DEPENDENCIES) 
-	@rm -f rbtest$(EXEEXT)
-	$(rbtest_LINK) $(rbtest_OBJECTS) $(rbtest_LDADD) $(LIBS)
-shmtest$(EXEEXT): $(shmtest_OBJECTS) $(shmtest_DEPENDENCIES) 
-	@rm -f shmtest$(EXEEXT)
-	$(shmtest_LINK) $(shmtest_OBJECTS) $(shmtest_LDADD) $(LIBS)
-singletontest$(EXEEXT): $(singletontest_OBJECTS) $(singletontest_DEPENDENCIES) 
-	@rm -f singletontest$(EXEEXT)
-	$(singletontest_LINK) $(singletontest_OBJECTS) $(singletontest_LDADD) $(LIBS)
-sockettest$(EXEEXT): $(sockettest_OBJECTS) $(sockettest_DEPENDENCIES) 
-	@rm -f sockettest$(EXEEXT)
-	$(sockettest_LINK) $(sockettest_OBJECTS) $(sockettest_LDADD) $(LIBS)
-threadtest$(EXEEXT): $(threadtest_OBJECTS) $(threadtest_DEPENDENCIES) 
-	@rm -f threadtest$(EXEEXT)
-	$(threadtest_LINK) $(threadtest_OBJECTS) $(threadtest_LDADD) $(LIBS)
-timestatstest$(EXEEXT): $(timestatstest_OBJECTS) $(timestatstest_DEPENDENCIES) 
-	@rm -f timestatstest$(EXEEXT)
-	$(timestatstest_LINK) $(timestatstest_OBJECTS) $(timestatstest_LDADD) $(LIBS)
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libopen.la: $(libopen_la_OBJECTS) $(libopen_la_DEPENDENCIES) 
+	$(CXXLINK)  $(libopen_la_OBJECTS) $(libopen_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -437,22 +240,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AutoPtrTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClassTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CyQueueTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EagleTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EventTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LockTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LogTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MmapTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PSemTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PropertiesTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RbTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShmTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingletonTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SocketTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ThreadTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeStatsTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tinyxml2.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -565,7 +353,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(LTLIBRARIES)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -594,7 +382,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -666,7 +454,7 @@ uninstall-am:
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstPROGRAMS ctags distclean \
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-dvi \
