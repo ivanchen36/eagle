@@ -2,6 +2,7 @@
 #include "StrUtil.h"
 #include "Define.h"
 #include "Log.h"
+#include "ShmAllocator.h"
 #include "tinyxml2.h"
 
 namespace

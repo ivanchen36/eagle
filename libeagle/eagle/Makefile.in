@@ -70,7 +70,8 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libeagle_la_DEPENDENCIES = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
-	$(EVENT_PATH)/libevent.la $(NODE_PATH)/libnode.la
+	$(EVENT_PATH)/libevent.la $(NODE_PATH)/libnode.la \
+	$(OPEN_PATH)/libopen.la
 am_libeagle_la_OBJECTS = Eagle.lo TaskThread.lo SignalManager.lo \
 	MasterSigManager.lo ChildSigManager.lo ProcessManager.lo \
 	EagleTime.lo Timer.lo
@@ -214,6 +215,7 @@ OS_PATH = $(top_srcdir)/libeagle/os
 UTIL_PATH = $(top_srcdir)/libeagle/util
 EVENT_PATH = $(top_srcdir)/libeagle/event
 NODE_PATH = $(top_srcdir)/libeagle/node
+OPEN_PATH = $(top_srcdir)/libeagle/open
 INCLUDES = -I$(LIB_INCLUDE)
 lib_LTLIBRARIES = libeagle.la
 libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
@@ -221,7 +223,8 @@ libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
 					  ProcessManager.cpp EagleTime.cpp Timer.cpp
 
 libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
-					 $(EVENT_PATH)/libevent.la $(NODE_PATH)/libnode.la
+					 $(EVENT_PATH)/libevent.la $(NODE_PATH)/libnode.la \
+					 $(OPEN_PATH)/libopen.la
 
 all: all-am
 

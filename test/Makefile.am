@@ -15,7 +15,7 @@ LIBNODE_INCLUDE = $(top_srcdir)/libeagle/node
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
 				  logtest psemtest threadtest shmtest mmaptest \
 				  eagletest rbtest locktest sockettest queuetest \
-				  classtest eventtest proptest
+				  classtest eventtest proptest alloctest
 
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBEAGLE_INCLUDE) \
 		   -I$(LIBEVENT_INCLUDE) -I$(LIBNODE_INCLUDE)
@@ -67,3 +67,6 @@ eventtest_LDFLAGS = $(TEST_LD)
 
 proptest_SOURCES = PropertiesTest.cpp
 proptest_LDFLAGS = $(TEST_LD)
+
+alloctest_SOURCES = ShmAllocatorTest.cpp
+alloctest_LDFLAGS = $(TEST_LD)

@@ -14708,7 +14708,7 @@ fi
 done
 
 
-ac_config_files="$ac_config_files Makefile libeagle/Makefile test/Makefile libeagle/os/Makefile libeagle/util/Makefile libeagle/eagle/Makefile libeagle/event/Makefile libeagle/node/Makefile libeagle/opensource/Makefile"
+ac_config_files="$ac_config_files Makefile libeagle/Makefile test/Makefile libeagle/os/Makefile libeagle/util/Makefile libeagle/eagle/Makefile libeagle/event/Makefile libeagle/node/Makefile libeagle/open/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -15797,7 +15797,7 @@ do
     "libeagle/eagle/Makefile") CONFIG_FILES="$CONFIG_FILES libeagle/eagle/Makefile" ;;
     "libeagle/event/Makefile") CONFIG_FILES="$CONFIG_FILES libeagle/event/Makefile" ;;
     "libeagle/node/Makefile") CONFIG_FILES="$CONFIG_FILES libeagle/node/Makefile" ;;
-    "libeagle/opensource/Makefile") CONFIG_FILES="$CONFIG_FILES libeagle/opensource/Makefile" ;;
+    "libeagle/open/Makefile") CONFIG_FILES="$CONFIG_FILES libeagle/open/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

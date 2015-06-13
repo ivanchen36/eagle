@@ -39,7 +39,7 @@ noinst_PROGRAMS = autoptrtest$(EXEEXT) timestatstest$(EXEEXT) \
 	threadtest$(EXEEXT) shmtest$(EXEEXT) mmaptest$(EXEEXT) \
 	eagletest$(EXEEXT) rbtest$(EXEEXT) locktest$(EXEEXT) \
 	sockettest$(EXEEXT) queuetest$(EXEEXT) classtest$(EXEEXT) \
-	eventtest$(EXEEXT) proptest$(EXEEXT)
+	eventtest$(EXEEXT) proptest$(EXEEXT) alloctest$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -51,6 +51,12 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
+am_alloctest_OBJECTS = ShmAllocatorTest.$(OBJEXT)
+alloctest_OBJECTS = $(am_alloctest_OBJECTS)
+alloctest_LDADD = $(LDADD)
+alloctest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(alloctest_LDFLAGS) $(LDFLAGS) -o $@
 am_autoptrtest_OBJECTS = AutoPtrTest.$(OBJEXT)
 autoptrtest_OBJECTS = $(am_autoptrtest_OBJECTS)
 autoptrtest_LDADD = $(LDADD)
@@ -160,18 +166,18 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(autoptrtest_SOURCES) $(classtest_SOURCES) \
-	$(eagletest_SOURCES) $(eventtest_SOURCES) $(locktest_SOURCES) \
-	$(logtest_SOURCES) $(mmaptest_SOURCES) $(proptest_SOURCES) \
-	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
-	$(shmtest_SOURCES) $(singletontest_SOURCES) \
+SOURCES = $(alloctest_SOURCES) $(autoptrtest_SOURCES) \
+	$(classtest_SOURCES) $(eagletest_SOURCES) $(eventtest_SOURCES) \
+	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
+	$(proptest_SOURCES) $(psemtest_SOURCES) $(queuetest_SOURCES) \
+	$(rbtest_SOURCES) $(shmtest_SOURCES) $(singletontest_SOURCES) \
 	$(sockettest_SOURCES) $(threadtest_SOURCES) \
 	$(timestatstest_SOURCES)
-DIST_SOURCES = $(autoptrtest_SOURCES) $(classtest_SOURCES) \
-	$(eagletest_SOURCES) $(eventtest_SOURCES) $(locktest_SOURCES) \
-	$(logtest_SOURCES) $(mmaptest_SOURCES) $(proptest_SOURCES) \
-	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
-	$(shmtest_SOURCES) $(singletontest_SOURCES) \
+DIST_SOURCES = $(alloctest_SOURCES) $(autoptrtest_SOURCES) \
+	$(classtest_SOURCES) $(eagletest_SOURCES) $(eventtest_SOURCES) \
+	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
+	$(proptest_SOURCES) $(psemtest_SOURCES) $(queuetest_SOURCES) \
+	$(rbtest_SOURCES) $(shmtest_SOURCES) $(singletontest_SOURCES) \
 	$(sockettest_SOURCES) $(threadtest_SOURCES) \
 	$(timestatstest_SOURCES)
 ETAGS = etags
@@ -339,6 +345,8 @@ eventtest_SOURCES = EventTest.cpp
 eventtest_LDFLAGS = $(TEST_LD)
 proptest_SOURCES = PropertiesTest.cpp
 proptest_LDFLAGS = $(TEST_LD)
+alloctest_SOURCES = ShmAllocatorTest.cpp
+alloctest_LDFLAGS = $(TEST_LD)
 all: all-am
 
 .SUFFIXES:
@@ -382,6 +390,9 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+alloctest$(EXEEXT): $(alloctest_OBJECTS) $(alloctest_DEPENDENCIES) 
+	@rm -f alloctest$(EXEEXT)
+	$(alloctest_LINK) $(alloctest_OBJECTS) $(alloctest_LDADD) $(LIBS)
 autoptrtest$(EXEEXT): $(autoptrtest_OBJECTS) $(autoptrtest_DEPENDENCIES) 
 	@rm -f autoptrtest$(EXEEXT)
 	$(autoptrtest_LINK) $(autoptrtest_OBJECTS) $(autoptrtest_LDADD) $(LIBS)
@@ -448,6 +459,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PSemTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PropertiesTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RbTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShmAllocatorTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShmTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingletonTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SocketTest.Po@am__quote@
