@@ -33,16 +33,12 @@ void notifyQuit(void *pram)
  */
 int main ( int argc, char *argv[] )
 {
-    if (g_sysLog->redirectToOther(STDOUT_FILENO))
-    {
-        DEBUGLOG("redirectToOther err");
-    }
     CallBack cb(notifyQuit);
-    EAGLE_INIT(cb);
+    EAGLE_INIT(cb, "1.0");
 
     while (0 == g_waitQuit)
     {
-        DEBUGLOG1("child %d wait sigquit", EagleAttr::index);
+        DEBUGLOG1("child %d wait sigquit", EagleI::instance().getIndex());
         sleep(10);
     }
 

@@ -4,6 +4,7 @@
 ChildSigManager::ChildSigManager()
 {
     m_handleMap[SIGQUIT] = (SaHandle)&ChildSigManager::sigQuit;  
+    m_handleMap[SIGTERM] = (SaHandle)&ChildSigManager::sigQuit;  
 }
 
 ChildSigManager::~ChildSigManager()

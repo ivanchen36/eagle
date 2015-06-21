@@ -162,6 +162,8 @@ public:
        m_eventHandler = eventHandler;
     }
 
+    virtual void close(){}
+
 protected:
     EventHandler *m_eventHandler;
 };

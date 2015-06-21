@@ -21,6 +21,8 @@
 class StrUtil 
 {
 public:
+    static void copy(char *&dest, const char *src);
+    static void copy(char *&dest, const char *src, const int len);
     static void split(const char *sep, const char *str, 
             std::vector<std::string> &vec);
     static void split(const char *sep, char *str, 

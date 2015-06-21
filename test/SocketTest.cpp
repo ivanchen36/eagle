@@ -755,11 +755,7 @@ void doPaireTest()
  */
 int main ( int argc, char *argv[] )
 {
-    //EagleTimeI::instance().autoUpdate();
-    if (g_sysLog->redirectToOther(STDOUT_FILENO))
-    {
-        DEBUGLOG("redirectToOther err");
-    }
+    EagleTimeI::instance().autoUpdate();
 
     doTcpTest();
 

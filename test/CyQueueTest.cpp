@@ -124,11 +124,6 @@ void doTest1()
  */
 int main ( int argc, char *argv[] )
 {
-    if (g_sysLog->redirectToOther(STDOUT_FILENO))
-    {
-        DEBUGLOG("redirectToOther err");
-    }
-
     doTest1();
 
     return EXIT_SUCCESS;

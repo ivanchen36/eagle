@@ -1,10 +1,10 @@
 #include "Log.h"
+#include "StrUtil.h"
 #include "TaskThread.h"
 
 Task::Task(const char *taskName) : m_name(NULL)
 {
-    m_name = new char[strlen(taskName) + 1];
-    strcpy(m_name, taskName);
+    StrUtil::copy(m_name, taskName);
 }
 
 Task::~Task()

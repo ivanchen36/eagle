@@ -44,14 +44,14 @@ public:
     {
         if (0 == m_processNum) return QUIT;
 
-        if (m_aliveNum == m_processNum)
+        if (m_aliveNum >= m_processNum)
             return NORMAL;
 
         return SPAWN;
     }
 
     void check();
-    void quit();
+    void quit(const int processNum = 0);
     int stop(const int pid);
     void waitQuit();
     int spawn(int &processNum);

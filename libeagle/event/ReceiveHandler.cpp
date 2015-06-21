@@ -21,6 +21,7 @@ ReceiveHandler::ReceiveHandler(EventManager *const manager, Socket *socket,
 
 ReceiveHandler::~ReceiveHandler()
 {
+    m_messageHandler->close();
     if (NULL != m_messageHandler) delete m_messageHandler;
 }
 

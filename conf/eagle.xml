@@ -1,15 +1,11 @@
 <eagle ip="127.0.0.1" port="18888">
-    <brother ip="127.0.0.1" port="18887" />
+    <node ip="127.0.0.1" port="18887" />
 
-    <include file="proxy.xml" />
-    <include file="hello.xml" />
-
-    <program name="proxy" ver="1.0" process="1" >
-        <bind server="proxy" port="auto" />
-        <connect name="hello" server="hello" />
+    <program name="proxy" ver="1.0" process="1" log="debug" >
+        <server name="proxy" port="auto" />
     </program>
 
-    <program name="hello" ver="1.0" process="1" >
-        <bind server="hello" port="auto" />
+    <program name="hello" ver="1.0" process="1" log="debug" >
+        <server name="hello" port="auto" />
     </program>
 </eagle>

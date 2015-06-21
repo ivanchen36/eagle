@@ -2,6 +2,24 @@
 
 #include "StrUtil.h"
 
+void StrUtil::copy(char *&dest, const char *src)
+{
+    int len = strlen(src) + 1;
+
+    dest = new char[len];
+    if (dest == NULL) return;
+
+    strcpy(dest, src);
+}
+
+void StrUtil::copy(char *&dest, const char *src, const int len)
+{
+    dest = new char[len + 1];
+    if (dest == NULL) return;
+
+    strcpy(dest, src);
+}
+
 void StrUtil::split(const char *sep, const char *str, 
         std::vector<std::string> &vec)
 {

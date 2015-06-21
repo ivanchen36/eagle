@@ -41,11 +41,13 @@ ProcessSem::~ProcessSem()
 
     if (NULL != m_ref)
     {
-        if (__sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1) == 0)
+        if (__sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1) != 0)
         {
             isDelete = 0;
+        }else
+        {
+            ShareMemI::instance().free(m_ref);
         }
-        ShareMemI::instance().free(m_ref);
     }
     if (!isDelete) return;
 

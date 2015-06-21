@@ -7,4 +7,5 @@ LIB_INCLUDE = $(top_srcdir)/libeagle/include
 INCLUDES = -I$(LIB_INCLUDE)
 
 noinst_LTLIBRARIES = libnode.la
-libnode_la_SOURCES = Follower.cpp Leader.cpp PropertiesParser.cpp
+libnode_la_SOURCES = Follower.cpp Leader.cpp PropertiesParser.cpp \
+					 EagleNode.cpp

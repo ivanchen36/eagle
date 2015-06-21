@@ -46,8 +46,10 @@ public:
     int readByLen(uint8_t *buf, const int len);
     int writeByLen(const uint8_t *buf, const int len);
     int readByOffset(uint8_t *buf, const int len, const int offset);
-    int writeByOffset(uint8_t *buf, const int len, const int offset);
+    int writeByOffset(const uint8_t *buf, const int len, const int offset);
 
+    static int isExist(const char *fileName);
+    static int del(const char *fileName);
     static int getSize(int fd);
     static int setSize(const int fd, const unsigned int size);
 

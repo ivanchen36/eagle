@@ -14,16 +14,14 @@
 #ifndef  _NODECLIENT_H_
 #define  _NODECLIENT_H_
 
-#include "SocketEx.h"
+#include "NodeHandler.h"
 
-class NodeClient 
+class NodeClient : public NodeHandler
 {
 public:
     NodeClient();
     ~NodeClient();
     
 private:
-    SocketEx *m_socket;
 };
-
 #endif   /* ----- #ifndef _NODECLIENT_H_  ----- */

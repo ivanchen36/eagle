@@ -5,6 +5,7 @@
 MasterSigManager::MasterSigManager()
 {
     m_handleMap[SIGQUIT] = (SaHandle)&MasterSigManager::sigQuit;  
+    m_handleMap[SIGTERM] = (SaHandle)&MasterSigManager::sigQuit;  
     m_handleMap[SIGCHLD] = (SaHandle)&MasterSigManager::sigChld;  
 }
 

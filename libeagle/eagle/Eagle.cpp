@@ -9,9 +9,130 @@
 #include "ProcessSem.h"
 #include "EagleTime.h"
 #include "Timer.h"
+#include "StrUtil.h"
+#include "Proctitle.h"
 
-int EagleAttr::index = 0;
-int EagleAttr::status = 0;
+#define OP_STOP "stop"
+#define OP_RELOAD "reload"
+
+Eagle::Eagle() : m_properties(NULL)
+{
+}
+
+Eagle::~Eagle()
+{
+    if (NULL != m_properties) delete m_properties;
+}
+
+int Eagle::checkDir()
+{
+    char buf[MAX_FILENAME_LEN];
+    int ret = EG_FAILED;
+
+    for (; ; )
+    {
+        snprintf(buf, MAX_FILENAME_LEN, "%s/%s", m_program.prefix, CONF_DIR);
+        if (!FileEx::isExist(buf)) break;
+
+        snprintf(buf, MAX_FILENAME_LEN, "%s/%s", m_program.prefix, LOG_DIR);
+        if (!FileEx::isExist(buf)) break;
+
+        ret = EG_SUCCESS;
+        break;
+    }
+
+    if (EG_SUCCESS != ret) 
+    {
+        printf("directory %s isn't exist\n", buf);
+
+        return EG_FAILED;
+    }
+
+    return EG_SUCCESS;
+}
+
+void Eagle::initLog()
+{
+    char buf[MAX_FILENAME_LEN];
+
+    snprintf(buf, MAX_FILENAME_LEN, "%s/logs/%s.log", m_program.prefix, 
+            m_program.name);
+    g_sysLog = new Log(buf, m_program.logLevel);
+}
+
+int Eagle::writePid()
+{
+    char buf[MAX_FILENAME_LEN];
+    snprintf(buf, MAX_FILENAME_LEN, "%s/%s%s.pid", m_program.prefix, 
+            m_program.name, m_program.ver);
+
+    pid_t pid;
+    int len = sizeof(pid);
+    FileEx file(buf, FileEx::RDWR_CREATE_RESET);
+
+    if (file.readByOffset((uint8_t *)&pid, len, 0) == EG_FAILED)
+    {
+        pid = 0;
+    }
+    snprintf(buf, MAX_FILENAME_LEN, "/proc/%d", pid);
+    if (FileEx::isExist(buf)) 
+    {
+        ERRORLOG2("%s %s has ran", m_program.name, m_program.ver);
+
+        return EG_FAILED;
+    }
+
+    pid = getpid();
+    file.writeByOffset((const uint8_t *)&pid, len, 0);
+
+    return EG_SUCCESS;
+}
+
+int Eagle::readPid()
+{
+    char buf[MAX_FILENAME_LEN];
+    snprintf(buf, MAX_FILENAME_LEN, "%s/%s%s.pid", m_program.prefix, 
+            m_program.name, m_program.ver);
+
+    pid_t pid;
+    FileEx file(buf, FileEx::RDWR);
+
+    if (file.readByOffset((uint8_t *)&pid, sizeof(pid_t), 0) == EG_FAILED)
+        return 0;
+
+    return pid;
+}
+
+int Eagle::delPid()
+{
+    char buf[MAX_FILENAME_LEN];
+    snprintf(buf, MAX_FILENAME_LEN, "%s/%s%s.pid", m_program.prefix, 
+            m_program.name, m_program.ver);
+
+    return FileEx::del(buf);
+}
+
+void Eagle::printPrompt(const char *option)
+{
+    printf("invalid option: \"%s\"\n" \
+            "get help : %s -h or %s -?\n",
+            option, m_program.name, m_program.name);
+}
+
+void Eagle::printVer()
+{
+    printf("%s version : %s\n", m_program.name, m_program.ver);
+}
+
+void Eagle::printUsage()
+{
+    printf("Usage: %s [-?hv] [-s signal] [-p prefix]\n" \
+           "Options:\n" \
+           "  -?,-h         : this help\n" \
+           "  -v            : show version and exit\n" \
+           "  -s signal     : send signal to a master process: reload, stop\n" \
+           "  -p prefix     : set prefix path\n", m_program.name);
+}
 
 int Eagle::spawnChildProcess()
 {
@@ -76,32 +197,178 @@ int Eagle::masterCycle()
         {
             ProcessManagerI::instance().waitQuit();
 
-            return -1;
+            return EG_FAILED;
         }
 
         if (ProcessManager::SPAWN == status)
         {
             TimerI::instance().pause();
-            if (ProcessManagerI::instance().reSpawn() == 0)
+            if (ProcessManagerI::instance().reSpawn() == EG_SUCCESS)
             {
                 masterClean();
 
-                return 0;
+                return EG_SUCCESS;
             }
             TimerI::instance().start();
         }
     }
+
+    return EG_SUCCESS;
 }
 
-int Eagle::init(const CallBack &notifyQuitCb)
+int Eagle::init(const int argc, char *const *argv, const CallBack &notifyQuitCb, 
+        const char *ver)
 {
-    int ret = spawnChildProcess();
+    int ret;
+    Proctitle proctitle;
 
-    if (ret > 0) ret = masterCycle();
+    proctitle.init(argc, argv);
+    StrUtil::copy(m_program.ver, ver);
+    ret = parseOptions(argc, argv);
+    if (EG_SUCCESS != ret) return EG_FAILED;
 
-    if (ret < 0) return -1;
+    if (checkDir() != EG_SUCCESS) return EG_FAILED;
 
+    initLog();
+    if (writePid() == EG_FAILED) return EG_FAILED;
+
+    ret = spawnChildProcess();
+
+    if (ret > 0) 
+    {
+        proctitle.setMaster(argc, argv, "%s: master", m_program.name);
+        ret = masterCycle();
+        delPid();
+
+        return ret;
+    }
+
+    if (ret < 0) return EG_FAILED;
+
+    proctitle.setWorker(argc, argv, "%s: worker-%d", m_program.name, m_index);
     childInit(notifyQuitCb);
 
-    return 0;
+    return EG_SUCCESS;
+}
+
+int Eagle::sendSignal(const char *signal)
+{
+    int sig;
+    pid_t pid = readPid();
+
+    if (0 == pid)
+    {
+        ERRORLOG1("no %s process", m_program.name);
+
+        return EG_FAILED;
+    }
+
+    if (strcmp(OP_STOP, signal) == 0)
+    {
+        sig = SIGTERM;
+    }else if (strcmp(OP_STOP, signal) == 0)
+    {
+        sig = SIGUSR1;
+    }
+    kill(pid, sig);
+
+    return EG_SUCCESS;
+}
+
+int Eagle::parseOptions(const int argc, char *const *argv)
+{
+    int i;
+    char *sig;
+    int ret = EG_SUCCESS;
+    char *p = rindex(argv[0], '/');
+
+    if (NULL != p)
+    {
+        StrUtil::copy(m_program.name, p + 1);
+    }else
+    {
+        StrUtil::copy(m_program.name, argv[0]);
+    }
+
+    if (argc < 2)
+    {
+        printf("must have start option\n" \
+            "get help : %s -h or %s -?\n",
+            m_program.name, m_program.name);
+
+        return EG_FAILED;
+    }
+
+    for (i = 1; i < argc; ++i)
+    {
+
+        p = argv[i];
+
+        if (*p++ != '-') 
+        {
+            printPrompt(argv[i]);
+
+            return EG_FAILED;
+        }
+
+        switch (*p++)
+        {
+            case '?':
+            case 'h':
+                printUsage();
+
+                return EG_SHOW_HELP;
+            case 'v':
+                printVer(); 
+
+                return EG_SHOW_VER;
+            case 's':
+                if (argv[++i]) 
+                {
+                    sig = argv[i];
+
+                    ret = EG_SEND_SIGNAL;
+                    break;
+                }
+
+                printf("option \"-s\" requires signal name\n");
+
+                return EG_FAILED;
+            case 'p':
+                if (argv[++i]) 
+                {
+                    if (*(argv[i] + strlen(argv[i]) - 1) == '/')
+                    {
+                        *(argv[i] + strlen(argv[i]) - 1) = 0;
+                    }
+                    StrUtil::copy(m_program.prefix, argv[i]);
+
+                    break;
+                }
+                printf("option \"-p\" requires directory name\n");
+
+                return EG_FAILED;
+            default:
+                printPrompt(argv[i]);
+
+                return EG_FAILED;
+        }
+    }
+
+    if (NULL == m_program.prefix)
+    {
+        printf("must set prefix\n" \
+            "get help : %s -h or %s -?\n",
+            m_program.name, m_program.name);
+
+        return EG_FAILED;
+
+    }
+
+    if (EG_SEND_SIGNAL == ret)
+    {
+        sendSignal(sig);
+    }
+
+    return ret;
 }

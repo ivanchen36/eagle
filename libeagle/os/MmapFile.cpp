@@ -3,6 +3,7 @@
 #include <sys/mman.h>
 
 #include "MmapFile.h"
+#include "StrUtil.h"
 
 namespace
 {
@@ -28,8 +29,7 @@ MmapFile::MmapFile(const char *fileName, const int isShm,
         return;
     }
 
-    m_fileName = new char[strlen(fileName) + 1];
-    strcpy(m_fileName, fileName);
+    StrUtil::copy(m_fileName, fileName);
     m_prot = M_MODE[mode];
     m_fileSize = FileEx::getSize(m_fd);
     mapByOffset(0);

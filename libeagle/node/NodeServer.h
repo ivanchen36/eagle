@@ -14,15 +14,14 @@
 #ifndef  _NODESERVER_H_
 #define  _NODESERVER_H_
 
-#include "SocketEx.h"
+#include "NodeHandler.h"
 
-class NodeServer 
+class NodeServer : public NodeHandler
 {
 public:
     NodeServer();
     ~NodeServer();
     
 private:
-    SocketEx *m_socket;
 };
 #endif   /* ----- #ifndef _NODESERVER_H_  ----- */

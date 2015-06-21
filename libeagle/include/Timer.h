@@ -21,6 +21,7 @@
 #include "Singleton.h"
 #include "MutexLock.h"
 #include "TaskThread.h"
+#include "StrUtil.h"
 
 class Timer
 {
@@ -39,8 +40,7 @@ public:
                 const int i, const int t, const CallBack &c)
             : interval(m), times(t), isAsync(i), cb(c)
         {
-            this->name = new char[strlen(n) + 1];
-            strcpy(this->name, n);
+            StrUtil::copy(this->name, n);
         }
 
         ~TaskNode()

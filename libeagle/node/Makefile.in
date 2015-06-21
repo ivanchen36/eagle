@@ -48,7 +48,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libnode_la_LIBADD =
-am_libnode_la_OBJECTS = Follower.lo Leader.lo PropertiesParser.lo
+am_libnode_la_OBJECTS = Follower.lo Leader.lo PropertiesParser.lo \
+	EagleNode.lo
 libnode_la_OBJECTS = $(am_libnode_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -187,7 +188,9 @@ top_srcdir = @top_srcdir@
 LIB_INCLUDE = $(top_srcdir)/libeagle/include
 INCLUDES = -I$(LIB_INCLUDE)
 noinst_LTLIBRARIES = libnode.la
-libnode_la_SOURCES = Follower.cpp Leader.cpp PropertiesParser.cpp
+libnode_la_SOURCES = Follower.cpp Leader.cpp PropertiesParser.cpp \
+					 EagleNode.cpp
+
 all: all-am
 
 .SUFFIXES:
@@ -240,6 +243,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EagleNode.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Follower.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Leader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PropertiesParser.Plo@am__quote@

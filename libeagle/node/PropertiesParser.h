@@ -14,15 +14,23 @@
 #ifndef  _PROPERTIESPARSER_H_
 #define  _PROPERTIESPARSER_H_
 
+#include "tinyxml2.h"
 #include "Properties.h"
 
 class PropertiesParser 
 {
 public:
-    static int initProperties(const char *fileName, Properties &properties);
+    static int initProProperties(Properties &properties);
+    static int initNodeProperties();
     static void formatToString(Properties &properties, 
             std::string &str); 
     static void formatToProperties(const std::string &str, 
             Properties &properties); 
+private:
+    static int handleNodeTag(tinyxml2::XMLElement *root);
+    static int handleEagleTag(tinyxml2::XMLElement *root);
+    static int handleProgramTag(tinyxml2::XMLElement *root);
+    static int handleServerTag(tinyxml2::XMLElement *root);
+    static int handlePropertyTag(tinyxml2::XMLElement *root, Properties &properties);
 };
 #endif   /* ----- #ifndef _PROPERTIESPARSER_H_  ----- */

@@ -51,10 +51,6 @@ void doTest()
  */
 int main ( int argc, char *argv[] )
 {
-    if (g_sysLog->redirectToOther(STDOUT_FILENO))
-    {
-        DEBUGLOG("redirectToOther err");
-    }
     EagleTimeI::instance().autoUpdate();
 
     doTest();

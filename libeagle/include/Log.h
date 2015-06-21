@@ -98,8 +98,6 @@ extern AutoPtr<Log> g_sysLog;
 #define WARN_LOG 2
 #define ERROR_LOG 3
 
-#define MAX_LINE_LEN 1024
-
 class Log
 {
 public:

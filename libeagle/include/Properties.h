@@ -35,7 +35,6 @@ public:
         return m_intMap[name];
     }
 
-private:
     void setProperties(const std::string &name, const std::string &val)
     {
         m_stringMap[name] = val;
@@ -46,6 +45,7 @@ private:
         m_intMap[name] = val;
     }
 
+private:
     std::map<std::string, int> m_intMap;
     std::map<std::string, std::string> m_stringMap;
 
@@ -53,24 +53,4 @@ private:
 };
 
 typedef AutoPtr<Properties> PropertiesPtr;
-
-class PropertiesManager
-{
-public:
-    int hasVerProperties(const std::string &program, 
-            const std::string &ver)
-    {
-        if (std::find(m_verList.begin(), m_verList.end(), program + ver) 
-                != m_verList.end()) return 1;
-
-        return 0;
-    }
-
-private:
-    std::vector<std::string> m_verList;
-    std::map<std::string, std::map<std::string, int> *> m_intMap;
-    std::map<std::string, std::map<std::string, std::string> *> m_stringMap;
-};
-
-typedef AutoPtr<PropertiesManager> PropertiesManagerPtr;
 #endif   /* ----- #ifndef _PROPERTIES_H_  ----- */
