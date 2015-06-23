@@ -8,8 +8,8 @@
 
 namespace
 {
-IoBufPoolManager &bufPoolManager = IoBufPoolManagerI::instance();
 ShareMem &shareMem = ShareMemI::instance();
+IoBufPoolManager &bufPoolManager = IoBufPoolManagerI::instance();
 MessageHandlerFactory &messageHandlerFactory = MessageHandlerFactoryI::instance();
 }
 

@@ -20,6 +20,7 @@
 #include "Log.h"
 #include "Properties.h"
 #include "EventHandler.h"
+#include "EventManager.h"
 
 #define EAGLE_INIT(cb, ver) \
     if (EG_SUCCESS != EagleI::instance().init(argc, argv, cb, ver)) return 0
@@ -89,18 +90,21 @@ private:
     void printVer();
     void printPrompt(const char *option);
     void nodeInit();
-    void workerInit(const CallBack &notifyQuitCb);
     void masterInit();
+    void workerInit(const CallBack &notifyQuitCb);
     void masterClean();
     int masterCycle();
     int initProcess();
-    int parseOptions(const int argc, char *const *argv);
     int sendSignal(const char *signal);
+    int parseOptions(const int argc, char *const *argv);
+    int initAccepterList(std::string &ip, std::map<std::string, int> &serverMap);
 
     int m_index;
     Properties *m_properties;
-    std::vector<EventHandlerPtr> accepterList;
+    EventManager *m_acceptManager;
+    EventManager *m_receiveManager;
     Program m_program;
+    std::vector<EventHandlerPtr> m_accepterList;
 
     friend class Singleton<Eagle>;
 };

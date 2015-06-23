@@ -9,7 +9,7 @@ EVENT_PATH = $(top_srcdir)/libeagle/event
 NODE_PATH = $(top_srcdir)/libeagle/node
 OPEN_PATH = $(top_srcdir)/libeagle/open
 
-INCLUDES = -I$(LIB_INCLUDE) -I$(NODE_PATH)
+INCLUDES = -I$(LIB_INCLUDE) -I$(NODE_PATH) -I$(EVENT_PATH)
 
 lib_LTLIBRARIES = libeagle.la
 libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \

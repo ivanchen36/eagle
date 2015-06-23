@@ -5,9 +5,8 @@
 
 namespace
 {
-
-MasterSigManager &masterSigManager = MasterSigManagerI::instance();
 ChildSigManager &childSigManager = ChildSigManagerI::instance();
+MasterSigManager &masterSigManager = MasterSigManagerI::instance();
 
 void masterSaHandler(int sig)
 {

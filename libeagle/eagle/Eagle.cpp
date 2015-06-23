@@ -13,27 +13,36 @@
 #include "StrUtil.h"
 #include "Proctitle.h"
 #include "PropertiesParser.h"
+#include "EpollManager.h"
+#include "SelectManager.h"
+#include "AcceptHandler.h"
+#include "MessageHandlerFactory.h"
 
 #define OP_STOP "stop"
 #define OP_RELOAD "reload"
 
 namespace
 {
-EagleTime &eagleTime = EagleTimeI::instance();
-MasterSigManager &masterSigManager = MasterSigManagerI::instance();
-ChildSigManager &childSigManager = ChildSigManagerI::instance();
 ShareMem &shareMem = ShareMemI::instance();
-ProcessManager &processManager = ProcessManagerI::instance();
+EagleTime &eagleTime = EagleTimeI::instance();
 EagleNode &eagleNode = EagleNodeI::instance();
+ProcessManager &processManager = ProcessManagerI::instance();
+ChildSigManager &childSigManager = ChildSigManagerI::instance();
+MasterSigManager &masterSigManager = MasterSigManagerI::instance();
+MessageHandlerFactory &messageHandlerFactory = MessageHandlerFactoryI::instance();
 }
 
 Eagle::Eagle() : m_properties(NULL)
 {
+    m_acceptManager = new SelectManager(1);
+    m_receiveManager = new EpollManager(WORKER_THREAD_NUM);
 }
 
 Eagle::~Eagle()
 {
     if (NULL != m_properties) delete m_properties;
+    if (NULL != m_acceptManager) delete m_acceptManager;
+    if (NULL != m_receiveManager) delete m_receiveManager;
 }
 
 int Eagle::checkDir()
@@ -146,15 +155,43 @@ void Eagle::printUsage()
            "  -p prefix     : set prefix path\n", m_program.name);
 }
 
+int Eagle::initAccepterList(std::string &ip, std::map<std::string, int> &serverMap)
+{
+    Socket *socket;
+    EventHandlerPtr handler;
+    std::map<std::string, int>::iterator iter;
+
+    for (iter = serverMap.begin(); iter != serverMap.end(); ++iter)
+    {
+        socket = new Socket(ip.c_str(), iter->second, 1);
+        if (!socket->isAvailable())
+        {
+            delete socket;
+            ERRORLOG2("create %s:%d socket failed.", ip.c_str(), iter->second);
+
+            return EG_FAILED;
+        }
+
+        handler = new AcceptHandler(m_receiveManager, socket, iter->second);
+        messageHandlerFactory.registerHandler(iter->second, iter->first.c_str());
+    }
+
+    return EG_SUCCESS;
+}
+
 int Eagle::initProcess()
 {
     int ret;
     uint8_t *isStop;
     int processNum;
+    std::string ip;
     ProcessSem sem(processNum + 1);
-    std::map<std::string, short> serverMap;
+    std::map<std::string, int> serverMap;
 
-    if (PropertiesParser::parseProProperties(serverMap))
+    if (PropertiesParser::parseProProperties(ip, serverMap))
+        return EG_FAILED;
+
+    if (initAccepterList(ip, serverMap) != EG_SUCCESS)
         return EG_FAILED;
 
     processNum = m_program.processNum;

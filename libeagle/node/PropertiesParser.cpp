@@ -35,8 +35,8 @@ const char TYPE_INT = '1';
 const char TYPE_STRING = '2';
 
 Eagle &eagle = EagleI::instance();
-EagleNode &eagleNode = EagleNodeI::instance();
 Program &program = eagle.getProgram();
+EagleNode &eagleNode = EagleNodeI::instance();
 }
 
 int PropertiesParser::handleEagleTag(tinyxml2::XMLElement *root)
@@ -90,7 +90,7 @@ int PropertiesParser::handleNodeTag(tinyxml2::XMLElement *root)
 }
 
 int PropertiesParser::handleProgramTag(tinyxml2::XMLElement *root, 
-        std::map<std::string, short> &serverMap)
+        std::map<std::string, int> &serverMap)
 {
     int process;
     tinyxml2::XMLElement *tmp;
@@ -135,7 +135,7 @@ int PropertiesParser::handleProgramTag(tinyxml2::XMLElement *root,
 }
 
 int PropertiesParser::handleServerTag(tinyxml2::XMLElement *root, 
-        std::map<std::string, short> &serverMap)
+        std::map<std::string, int> &serverMap)
 {
     int num;
     const char *name = root->Attribute(ATTR_NAME);
@@ -197,8 +197,10 @@ int PropertiesParser::handlePropertyTag(tinyxml2::XMLElement *root, Properties &
     return EG_SUCCESS;
 }
 
-int PropertiesParser::parseProProperties(std::map<std::string, short> &serverMap)
+int PropertiesParser::parseProProperties(std::string &ip, 
+        std::map<std::string, int> &serverMap)
 {
+    const char *attr;
     char buf[MAX_FILENAME_LEN];
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLElement *root;
@@ -216,6 +218,15 @@ int PropertiesParser::parseProProperties(std::map<std::string, short> &serverMap
         return EG_FAILED;
     }
 
+    attr = root->Attribute(ATTR_IP);
+    if (NULL == attr)
+    {
+        ERRORLOG("not found attribute ip.");
+
+        return EG_FAILED;
+    }
+
+    ip = attr;
     for (tmp = root->FirstChildElement(TAG_PROGRAM); NULL != tmp; 
             tmp = tmp->NextSiblingElement(TAG_PROGRAM))
     {

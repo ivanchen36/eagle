@@ -21,7 +21,8 @@ class PropertiesParser
 {
 public:
     static int parseNodeProperties();
-    static int parseProProperties(std::map<std::string, short> &serverMap);
+    static int parseProProperties(std::string &ip, 
+            std::map<std::string, int> &serverMap);
     static int parseProperties(Properties &properties);
     static void formatToString(Properties &properties, 
             std::string &str); 
@@ -31,9 +32,9 @@ private:
     static int handleNodeTag(tinyxml2::XMLElement *root);
     static int handleEagleTag(tinyxml2::XMLElement *root);
     static int handleProgramTag(tinyxml2::XMLElement *root, 
-            std::map<std::string, short> &serverMap);
+            std::map<std::string, int> &serverMap);
     static int handleServerTag(tinyxml2::XMLElement *root, 
-            std::map<std::string, short> &serverMap);
+            std::map<std::string, int> &serverMap);
     static int handlePropertyTag(tinyxml2::XMLElement *root, Properties &properties);
 };
 #endif   /* ----- #ifndef _PROPERTIESPARSER_H_  ----- */
