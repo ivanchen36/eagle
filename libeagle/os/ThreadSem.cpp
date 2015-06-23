@@ -4,6 +4,11 @@
 #include "Log.h"
 #include "EagleTime.h"
 
+namespace
+{
+EagleTime &eagleTime = EagleTimeI::instance();
+}
+
 ThreadSem::ThreadSem(const int val) : m_isInit(0)
 {
     if (sem_init(&m_sem, 0, 0) != 0) 
@@ -65,7 +70,7 @@ int ThreadSem::timedWait(const int sec)
     int ret;
     struct timespec t;
 
-    t.tv_sec = EagleTimeI::instance().getSec() + sec;
+    t.tv_sec = eagleTime.getSec() + sec;
     t.tv_nsec = 0;
     t.tv_sec += sec;
     for (; ;)

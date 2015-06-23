@@ -3,26 +3,40 @@
 #include "Log.h"
 
 ReceiveHandler::ReceiveHandler(EventManager *const manager, const int fd, 
-        MessageHandler *handler)
+        MessageHandler *handler, Pool<IoBufferUnion> *bufPool)
     :EventHandler(manager, fd), m_readMutex('\0'), m_writeMutex('\0'),
-    m_messageHandler(handler) 
+    m_readBuf(NULL), m_writeBuf(NULL), m_messageHandler(handler), m_bufPool(bufPool)
 
 {
     m_messageHandler->setEventHandler(this);
 }
 
 ReceiveHandler::ReceiveHandler(EventManager *const manager, Socket *socket,
-        MessageHandler *handler) 
+        MessageHandler *handler, Pool<IoBufferUnion> *bufPool) 
     : EventHandler(manager, socket), m_readMutex('\0'), m_writeMutex('\0'),
-    m_messageHandler(handler)
+    m_readBuf(NULL), m_writeBuf(NULL), m_messageHandler(handler), m_bufPool(bufPool)
 {
     m_messageHandler->setEventHandler(this);
 }
 
 ReceiveHandler::~ReceiveHandler()
 {
+    IoBuffer *ib;
+
     m_messageHandler->close();
     if (NULL != m_messageHandler) delete m_messageHandler;
+
+    for (ib = m_readBuf; NULL != m_readBuf; ib = m_readBuf)
+    {
+        m_readBuf = m_readBuf->next;
+        releaseBuf(ib); 
+    }
+
+    for (ib = m_writeBuf; NULL != m_writeBuf; ib = m_writeBuf)
+    {
+        m_writeBuf = m_writeBuf->next;
+        releaseBuf(ib); 
+    }
 }
 
 int ReceiveHandler::read()
@@ -36,7 +50,7 @@ int ReceiveHandler::read()
     readLock();
     if (m_readBuf == NULL)
     {
-        m_readBuf = m_manager->getBuf();
+        m_readBuf = getBuf();
         ib = m_readBuf;
         recv = ib->size;
     }else
@@ -69,7 +83,7 @@ int ReceiveHandler::read()
         ib->cur += recv;
         if (ib->size == ib->cur)
         {
-            tmp = m_manager->getBuf();
+            tmp = getBuf();
             ib->next = tmp;
             ib = tmp;
             recv = ib->size;
@@ -84,7 +98,7 @@ int ReceiveHandler::read()
     {
         tmp = m_readBuf;
         m_readBuf = m_readBuf->next;
-        m_manager->releaseBuf(tmp); 
+        releaseBuf(tmp); 
     }
     readUnlock();
 
@@ -125,7 +139,7 @@ int ReceiveHandler::write()
         }
 
         m_writeBuf = m_writeBuf->next;
-        m_manager->releaseBuf(ib);
+        releaseBuf(ib);
     }
 
     m_manager->unregisterEvent(WRITE, this);
@@ -176,7 +190,7 @@ void ReceiveHandler::waitWrite(const uint8_t *buf, int size)
     writeLock();
     if (m_writeBuf == NULL)
     {
-        m_writeBuf = m_manager->getBuf();
+        m_writeBuf = getBuf();
         ib = m_writeBuf;
         len = ib->size;
     }else
@@ -197,7 +211,7 @@ void ReceiveHandler::waitWrite(const uint8_t *buf, int size)
         ib->cur += len;
         if (0 == size) break;
 
-        tmp = m_manager->getBuf();
+        tmp = getBuf();
         ib->next = tmp;
         ib = tmp;
         len = ib->size;

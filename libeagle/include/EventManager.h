@@ -16,7 +16,6 @@
 
 #include "EventHandler.h"
 #include "EventWorker.h"
-#include "Pool.h"
 
 class EventManager
 {
@@ -29,17 +28,9 @@ public:
     virtual int registerEvent(int event, EventHandler *handler) = 0;
     virtual int unregisterEvent(int event, EventHandler *handler) = 0;
 
-    IoBuffer *getBuf()
+    int isOverLoad()
     {
-        IoBuffer *tmp = (IoBuffer *)m_bufPool.pop();
-
-        tmp->reset();
-        return tmp;
-    }
-
-    void releaseBuf(IoBuffer *buf)
-    {
-        return m_bufPool.push((IoBufferUnion *)buf);
+        return m_isOverLoad;
     }
 
 protected:
@@ -51,9 +42,9 @@ protected:
     int m_workerNum;
     int m_curWorker;
     int m_isStop;
+    int m_isOverLoad;
     MutexLock m_lock;
     EventWorker *m_workers;
-    Pool<IoBufferUnion> m_bufPool;
 };
 
 typedef AutoPtr<EventManager> EventManagerPtr;

@@ -51,7 +51,7 @@ public:
     }
 
     void check();
-    void quit(const int processNum = 0);
+    void quit(int processNum = 0);
     int stop(const int pid);
     void waitQuit();
     int spawn(int &processNum);

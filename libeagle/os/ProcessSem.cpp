@@ -7,6 +7,11 @@
 #include "Log.h"
 #include "ShareMem.h"
 
+namespace
+{
+ShareMem &shareMem = ShareMemI::instance();
+}
+
 union semun 
 {
     int              val;    /*  Value for SETVAL */
@@ -30,7 +35,7 @@ ProcessSem::ProcessSem(const int preceesNum, const int val)
     init(val);
     if (preceesNum > 1)
     {
-        m_ref = (int *)ShareMemI::instance().alloc(sizeof(int));
+        m_ref = (int *)shareMem.alloc(sizeof(int));
         *m_ref = preceesNum;
     }
 }
@@ -46,7 +51,7 @@ ProcessSem::~ProcessSem()
             isDelete = 0;
         }else
         {
-            ShareMemI::instance().free(m_ref);
+            shareMem.free(m_ref);
         }
     }
     if (!isDelete) return;

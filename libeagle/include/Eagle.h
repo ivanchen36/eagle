@@ -19,9 +19,10 @@
 #include "Singleton.h"
 #include "Log.h"
 #include "Properties.h"
+#include "EventHandler.h"
 
 #define EAGLE_INIT(cb, ver) \
-    if (0 != EagleI::instance().init(argc, argv, cb, ver)) return 0
+    if (EG_SUCCESS != EagleI::instance().init(argc, argv, cb, ver)) return 0
 
 struct Program
 {
@@ -29,7 +30,7 @@ struct Program
     char *ver;
     char *prefix;
     int logLevel;
-    int process;
+    int processNum;
 
     Program()
     {
@@ -71,7 +72,7 @@ public:
     Program &getProgram()
     {
         return m_program;
-    }
+    } 
 
     int init(const int argc, char *const *argv, const CallBack &notifyQuitCb, 
             const char *ver);
@@ -87,17 +88,19 @@ private:
     void printUsage();
     void printVer();
     void printPrompt(const char *option);
-    void childInit(const CallBack &notifyQuitCb);
+    void nodeInit();
+    void workerInit(const CallBack &notifyQuitCb);
     void masterInit();
     void masterClean();
     int masterCycle();
-    int spawnChildProcess();
+    int initProcess();
     int parseOptions(const int argc, char *const *argv);
     int sendSignal(const char *signal);
 
     int m_index;
-    Program m_program;
     Properties *m_properties;
+    std::vector<EventHandlerPtr> accepterList;
+    Program m_program;
 
     friend class Singleton<Eagle>;
 };

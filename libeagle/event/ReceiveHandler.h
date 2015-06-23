@@ -20,9 +20,9 @@ class ReceiveHandler : public EventHandler
 {
 public:
     ReceiveHandler(EventManager *const manager, const int fd, 
-            MessageHandler *handler);
+            MessageHandler *handler, Pool<IoBufferUnion> *bufPool);
     ReceiveHandler(EventManager *const manager, Socket *socket, 
-            MessageHandler *handler);
+            MessageHandler *handler, Pool<IoBufferUnion> *bufPool);
     virtual ~ReceiveHandler();
    
     virtual int read();
@@ -31,6 +31,19 @@ public:
 
 private:
     void waitWrite(const uint8_t *buf, int size);
+
+    IoBuffer *getBuf()
+    {
+        IoBuffer *tmp = (IoBuffer *)m_bufPool->pop();
+
+        tmp->reset();
+        return tmp;
+    }
+
+    void releaseBuf(IoBuffer *buf)
+    {
+        return m_bufPool->push((IoBufferUnion *)buf);
+    }
 
     void readLock()
     {
@@ -70,6 +83,9 @@ private:
 
     char m_readMutex;
     char m_writeMutex;
+    IoBuffer *m_readBuf;
+    IoBuffer *m_writeBuf;
     MessageHandler *m_messageHandler;
+    Pool<IoBufferUnion> *m_bufPool;
 };
 #endif   /* ----- #ifndef _RECEIVEHANDLER_H_  ----- */

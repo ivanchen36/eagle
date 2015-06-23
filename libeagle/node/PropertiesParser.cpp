@@ -8,31 +8,35 @@
 
 namespace
 {
-    const char *TAG_EAGLE = "eagle";
-    const char *TAG_NODE = "node";
-    const char *TAG_PROGRAM = "program";
-    const char *TAG_PROPERTY = "property";
-    const char *TAG_SERVER = "server";
+const char *TAG_EAGLE = "eagle";
+const char *TAG_NODE = "node";
+const char *TAG_PROGRAM = "program";
+const char *TAG_PROPERTY = "property";
+const char *TAG_SERVER = "server";
 
-    const char *ATTR_IP = "ip";
-    const char *ATTR_PORT = "port";
-    const char *ATTR_NAME = "name";
-    const char *ATTR_VER = "ver";
-    const char *ATTR_TYPE = "type";
-    const char *ATTR_VALUE = "value";
-    const char *ATTR_PROCESS = "process";
-    const char *ATTR_LOG = "log";
+const char *ATTR_IP = "ip";
+const char *ATTR_PORT = "port";
+const char *ATTR_NAME = "name";
+const char *ATTR_VER = "ver";
+const char *ATTR_TYPE = "type";
+const char *ATTR_VALUE = "value";
+const char *ATTR_PROCESS = "process";
+const char *ATTR_LOG = "log";
 
-    const char *VAL_AUTO = "auto";
-    const char *VAL_STRING = "string";
-    const char *VAL_INT = "int";
-    const char *VAL_DEBUG = "debug";
-    const char *VAL_INFO = "info";
-    const char *VAL_WARN = "warn";
-    const char *VAL_ERROR = "error";
+const char *VAL_AUTO = "auto";
+const char *VAL_STRING = "string";
+const char *VAL_INT = "int";
+const char *VAL_DEBUG = "debug";
+const char *VAL_INFO = "info";
+const char *VAL_WARN = "warn";
+const char *VAL_ERROR = "error";
 
-    const char TYPE_INT = '1';
-    const char TYPE_STRING = '2';
+const char TYPE_INT = '1';
+const char TYPE_STRING = '2';
+
+Eagle &eagle = EagleI::instance();
+EagleNode &eagleNode = EagleNodeI::instance();
+Program &program = eagle.getProgram();
 }
 
 int PropertiesParser::handleEagleTag(tinyxml2::XMLElement *root)
@@ -55,7 +59,7 @@ int PropertiesParser::handleEagleTag(tinyxml2::XMLElement *root)
         return EG_FAILED;
     }
 
-    EagleNodeI::instance().setNodeAddr(ip, port);
+    eagleNode.setNodeAddr(ip, port);
 
     return EG_SUCCESS;
 }
@@ -80,19 +84,19 @@ int PropertiesParser::handleNodeTag(tinyxml2::XMLElement *root)
         return EG_FAILED;
     }
 
-    EagleNodeI::instance().addNodeAddr(ip, port);
+    eagleNode.addNodeAddr(ip, port);
 
     return EG_SUCCESS;
 }
 
-int PropertiesParser::handleProgramTag(tinyxml2::XMLElement *root)
+int PropertiesParser::handleProgramTag(tinyxml2::XMLElement *root, 
+        std::map<std::string, short> &serverMap)
 {
     int process;
     tinyxml2::XMLElement *tmp;
     const char *name = root->Attribute(ATTR_NAME);
     const char *ver = root->Attribute(ATTR_VER);
     const char *log = root->Attribute(ATTR_LOG);
-    Program &pro = EagleI::instance().getProgram();
 
     if (NULL == name || NULL == ver || 
             root->QueryIntAttribute(ATTR_PROCESS, &process) != tinyxml2::XML_NO_ERROR)
@@ -102,35 +106,36 @@ int PropertiesParser::handleProgramTag(tinyxml2::XMLElement *root)
         return EG_FAILED;
     } 
 
-    if (strcmp(name, pro.name) != 0
-            || strcmp(ver,pro.ver) != 0)
+    if (strcmp(name, program.name) != 0
+            || strcmp(ver,program.ver) != 0)
         return EG_SUCCESS;
 
     if (NULL == log || strcmp(VAL_DEBUG, log) == 0)
     {
-        pro.logLevel = DEBUG_LOG;
+        program.logLevel = DEBUG_LOG;
     }else if (strcmp(VAL_INFO, log) == 0)
     {
-        pro.logLevel = INFO_LOG;
+        program.logLevel = INFO_LOG;
     }else if (strcmp(VAL_WARN, log) == 0)
     {
-        pro.logLevel = WARN_LOG;
+        program.logLevel = WARN_LOG;
     }else if (strcmp(VAL_ERROR, log) == 0)
     {
-        pro.logLevel = ERROR_LOG;
+        program.logLevel = ERROR_LOG;
     }
-    pro.process = process;
+    program.processNum = process;
 
     for (tmp = root->FirstChildElement(TAG_SERVER); NULL != tmp; 
             tmp = tmp->NextSiblingElement(TAG_SERVER))
     {
-        handleServerTag(tmp);
+        handleServerTag(tmp, serverMap);
     }
 
     return EG_SUCCESS;
 }
 
-int PropertiesParser::handleServerTag(tinyxml2::XMLElement *root)
+int PropertiesParser::handleServerTag(tinyxml2::XMLElement *root, 
+        std::map<std::string, short> &serverMap)
 {
     int num;
     const char *name = root->Attribute(ATTR_NAME);
@@ -145,7 +150,7 @@ int PropertiesParser::handleServerTag(tinyxml2::XMLElement *root)
 
     if (strcmp(port, VAL_AUTO) == 0)
     {
-        EagleNodeI::instance().addServer(name, 0);
+        serverMap[name] = 0;
 
         return EG_SUCCESS;
     }
@@ -158,7 +163,7 @@ int PropertiesParser::handleServerTag(tinyxml2::XMLElement *root)
         return EG_FAILED;
     }
 
-    EagleNodeI::instance().addServer(name, num);
+    serverMap[name] = num;
 
     return EG_SUCCESS;
 }
@@ -192,7 +197,7 @@ int PropertiesParser::handlePropertyTag(tinyxml2::XMLElement *root, Properties &
     return EG_SUCCESS;
 }
 
-int PropertiesParser::initNodeProperties()
+int PropertiesParser::parseProProperties(std::map<std::string, short> &serverMap)
 {
     char buf[MAX_FILENAME_LEN];
     tinyxml2::XMLDocument doc;
@@ -200,7 +205,35 @@ int PropertiesParser::initNodeProperties()
     tinyxml2::XMLElement *tmp;
 
     snprintf(buf, MAX_FILENAME_LEN, "%s/%s/%s.xml", 
-            EagleI::instance().getProgram().prefix, CONF_DIR, ENTRY_CONF_FILE);
+            program.prefix, CONF_DIR, ENTRY_CONF_FILE);
+    doc.LoadFile(buf);
+
+    root = doc.FirstChildElement(TAG_EAGLE);
+    if (NULL == root)
+    {
+        ERRORLOG1("parse file %s failed, not find eagle tag.", buf);
+
+        return EG_FAILED;
+    }
+
+    for (tmp = root->FirstChildElement(TAG_PROGRAM); NULL != tmp; 
+            tmp = tmp->NextSiblingElement(TAG_PROGRAM))
+    {
+        handleProgramTag(tmp, serverMap);
+    }
+
+    return EG_SUCCESS;
+}
+
+int PropertiesParser::parseNodeProperties()
+{
+    char buf[MAX_FILENAME_LEN];
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement *root;
+    tinyxml2::XMLElement *tmp;
+
+    snprintf(buf, MAX_FILENAME_LEN, "%s/%s/%s.xml", 
+            program.prefix, CONF_DIR, ENTRY_CONF_FILE);
     doc.LoadFile(buf);
 
     root = doc.FirstChildElement(TAG_EAGLE);
@@ -213,36 +246,25 @@ int PropertiesParser::initNodeProperties()
 
     if (handleEagleTag(root) != EG_SUCCESS) return EG_FAILED;
 
-    for (tmp = root->FirstChildElement(); NULL != tmp; 
-            tmp = tmp->NextSiblingElement())
+    for (tmp = root->FirstChildElement(TAG_NODE); NULL != tmp; 
+            tmp = tmp->NextSiblingElement(TAG_NODE))
     {
-        if (tmp->Name() == TAG_NODE)
-        {
-            handleNodeTag(tmp);
-        }else if (tmp->Name() == TAG_PROGRAM)
-        {
-            handleProgramTag(tmp);
-        }else
-        {
-            ERRORLOG1("invalid tag %s.", tmp->Name());
-        }
+        handleNodeTag(tmp);
     }
 
     return EG_SUCCESS;
 }
-
-int PropertiesParser::initProProperties(Properties &properties)
+int PropertiesParser::parseProperties(Properties &properties)
 {
     const char *attr;
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLElement *root;
     tinyxml2::XMLElement *tmp;
     char buf[MAX_FILENAME_LEN];
-    Program &pro = EagleI::instance().getProgram();
-    const char *programName = pro.name;
-    const char *programVer = pro.ver;
+    const char *programName = program.name;
+    const char *programVer = program.ver;
 
-    snprintf(buf, MAX_FILENAME_LEN, "%s/%s/%s.xml", pro.prefix, 
+    snprintf(buf, MAX_FILENAME_LEN, "%s/%s/%s.xml", program.prefix, 
             CONF_DIR, programName);
     if (!FileEx::isExist(buf))
     {

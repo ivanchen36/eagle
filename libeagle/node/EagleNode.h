@@ -64,6 +64,7 @@ public:
     void addNodeAddr(const char *ip, const short port);
     void delNodeAddr(const char *ip, const short port);
     void addServer(const char *name, const short port);
+    void run();
 
 private:
     EagleNode() {}

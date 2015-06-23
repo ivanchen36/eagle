@@ -2,6 +2,7 @@
 #include <unistd.h>
 
 #include "Eagle.h"
+#include "EagleNode.h"
 #include "Log.h"
 #include "ProcessManager.h"
 #include "ChildSigManager.h"
@@ -11,9 +12,20 @@
 #include "Timer.h"
 #include "StrUtil.h"
 #include "Proctitle.h"
+#include "PropertiesParser.h"
 
 #define OP_STOP "stop"
 #define OP_RELOAD "reload"
+
+namespace
+{
+EagleTime &eagleTime = EagleTimeI::instance();
+MasterSigManager &masterSigManager = MasterSigManagerI::instance();
+ChildSigManager &childSigManager = ChildSigManagerI::instance();
+ShareMem &shareMem = ShareMemI::instance();
+ProcessManager &processManager = ProcessManagerI::instance();
+EagleNode &eagleNode = EagleNodeI::instance();
+}
 
 Eagle::Eagle() : m_properties(NULL)
 {
@@ -134,52 +146,56 @@ void Eagle::printUsage()
            "  -p prefix     : set prefix path\n", m_program.name);
 }
 
-int Eagle::spawnChildProcess()
+int Eagle::initProcess()
 {
     int ret;
     uint8_t *isStop;
-    int processNum = 4;
+    int processNum;
     ProcessSem sem(processNum + 1);
+    std::map<std::string, short> serverMap;
 
-    isStop = (uint8_t *)ShareMemI::instance().calloc(1);
-    ret = ProcessManagerI::instance().spawn(processNum);
+    if (PropertiesParser::parseProProperties(serverMap))
+        return EG_FAILED;
+
+    processNum = m_program.processNum;
+    isStop = (uint8_t *)shareMem.calloc(1);
+    ret = processManager.spawn(processNum);
     if (ret == 0)
     {
         sem.wait();
-        if(*isStop) ret = -1;
-        ShareMemI::instance().free(isStop);
+        if(*isStop) ret = EG_FAILED;
+        shareMem.free(isStop);
 
         return ret;
     }
 
-    if (ret < 0) 
+    if (EG_FAILED == ret) 
     {
         *isStop = 1;
         ERRORLOG("spawnprocess err");
     }
     sem.op(processNum);
-    ShareMemI::instance().free(isStop);
+    shareMem.free(isStop);
 
     return ret;
 }
 
-void Eagle::childInit(const CallBack &notifyQuitCb)
+void Eagle::workerInit(const CallBack &notifyQuitCb)
 {
-    ChildSigManagerI::instance().init(notifyQuitCb);
+    childSigManager.init(notifyQuitCb);
 }
 
 void Eagle::masterInit()
 {
-    EagleTimeI::instance().autoUpdate();
-    MasterSigManagerI::instance().init();
-    MasterSigManagerI::instance().block();
+    eagleTime.autoUpdate();
+    masterSigManager.init();
+    masterSigManager.block();
 }
 
 void Eagle::masterClean()
 {
-    TimerI::del();
-    MasterSigManagerI::instance().unBlock();
-    MasterSigManagerI::instance().clean();
+    masterSigManager.unBlock();
+    masterSigManager.clean();
 }
 
 int Eagle::masterCycle()
@@ -191,29 +207,27 @@ int Eagle::masterCycle()
     for (;;)
     {
         sigsuspend(&set);
-        status = ProcessManagerI::instance().getStatus();
+        status = processManager.getStatus();
 
         if (ProcessManager::QUIT == status)
         {
-            ProcessManagerI::instance().waitQuit();
+            processManager.waitQuit();
 
-            return EG_FAILED;
+            return EG_EXIT;
         }
 
         if (ProcessManager::SPAWN == status)
         {
-            TimerI::instance().pause();
-            if (ProcessManagerI::instance().reSpawn() == EG_SUCCESS)
+            if (processManager.reSpawn() == EG_SUCCESS)
             {
                 masterClean();
 
                 return EG_SUCCESS;
             }
-            TimerI::instance().start();
         }
     }
 
-    return EG_SUCCESS;
+    return EG_EXIT;
 }
 
 int Eagle::init(const int argc, char *const *argv, const CallBack &notifyQuitCb, 
@@ -232,21 +246,27 @@ int Eagle::init(const int argc, char *const *argv, const CallBack &notifyQuitCb,
     initLog();
     if (writePid() == EG_FAILED) return EG_FAILED;
 
-    ret = spawnChildProcess();
+    ret = initProcess();
 
     if (ret > 0) 
     {
         proctitle.setMaster(argc, argv, "%s: master", m_program.name);
         ret = masterCycle();
-        delPid();
-
-        return ret;
+        if (EG_EXIT == ret) delPid();
     }
 
-    if (ret < 0) return EG_FAILED;
+    if (ret != EG_SUCCESS) return ret;
+
+    if (0 == m_index)
+    {
+        proctitle.setWorker(argc, argv, "%s: nodeserver", m_program.name);
+        eagleNode.run();
+
+        return EG_EXIT;
+    }
 
     proctitle.setWorker(argc, argv, "%s: worker-%d", m_program.name, m_index);
-    childInit(notifyQuitCb);
+    workerInit(notifyQuitCb);
 
     return EG_SUCCESS;
 }

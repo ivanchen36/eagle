@@ -30,6 +30,8 @@ public:
     void update();
     void autoUpdate();
     void cancelUpdate();
+    void *operator new(size_t size);
+    void operator delete(void* ptr);
 
     const char *getLogTime()
     {
@@ -44,16 +46,6 @@ public:
     const uint64_t getMsec()
     {
         return m_msec;
-    }
-
-    void *operator new(size_t size)
-    {
-        return ShareMemI::instance().alloc(size);
-    }
-
-    void operator delete(void* ptr)
-    {
-        ShareMemI::instance().free(ptr);
     }
 
 private:

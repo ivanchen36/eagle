@@ -39,6 +39,7 @@ namespace
 
     EventManager *accpetEpoll = new SelectManager(2);
     EventManager *receiveEpoll = new SelectManager(8);
+    IoBufPoolManager &bufPoolManager = IoBufPoolManagerI::instance();
 }
 
 class HelloMessage : public MessageHandler
@@ -112,7 +113,8 @@ void startClient(EventManager *clientEpoll)
         return;
     }
     clientEpoll->registerEvent(READ, new ReceiveHandler(
-                clientEpoll, socket, new HelloMessage()));
+                clientEpoll, socket, new HelloMessage(), 
+                bufPoolManager.getBufPool()));
     int len = clientLen;
     socket->send((const uint8_t *)clientContent, len);
 }

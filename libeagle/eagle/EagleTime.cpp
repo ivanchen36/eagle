@@ -4,13 +4,29 @@
 #include "Log.h"
 #include "EagleTime.h"
 #include "CallBack.h"
+#include "Define.h"
 #include "Timer.h"
 
-#define UPDATE_TIME_INTERVAL 50
+namespace
+{
+ShareMem &shareMem = ShareMemI::instance();
+EagleTime &eagleTime = EagleTimeI::instance();
+Timer &timer = TimerI::instance();
+}
 
 void updateEagleTime(void *param)
 {
-    EagleTimeI::instance().update();
+    eagleTime.update();
+}
+
+void *EagleTime::operator new(size_t size)
+{
+    return shareMem.alloc(size);
+}
+
+void EagleTime::operator delete(void* ptr)
+{
+    shareMem.free(ptr);
 }
 
 EagleTime::EagleTime() : m_sec(0), m_msec(0)
@@ -26,13 +42,13 @@ EagleTime::~EagleTime()
 
 void EagleTime::cancelUpdate()
 {
-    TimerI::instance().delTask("updatetime");
+    timer.delTask("updatetime");
 }
 
 void EagleTime::autoUpdate()
 {
     CallBack cb(updateEagleTime);
-    TimerI::instance().addTask("updatetime", MIN_TIMER_INTERVAL, cb);
+    timer.addTask("updatetime", MIN_TIMER_INTERVAL, cb);
 }
 
 void EagleTime::update()

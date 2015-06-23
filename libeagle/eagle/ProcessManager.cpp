@@ -8,6 +8,11 @@
 #include "Eagle.h"
 #include "Log.h"
 
+namespace
+{
+Eagle &eagle = EagleI::instance();
+}
+
 ProcessManager::ProcessManager()
     :  m_aliveNum(0), m_processNum(0), m_processHead(NULL)
 {
@@ -44,7 +49,7 @@ int ProcessManager::reSpawn()
 
     if (0 == pid)
     {
-        EagleI::instance().setIndex(index);
+        eagle.setIndex(index);
 
         return EG_CHILD;
     }
@@ -61,13 +66,13 @@ int ProcessManager::spawn(int &processNum)
 
     while (++num < processNum && (pid = fork()) > 0)
     {
-        index = num + m_processNum + 1;
+        index = num + m_processNum;
         process = new ProcessNode(index, pid, process);
     }
 
     if (0 == pid)
     {
-        EagleI::instance().setIndex(index + 1);
+        eagle.setIndex(index);
 
         return EG_CHILD;
     }
@@ -96,7 +101,13 @@ void ProcessManager::deleteProcess(const int pid)
     {
         if (pid == process->pid)
         {
-            process->pid = 0;
+            if (process->index == 0)
+            {
+                quit();
+            }else
+            {
+                process->pid = 0;
+            }
 
             return;
         }
@@ -135,14 +146,15 @@ int ProcessManager::stop(const int pid)
     return EG_FAILED;
 }
 
-void ProcessManager::quit(const int processNum)
+void ProcessManager::quit(int processNum)
 {
     ProcessNode *process;
 
+    if (processNum > m_processNum) processNum = m_processNum;
     m_processNum = processNum == 0 ? 0 : m_processNum - processNum;
     for (process = m_processHead; NULL != process; process = m_processHead)
     {
-        if (m_processNum >= process->index) break;
+        if (m_processNum > process->index) break;
 
         stop(process->pid);
         m_processHead = m_processHead->next;

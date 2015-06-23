@@ -7,20 +7,17 @@
 #include "Define.h"
 #include "EagleTime.h"
 
-LogPtr g_sysLog;
+LogPtr g_sysLog = new Log("/dev/null", DEBUG_LOG);
 
 namespace
 {
 const char *g_logTime = "1970-09-28 12:00:00";
 const char *LOG_LEVEL_STR[] = {"debug", "info", "warn", "error"};
+}
 
 __attribute__((constructor)) void initLog()  
 { 
-    ShareMemI::instance();
-    EagleTimeI::instance().getLogTime();
-    g_sysLog = new Log("/dev/null", DEBUG_LOG);
     g_sysLog->redirectToOther(STDOUT_FILENO);
-}
 }
 
 Log::Log(const char *fileName, int level)

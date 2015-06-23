@@ -23,6 +23,7 @@
 #define EG_EPOLL_MAX_EVENT 512
 #define EG_LISTEN_BACKLOG 1024
 
+#define WORKER_THREAD_NUM 4
 
 #define MAX_LOG_LINE_LEN 1024 /* log content size */
 #define MAX_FILENAME_LEN 256 /* filename size */
@@ -42,6 +43,7 @@
 #define EG_SHOW_HELP 2 
 #define EG_SEND_SIGNAL 3 
 
+#define EG_EXIT 2
 #define EG_AGAIN 1
 #define EG_SUCCESS 0
 #define EG_FAILED -1

@@ -5,15 +5,19 @@
 
 namespace
 {
-    void masterSaHandler(int sig)
-    {
-        MasterSigManagerI::instance().handleSig(sig); 
-    }
 
-    void childSaHandler(int sig)
-    {
-        ChildSigManagerI::instance().handleSig(sig); 
-    }
+MasterSigManager &masterSigManager = MasterSigManagerI::instance();
+ChildSigManager &childSigManager = ChildSigManagerI::instance();
+
+void masterSaHandler(int sig)
+{
+    masterSigManager.handleSig(sig); 
+}
+
+void childSaHandler(int sig)
+{
+    childSigManager.handleSig(sig); 
+}
 }
 
 int SignalManager::block()

@@ -79,6 +79,7 @@ int SelectManager::registerEvent(int event, EventHandler *handler)
         LockGuard guard(m_lock);
         reEvent = event;
         handler->inc();
+        if (m_maxFd < handler->getFd()) m_maxFd = handler->getFd();
         m_eventMap[handler->getFd()] = handler;
         flushSelectEvent();
 
@@ -115,14 +116,12 @@ void SelectManager::initFdSet()
     FD_ZERO(&m_readSet);
     FD_ZERO(&m_writeSet);
     FD_SET(m_recvNotifyFd, &m_readSet);
-    m_maxFd = m_recvNotifyFd;
     for (iter = m_eventMap.begin(); iter != m_eventMap.end(); ++iter)
     {
         fd = iter->first;
         handler = iter->second;
         event = handler->getRegisterEvent();
 
-        if (m_maxFd < fd) m_maxFd = fd;
         if (READ & event) FD_SET(fd, &m_readSet);
         if (WRITE & event) FD_SET(fd, &m_writeSet);
     }

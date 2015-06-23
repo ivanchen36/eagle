@@ -13,6 +13,9 @@
  */
 #ifndef  _POOL_H_
 #define  _POOL_H_
+
+#include "MutexLock.h"
+
 template <class T> class Pool
 {
 public:

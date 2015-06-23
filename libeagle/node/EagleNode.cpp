@@ -35,3 +35,8 @@ void EagleNode::addServer(const char *name, const short port)
 {
     m_serverMap[name] = port;
 }
+
+void EagleNode::run()
+{
+
+}

@@ -9,13 +9,16 @@
 
 namespace
 {
+EagleTime &eagleTime = EagleTimeI::instance();
+Timer &timer = TimerI::instance();
+
 #ifdef _TEST_
 void excuteTimer(union sigval val)
 #else
 void excuteTimer(int sig)
 #endif
 {
-    TimerI::instance().excute();
+    timer.excute();
 }
 }
 
@@ -101,7 +104,7 @@ int Timer::setTimer(int msec)
 
 void Timer::start()
 {
-    uint64_t curTime = EagleTimeI::instance().getMsec();
+    uint64_t curTime = eagleTime.getMsec();
     LockGuard guard(m_lock);
     if (m_taskMap.empty()) return;
 
@@ -158,7 +161,7 @@ void Timer::excute()
     TaskNode *next;
     uint64_t tmp;
     uint64_t startTime = (uint64_t)-1;
-    uint64_t curTime = EagleTimeI::instance().getMsec();
+    uint64_t curTime = eagleTime.getMsec();
 
     LockGuard guard(m_lock);
     TaskMap::Iterator iter = m_taskMap.getMin();
@@ -229,7 +232,7 @@ int Timer::addTask(const char *name, const int msec,
         return -1;
     }
 
-    uint64_t curTime = EagleTimeI::instance().getMsec();
+    uint64_t curTime = eagleTime.getMsec();
     uint64_t startTime = curTime + 1;
 
     startTime = ALIGN(startTime, msec);

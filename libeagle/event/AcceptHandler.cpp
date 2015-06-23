@@ -3,12 +3,20 @@
 #include "EventManager.h"
 #include "MessageHandlerFactory.h"
 #include "ShareMem.h"
+#include "Eagle.h"
 #include "Log.h"
+
+namespace
+{
+IoBufPoolManager &bufPoolManager = IoBufPoolManagerI::instance();
+ShareMem &shareMem = ShareMemI::instance();
+MessageHandlerFactory &messageHandlerFactory = MessageHandlerFactoryI::instance();
+}
 
 AcceptHandler::AcceptHandler(EventManager *const manager, Socket *socket,
         const int port) : EventHandler(manager, socket), m_port(port)
 {
-    m_lock = (char *)ShareMemI::instance().alloc(1, port);
+    m_lock = (char *)shareMem.alloc(1, port);
     if (NULL == m_lock)
     {
         ERRORLOG("alloc accept lock err");
@@ -20,11 +28,14 @@ AcceptHandler::AcceptHandler(EventManager *const manager, Socket *socket,
 
 AcceptHandler::~AcceptHandler()
 {
-    if (NULL != m_lock) ShareMemI::instance().free(m_lock);
+    if (NULL != m_lock) shareMem.free(m_lock);
 }
 
 int AcceptHandler::read()
 {
+    if (m_manager->isOverLoad())
+        return EG_SUCCESS;
+
     if (tryLock() == EG_FAILED)
         return EG_SUCCESS;
 
@@ -37,11 +48,11 @@ int AcceptHandler::read()
     {
         ret = m_socket->accept(fd, addr);
         if (EG_SUCCESS != ret) break;
-        if (MessageHandlerFactoryI::instance().createHandler(
+        if (messageHandlerFactory.createHandler(
                     m_port, message) != EG_SUCCESS) continue;
 
         m_manager->registerEvent(READ, new ReceiveHandler(
-                    m_manager, fd, message));
+                    m_manager, fd, message, bufPoolManager.getBufPool()));
     }
 
     unlock();
