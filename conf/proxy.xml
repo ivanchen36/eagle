@@ -1,3 +1,3 @@
-<proxy ver="1.0">
+<proxy ver="0.1.0">
     <property name="retry" type="int" value="3">
 </proxy>

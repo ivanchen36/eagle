@@ -20,6 +20,7 @@
 
 #define OP_STOP "stop"
 #define OP_RELOAD "reload"
+#define NODE_SERVER_INDEX 0
 
 namespace
 {
@@ -161,6 +162,7 @@ int Eagle::initAccepterList(std::string &ip, std::map<std::string, int> &serverM
     EventHandlerPtr handler;
     std::map<std::string, int>::iterator iter;
 
+    m_accepterList.reserve(serverMap.size());
     for (iter = serverMap.begin(); iter != serverMap.end(); ++iter)
     {
         socket = new Socket(ip.c_str(), iter->second, 1);
@@ -174,6 +176,7 @@ int Eagle::initAccepterList(std::string &ip, std::map<std::string, int> &serverM
 
         handler = new AcceptHandler(m_receiveManager, socket, iter->second);
         messageHandlerFactory.registerHandler(iter->second, iter->first.c_str());
+        m_accepterList.push_back(handler);
     }
 
     return EG_SUCCESS;
@@ -197,11 +200,16 @@ int Eagle::initProcess()
     processNum = m_program.processNum;
     isStop = (uint8_t *)shareMem.calloc(1);
     ret = processManager.spawn(processNum);
-    if (ret == 0)
+    if (ret == EG_CHILD)
     {
         sem.wait();
         if(*isStop) ret = EG_FAILED;
         shareMem.free(isStop);
+
+        if (ret == EG_CHILD && NODE_SERVER_INDEX == m_index)
+        {
+            eagleNode.addServer(serverMap); 
+        }
 
         return ret;
     }
@@ -219,6 +227,13 @@ int Eagle::initProcess()
 
 void Eagle::workerInit(const CallBack &notifyQuitCb)
 {
+    std::vector<EventHandlerPtr>::iterator iter;
+
+    for (iter = m_accepterList.begin(); iter != m_accepterList.end(); ++iter)
+    {
+        m_acceptManager->registerEvent(READ, iter->ptr());
+    }
+    m_accepterList.clear();
     childSigManager.init(notifyQuitCb);
 }
 
@@ -285,16 +300,16 @@ int Eagle::init(const int argc, char *const *argv, const CallBack &notifyQuitCb,
 
     ret = initProcess();
 
-    if (ret > 0) 
+    if (EG_PARENT == ret) 
     {
         proctitle.setMaster(argc, argv, "%s: master", m_program.name);
         ret = masterCycle();
         if (EG_EXIT == ret) delPid();
     }
 
-    if (ret != EG_SUCCESS) return ret;
+    if (ret != EG_CHILD) return ret;
 
-    if (0 == m_index)
+    if (NODE_SERVER_INDEX == m_index)
     {
         proctitle.setWorker(argc, argv, "%s: nodeserver", m_program.name);
         eagleNode.run();

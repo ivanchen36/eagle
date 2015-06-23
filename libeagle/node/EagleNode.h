@@ -23,11 +23,11 @@
 struct NodeAddress
 {
     std::string ip;
-    short port;
+    int port;
 
     NodeAddress() {}
 
-    NodeAddress(const std::string & i, const short p)
+    NodeAddress(const std::string & i, const int p)
     {
         ip = i;
         port = p;
@@ -60,10 +60,10 @@ class EagleNode
 public:
     ~EagleNode() {}
 
-    void setNodeAddr(const char *ip, const short port);
-    void addNodeAddr(const char *ip, const short port);
-    void delNodeAddr(const char *ip, const short port);
-    void addServer(const char *name, const short port);
+    void setNodeAddr(const char *ip, const int port);
+    void addNodeAddr(const char *ip, const int port);
+    void delNodeAddr(const char *ip, const int port);
+    void addServer(std::map<std::string, int> &serverMap);
     void run();
 
 private:
@@ -71,7 +71,7 @@ private:
 
     NodeHandler *m_handler;
     NodeAddress m_nodeAddr;
-    std::map<std::string, short> m_serverMap;
+    std::map<std::string, int> m_serverMap;
     std::vector<NodeAddress> m_otherNodeAddr;
 
     friend class Singleton<EagleNode>;

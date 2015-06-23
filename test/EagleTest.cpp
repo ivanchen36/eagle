@@ -34,7 +34,7 @@ void notifyQuit(void *pram)
 int main ( int argc, char *argv[] )
 {
     CallBack cb(notifyQuit);
-    EAGLE_INIT(cb, "1.0");
+    EAGLE_INIT(cb, "0.1.0");
 
     while (0 == g_waitQuit)
     {

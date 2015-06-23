@@ -1,12 +1,12 @@
 #include "EagleNode.h"
 
-void EagleNode::setNodeAddr(const char *ip, const short port)
+void EagleNode::setNodeAddr(const char *ip, const int port)
 {
     m_nodeAddr.ip = ip;
     m_nodeAddr.port = port;
 }
 
-void EagleNode::addNodeAddr(const char *ip, const short port)
+void EagleNode::addNodeAddr(const char *ip, const int port)
 {
     std::vector<NodeAddress>::iterator iter;
     for (iter = m_otherNodeAddr.begin(); iter != m_otherNodeAddr.end(); ++iter) 
@@ -17,7 +17,7 @@ void EagleNode::addNodeAddr(const char *ip, const short port)
     m_otherNodeAddr.push_back(NodeAddress(ip, port));
 }
 
-void EagleNode::delNodeAddr(const char *ip, const short port)
+void EagleNode::delNodeAddr(const char *ip, const int port)
 {
     std::vector<NodeAddress>::iterator iter;
     for (iter = m_otherNodeAddr.begin(); iter != m_otherNodeAddr.end(); ++iter) 
@@ -31,9 +31,9 @@ void EagleNode::delNodeAddr(const char *ip, const short port)
     }
 }
 
-void EagleNode::addServer(const char *name, const short port)
+void EagleNode::addServer(std::map<std::string, int> &serverMap)
 {
-    m_serverMap[name] = port;
+    m_serverMap.swap(serverMap);
 }
 
 void EagleNode::run()

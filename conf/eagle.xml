@@ -1,11 +1,11 @@
 <eagle ip="127.0.0.1" port="18888">
     <node ip="127.0.0.1" port="18887" />
 
-    <program name="proxy" ver="1.0" process="1" log="debug" >
+    <program name="proxy" ver="0.1.0" process="1" log="debug" >
         <server name="proxy" port="auto" />
     </program>
 
-    <program name="hello" ver="1.0" process="1" log="debug" >
+    <program name="hello" ver="0.1.0" process="1" log="debug" >
         <server name="hello" port="auto" />
     </program>
 </eagle>
