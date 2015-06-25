@@ -1,9 +1,21 @@
 #include "EagleNode.h"
 #include "ChildSigManager.h"
+#include "SelectManager.h"
 
 namespace
 {
 ChildSigManager &childSigManager = ChildSigManagerI::instance();
+
+void quitEagleNode(void *param)
+{
+    EventManager *manager = (EventManager *)param;
+    manager->stopLoop();
+}
+}
+
+EagleNode::EagleNode()
+{
+    m_eventManager = new SelectManager(1); 
 }
 
 void EagleNode::setNodeAddr(const char *ip, const int port)

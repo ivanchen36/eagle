@@ -33,16 +33,14 @@ MasterSigManager &masterSigManager = MasterSigManagerI::instance();
 MessageHandlerFactory &messageHandlerFactory = MessageHandlerFactoryI::instance();
 }
 
-Eagle::Eagle() : m_sockets(NULL), m_properties(NULL), 
+Eagle::Eagle() : m_servers(NULL), m_properties(NULL), 
     m_acceptManager(NULL), m_receiveManager(NULL)
 {
-    m_acceptManager = new SelectManager(1);
-    m_receiveManager = new EpollManager(WORKER_THREAD_NUM);
 }
 
 Eagle::~Eagle()
 {
-    if (NULL != m_sockets) delete m_sockets;
+    if (NULL != m_servers) delete m_servers;
     if (NULL != m_properties) delete m_properties;
     if (NULL != m_acceptManager) delete m_acceptManager;
     if (NULL != m_receiveManager) delete m_receiveManager;
@@ -158,14 +156,15 @@ void Eagle::printUsage()
            "  -p prefix     : set prefix path\n", m_program.name);
 }
 
-int Eagle::initSockets(std::string &ip, std::map<std::string, int> &serverMap)
+int Eagle::initServers(std::string &ip, std::map<std::string, int> &serverMap)
 {
     Socket *socket;
-    EventHandlerPtr handler;
+    Server *server;
     std::map<std::string, int>::iterator iter;
-    int len = serverMap.size();
+    int len = serverMap.size() + 1;
 
-    m_sockets = (Socket **)new char[sizeof(Socket *) * len];
+    m_servers = (Server **)new char[sizeof(Server *) * len];
+    *(m_servers + len--) = NULL;
     for (iter = serverMap.begin(); iter != serverMap.end(); ++iter)
     {
         socket = new Socket(ip.c_str(), iter->second, 1);
@@ -176,12 +175,8 @@ int Eagle::initSockets(std::string &ip, std::map<std::string, int> &serverMap)
 
             return EG_FAILED;
         }
-        *(m_sockets + len--) = socket;
-#if 0
-        handler = new AcceptHandler(m_receiveManager, socket, iter->second);
-        messageHandlerFactory.registerHandler(iter->second, iter->first.c_str());
-        m_accepterList.push_back(handler);
-#endif
+        server = new Server(iter->first.c_str(), iter->second, socket);
+        *(m_servers + len--) = server;
     }
 
     return EG_SUCCESS;
@@ -199,7 +194,7 @@ int Eagle::initProcess()
     if (PropertiesParser::parseProProperties(ip, serverMap))
         return EG_FAILED;
 
-    if (initSockets(ip, serverMap) != EG_SUCCESS)
+    if (initServers(ip, serverMap) != EG_SUCCESS)
         return EG_FAILED;
 
     processNum = m_program.processNum;
@@ -232,14 +227,21 @@ int Eagle::initProcess()
 
 void Eagle::workerInit(const CallBack &notifyQuitCb)
 {
-    std::vector<EventHandlerPtr>::iterator iter;
-#if 0
-    for (iter = m_accepterList.begin(); iter != m_accepterList.end(); ++iter)
+    EventHandlerPtr handler;
+    Server *server = *m_servers;
+
+    m_acceptManager = new SelectManager(1);
+    m_receiveManager = new EpollManager(WORKER_THREAD_NUM);
+    for (int i = 0; NULL != server; ++i, server = *(m_servers + i))
     {
-        m_acceptManager->registerEvent(READ, iter->ptr());
+
+        handler = new AcceptHandler(m_receiveManager, server.socket, server.port);
+        messageHandlerFactory.registerHandler(server.port, server.name);
+        m_acceptManager->registerEvent(READ, handler);
+        server.socket = NULL;
+        delete server;
     }
-    m_accepterList.clear();
-#endif
+    delete [](char *)m_servers;
     childSigManager.init(notifyQuitCb);
 }
 

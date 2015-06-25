@@ -41,7 +41,7 @@ MmapFile::~MmapFile()
 
     if (NULL != m_ptr) unmap();
     closeFile();
-    if (NULL != m_fileName) delete m_fileName;
+    if (NULL != m_fileName) delete []m_fileName;
 }
 
 int MmapFile::flush()

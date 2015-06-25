@@ -18,6 +18,7 @@
 #include "CallBack.h"
 #include "Singleton.h"
 #include "Log.h"
+#include "StrUtil.h"
 #include "Properties.h"
 #include "EventHandler.h"
 #include "EventManager.h"
@@ -43,9 +44,29 @@ struct Program
 
     ~Program()
     {
-        if (NULL != name) delete name;
-        if (NULL != ver) delete ver;
-        if (NULL != prefix) delete prefix;
+        if (NULL != name) delete []name;
+        if (NULL != ver) delete []ver;
+        if (NULL != prefix) delete []prefix;
+    }
+};
+
+struct Server
+{
+    char *name;
+    Socket *socket;
+    int port;
+
+    Server(const char *n, const int p, Socket *s)
+    {
+        StrUtil::copy(name, n);
+        socket = s;
+        port = p;
+    }
+
+    ~Server()
+    {
+        if (NULL != name) delete []name;
+        if (NULL != socket) delete []socket;
     }
 };
 
@@ -91,10 +112,10 @@ private:
     int initProcess();
     int sendSignal(const char *signal);
     int parseOptions(const int argc, char *const *argv);
-    int initSockets(std::string &ip, std::map<std::string, int> &serverMap);
+    int initServers(std::string &ip, std::map<std::string, int> &serverMap);
 
     int m_index;
-    Socket **m_sockets;
+    Server **m_servers;
     Properties *m_properties;
     EventManager *m_acceptManager;
     EventManager *m_receiveManager;
