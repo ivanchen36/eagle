@@ -186,7 +186,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 LIB_INCLUDE = $(top_srcdir)/libeagle/include
-INCLUDES = -I$(LIB_INCLUDE)
+EAGLE_PATH = $(top_srcdir)/libeagle/eagle
+INCLUDES = -I$(LIB_INCLUDE) -I$(EAGLE_PATH)
 noinst_LTLIBRARIES = libnode.la
 libnode_la_SOURCES = Follower.cpp Leader.cpp PropertiesParser.cpp \
 					 EagleNode.cpp

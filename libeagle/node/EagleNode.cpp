@@ -1,4 +1,10 @@
 #include "EagleNode.h"
+#include "ChildSigManager.h"
+
+namespace
+{
+ChildSigManager &childSigManager = ChildSigManagerI::instance();
+}
 
 void EagleNode::setNodeAddr(const char *ip, const int port)
 {
@@ -38,5 +44,7 @@ void EagleNode::addServer(std::map<std::string, int> &serverMap)
 
 void EagleNode::run()
 {
-
+#if 0
+    childSigManager.init(notifyQuitCb);
+#endif
 }

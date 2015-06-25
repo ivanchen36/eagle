@@ -33,7 +33,8 @@ MasterSigManager &masterSigManager = MasterSigManagerI::instance();
 MessageHandlerFactory &messageHandlerFactory = MessageHandlerFactoryI::instance();
 }
 
-Eagle::Eagle() : m_properties(NULL)
+Eagle::Eagle() : m_sockets(NULL), m_properties(NULL), 
+    m_acceptManager(NULL), m_receiveManager(NULL)
 {
     m_acceptManager = new SelectManager(1);
     m_receiveManager = new EpollManager(WORKER_THREAD_NUM);
@@ -41,6 +42,7 @@ Eagle::Eagle() : m_properties(NULL)
 
 Eagle::~Eagle()
 {
+    if (NULL != m_sockets) delete m_sockets;
     if (NULL != m_properties) delete m_properties;
     if (NULL != m_acceptManager) delete m_acceptManager;
     if (NULL != m_receiveManager) delete m_receiveManager;
@@ -156,13 +158,14 @@ void Eagle::printUsage()
            "  -p prefix     : set prefix path\n", m_program.name);
 }
 
-int Eagle::initAccepterList(std::string &ip, std::map<std::string, int> &serverMap)
+int Eagle::initSockets(std::string &ip, std::map<std::string, int> &serverMap)
 {
     Socket *socket;
     EventHandlerPtr handler;
     std::map<std::string, int>::iterator iter;
+    int len = serverMap.size();
 
-    m_accepterList.reserve(serverMap.size());
+    m_sockets = (Socket **)new char[sizeof(Socket *) * len];
     for (iter = serverMap.begin(); iter != serverMap.end(); ++iter)
     {
         socket = new Socket(ip.c_str(), iter->second, 1);
@@ -173,10 +176,12 @@ int Eagle::initAccepterList(std::string &ip, std::map<std::string, int> &serverM
 
             return EG_FAILED;
         }
-
+        *(m_sockets + len--) = socket;
+#if 0
         handler = new AcceptHandler(m_receiveManager, socket, iter->second);
         messageHandlerFactory.registerHandler(iter->second, iter->first.c_str());
         m_accepterList.push_back(handler);
+#endif
     }
 
     return EG_SUCCESS;
@@ -194,7 +199,7 @@ int Eagle::initProcess()
     if (PropertiesParser::parseProProperties(ip, serverMap))
         return EG_FAILED;
 
-    if (initAccepterList(ip, serverMap) != EG_SUCCESS)
+    if (initSockets(ip, serverMap) != EG_SUCCESS)
         return EG_FAILED;
 
     processNum = m_program.processNum;
@@ -228,12 +233,13 @@ int Eagle::initProcess()
 void Eagle::workerInit(const CallBack &notifyQuitCb)
 {
     std::vector<EventHandlerPtr>::iterator iter;
-
+#if 0
     for (iter = m_accepterList.begin(); iter != m_accepterList.end(); ++iter)
     {
         m_acceptManager->registerEvent(READ, iter->ptr());
     }
     m_accepterList.clear();
+#endif
     childSigManager.init(notifyQuitCb);
 }
 

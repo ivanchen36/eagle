@@ -112,7 +112,7 @@ public:
        m_eventHandler = eventHandler;
     }
 
-    virtual void close(){}
+    virtual void quit(){}
 
 protected:
     EventHandler *m_eventHandler;

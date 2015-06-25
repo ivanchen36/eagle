@@ -19,6 +19,7 @@
 
 #include "Singleton.h"
 #include "NodeHandler.h"
+#include "EventManager.h"
 
 struct NodeAddress
 {
@@ -70,6 +71,7 @@ private:
     EagleNode() {}
 
     NodeHandler *m_handler;
+    EventManager *m_eventManager;
     NodeAddress m_nodeAddr;
     std::map<std::string, int> m_serverMap;
     std::vector<NodeAddress> m_otherNodeAddr;

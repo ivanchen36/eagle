@@ -49,12 +49,6 @@ struct Program
     }
 };
 
-struct EagleAttr
-{
-    static int index;
-    static int status;
-};
-
 class Eagle
 {
 public:
@@ -97,14 +91,14 @@ private:
     int initProcess();
     int sendSignal(const char *signal);
     int parseOptions(const int argc, char *const *argv);
-    int initAccepterList(std::string &ip, std::map<std::string, int> &serverMap);
+    int initSockets(std::string &ip, std::map<std::string, int> &serverMap);
 
     int m_index;
+    Socket **m_sockets;
     Properties *m_properties;
     EventManager *m_acceptManager;
     EventManager *m_receiveManager;
     Program m_program;
-    std::vector<EventHandlerPtr> m_accepterList;
 
     friend class Singleton<Eagle>;
 };
