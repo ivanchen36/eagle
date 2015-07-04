@@ -17,6 +17,7 @@
 #include <semaphore.h>
 
 #include "SemEx.h"
+#include "EagleTime.h"
 
 class ThreadSem : public Semaphore
 {
@@ -31,6 +32,7 @@ public:
 private:
     int m_isInit;
     sem_t m_sem;
+    EagleTime &m_eagleTime;
 };
 
 typedef AutoPtr<ThreadSem> ThreadSemPtr;

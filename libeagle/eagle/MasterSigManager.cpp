@@ -2,11 +2,6 @@
 #include "ProcessManager.h"
 #include "Log.h"
 
-namespace
-{
-ProcessManager &processManager = ProcessManagerI::instance();
-}
-
 MasterSigManager::MasterSigManager()
 {
     m_handleMap[SIGQUIT] = (SaHandle)&MasterSigManager::sigQuit;  
@@ -26,10 +21,10 @@ MasterSigManager::Type MasterSigManager::getType()
 
 void MasterSigManager::sigQuit()
 {
-    processManager.quit();
+    ProcessManagerI::instance().quit();
 }
 
 void MasterSigManager::sigChld()
 {
-    processManager.check();
+    ProcessManagerI::instance().check();
 }

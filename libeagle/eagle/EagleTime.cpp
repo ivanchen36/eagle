@@ -11,7 +11,6 @@ namespace
 {
 ShareMem &shareMem = ShareMemI::instance();
 EagleTime &eagleTime = EagleTimeI::instance();
-Timer &timer = TimerI::instance();
 }
 
 void updateEagleTime(void *param)
@@ -42,13 +41,13 @@ EagleTime::~EagleTime()
 
 void EagleTime::cancelUpdate()
 {
-    timer.delTask("updatetime");
+    TimerI::instance().delTask("updatetime");
 }
 
 void EagleTime::autoUpdate()
 {
     CallBack cb(updateEagleTime);
-    timer.addTask("updatetime", MIN_TIMER_INTERVAL, cb);
+    TimerI::instance().addTask("updatetime", MIN_TIMER_INTERVAL, cb);
 }
 
 void EagleTime::update()

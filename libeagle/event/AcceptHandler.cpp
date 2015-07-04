@@ -1,7 +1,6 @@
 #include "AcceptHandler.h"
 #include "ReceiveHandler.h"
 #include "EventManager.h"
-#include "MessageHandlerFactory.h"
 #include "ShareMem.h"
 #include "Eagle.h"
 #include "Log.h"
@@ -9,12 +8,12 @@
 namespace
 {
 ShareMem &shareMem = ShareMemI::instance();
-IoBufPoolManager &bufPoolManager = IoBufPoolManagerI::instance();
-MessageHandlerFactory &messageHandlerFactory = MessageHandlerFactoryI::instance();
 }
 
 AcceptHandler::AcceptHandler(EventManager *const manager, Socket *socket,
-        const int port) : EventHandler(manager, socket), m_port(port)
+        const int port) : EventHandler(manager, socket), m_port(port),
+    m_messageHandlerFactory(MessageHandlerFactoryI::instance()), 
+    m_bufPoolManager(IoBufPoolManagerI::instance())
 {
     m_lock = (char *)shareMem.alloc(1, port);
     if (NULL == m_lock)
@@ -48,11 +47,11 @@ int AcceptHandler::read()
     {
         ret = m_socket->accept(fd, addr);
         if (EG_SUCCESS != ret) break;
-        if (messageHandlerFactory.createHandler(
+        if (m_messageHandlerFactory.createHandler(
                     m_port, message) != EG_SUCCESS) continue;
 
         m_manager->registerEvent(READ, new ReceiveHandler(
-                    m_manager, fd, message, bufPoolManager.getBufPool()));
+                    m_manager, fd, message, m_bufPoolManager.getBufPool()));
     }
 
     unlock();

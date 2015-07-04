@@ -3,27 +3,24 @@
 
 #include "Timer.h"
 #include "Thread.h"
-#include "EagleTime.h"
 #include "Define.h"
 #include "Log.h"
 
 namespace
 {
-EagleTime &eagleTime = EagleTimeI::instance();
-Timer &timer = TimerI::instance();
-
+Timer *timer;
 #ifdef _TEST_
 void excuteTimer(union sigval val)
 #else
 void excuteTimer(int sig)
 #endif
 {
-    timer.excute();
+    timer->excute();
 }
 }
 
 Timer::Timer() : m_isPause(0), m_nextExcuteTime((uint64_t)-1), 
-    m_taskListHead(NULL)
+    m_taskListHead(NULL), m_eagleTime(EagleTimeI::instance())
 { 
 #ifdef _TEST_
     struct sigevent evp;
@@ -49,6 +46,7 @@ Timer::Timer() : m_isPause(0), m_nextExcuteTime((uint64_t)-1),
                 SIGALRM, strerror(errno));
     }
 #endif
+    timer = this;
 }
 
 Timer::~Timer()
@@ -104,7 +102,7 @@ int Timer::setTimer(int msec)
 
 void Timer::start()
 {
-    uint64_t curTime = eagleTime.getMsec();
+    uint64_t curTime = m_eagleTime.getMsec();
     LockGuard guard(m_lock);
     if (m_taskMap.empty()) return;
 
@@ -161,7 +159,7 @@ void Timer::excute()
     TaskNode *next;
     uint64_t tmp;
     uint64_t startTime = (uint64_t)-1;
-    uint64_t curTime = eagleTime.getMsec();
+    uint64_t curTime = m_eagleTime.getMsec();
 
     LockGuard guard(m_lock);
     TaskMap::Iterator iter = m_taskMap.getMin();
@@ -232,7 +230,7 @@ int Timer::addTask(const char *name, const int msec,
         return -1;
     }
 
-    uint64_t curTime = eagleTime.getMsec();
+    uint64_t curTime = m_eagleTime.getMsec();
     uint64_t startTime = curTime + 1;
 
     startTime = ALIGN(startTime, msec);

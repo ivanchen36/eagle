@@ -15,6 +15,7 @@
 #define  _ACCEPTHANDLER_H_
 
 #include "EventHandler.h"
+#include "MessageHandlerFactory.h"
 
 class AcceptHandler : public EventHandler
 {
@@ -45,5 +46,7 @@ public:
 private:
     char *m_lock;
     const int m_port;
+    MessageHandlerFactory &m_messageHandlerFactory;
+    IoBufPoolManager &m_bufPoolManager;
 };
 #endif   /* ----- #ifndef _ACCEPTHANDLER_H_  ----- */

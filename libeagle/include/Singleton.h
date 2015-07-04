@@ -41,7 +41,7 @@ public:
         if (NULL == s_instance) return;
 
         delete s_instance;
-        s_instance = 0;
+        s_instance = NULL;
     }
     
 private:

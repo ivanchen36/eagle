@@ -26,11 +26,6 @@ namespace
 {
 ShareMem &shareMem = ShareMemI::instance();
 EagleTime &eagleTime = EagleTimeI::instance();
-EagleNode &eagleNode = EagleNodeI::instance();
-ProcessManager &processManager = ProcessManagerI::instance();
-ChildSigManager &childSigManager = ChildSigManagerI::instance();
-MasterSigManager &masterSigManager = MasterSigManagerI::instance();
-MessageHandlerFactory &messageHandlerFactory = MessageHandlerFactoryI::instance();
 }
 
 Eagle::Eagle() : m_servers(NULL), m_properties(NULL), 
@@ -199,16 +194,17 @@ int Eagle::initProcess()
 
     processNum = m_program.processNum;
     isStop = (uint8_t *)shareMem.calloc(1);
-    ret = processManager.spawn(processNum);
+    ret = ProcessManagerI::instance().spawn(processNum);
     if (ret == EG_CHILD)
     {
+        ProcessManagerI::del();
         sem.wait();
         if(*isStop) ret = EG_FAILED;
         shareMem.free(isStop);
 
         if (ret == EG_CHILD && NODE_SERVER_INDEX == m_index)
         {
-            eagleNode.addServer(serverMap); 
+            EagleNodeI::instance().addServer(serverMap); 
         }
 
         return ret;
@@ -227,7 +223,7 @@ int Eagle::initProcess()
 
 void Eagle::workerInit(const CallBack &notifyQuitCb)
 {
-    EventHandlerPtr handler;
+    EventHandler *handler;
     Server *server = *m_servers;
 
     m_acceptManager = new SelectManager(1);
@@ -235,27 +231,30 @@ void Eagle::workerInit(const CallBack &notifyQuitCb)
     for (int i = 0; NULL != server; ++i, server = *(m_servers + i))
     {
 
-        handler = new AcceptHandler(m_receiveManager, server.socket, server.port);
-        messageHandlerFactory.registerHandler(server.port, server.name);
+        handler = new AcceptHandler(m_receiveManager, server->socket, server->port);
+        MessageHandlerFactoryI::instance().registerHandler(server->port, server->name);
         m_acceptManager->registerEvent(READ, handler);
-        server.socket = NULL;
+        server->socket = NULL;
         delete server;
     }
     delete [](char *)m_servers;
-    childSigManager.init(notifyQuitCb);
+    ChildSigManagerI::instance().init(notifyQuitCb);
 }
 
 void Eagle::masterInit()
 {
     eagleTime.autoUpdate();
-    masterSigManager.init();
-    masterSigManager.block();
+    MasterSigManagerI::instance().init();
+    MasterSigManagerI::instance().block();
 }
 
 void Eagle::masterClean()
 {
-    masterSigManager.unBlock();
-    masterSigManager.clean();
+    MasterSigManagerI::instance().unBlock();
+    MasterSigManagerI::instance().clean();
+    MasterSigManagerI::del();
+    ProcessManagerI::del();
+    TimerI::del();
 }
 
 int Eagle::masterCycle()
@@ -267,23 +266,26 @@ int Eagle::masterCycle()
     for (;;)
     {
         sigsuspend(&set);
-        status = processManager.getStatus();
+        status = ProcessManagerI::instance().getStatus();
 
         if (ProcessManager::QUIT == status)
         {
-            processManager.waitQuit();
+            ProcessManagerI::instance().waitQuit();
 
             return EG_EXIT;
         }
 
         if (ProcessManager::SPAWN == status)
         {
-            if (processManager.reSpawn() == EG_SUCCESS)
+            TimerI::instance().pause();
+            if (ProcessManagerI::instance().reSpawn() == EG_SUCCESS)
             {
                 masterClean();
 
                 return EG_SUCCESS;
             }
+
+            TimerI::instance().start();
         }
     }
 
@@ -320,7 +322,7 @@ int Eagle::init(const int argc, char *const *argv, const CallBack &notifyQuitCb,
     if (NODE_SERVER_INDEX == m_index)
     {
         proctitle.setWorker(argc, argv, "%s: nodeserver", m_program.name);
-        eagleNode.run();
+        EagleNodeI::instance().run();
 
         return EG_EXIT;
     }

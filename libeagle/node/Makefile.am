@@ -4,9 +4,9 @@ CXXFLAGS = -g -O0 -pedantic -Wall -Werror -Wfloat-equal -Wshadow
 
 LIB_INCLUDE = $(top_srcdir)/libeagle/include
 EAGLE_PATH = $(top_srcdir)/libeagle/eagle
+EVENT_PATH = $(top_srcdir)/libeagle/event
 
-
-INCLUDES = -I$(LIB_INCLUDE) -I$(EAGLE_PATH)
+INCLUDES = -I$(LIB_INCLUDE) -I$(EAGLE_PATH) -I$(EVENT_PATH)
 
 noinst_LTLIBRARIES = libnode.la
 libnode_la_SOURCES = Follower.cpp Leader.cpp PropertiesParser.cpp \

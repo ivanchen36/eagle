@@ -36,7 +36,6 @@ const char TYPE_STRING = '2';
 
 Eagle &eagle = EagleI::instance();
 Program &program = eagle.getProgram();
-EagleNode &eagleNode = EagleNodeI::instance();
 }
 
 int PropertiesParser::handleEagleTag(tinyxml2::XMLElement *root)
@@ -59,7 +58,7 @@ int PropertiesParser::handleEagleTag(tinyxml2::XMLElement *root)
         return EG_FAILED;
     }
 
-    eagleNode.setNodeAddr(ip, port);
+    EagleNodeI::instance().setNodeAddr(ip, port);
 
     return EG_SUCCESS;
 }
@@ -84,7 +83,7 @@ int PropertiesParser::handleNodeTag(tinyxml2::XMLElement *root)
         return EG_FAILED;
     }
 
-    eagleNode.addNodeAddr(ip, port);
+    EagleNodeI::instance().addNodeAddr(ip, port);
 
     return EG_SUCCESS;
 }

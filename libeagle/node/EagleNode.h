@@ -59,7 +59,7 @@ struct NodeAddress
 class EagleNode 
 {
 public:
-    ~EagleNode() {}
+    ~EagleNode();
 
     void setNodeAddr(const char *ip, const int port);
     void addNodeAddr(const char *ip, const int port);
@@ -68,7 +68,7 @@ public:
     void run();
 
 private:
-    EagleNode() {}
+    EagleNode();
 
     NodeHandler *m_handler;
     EventManager *m_eventManager;

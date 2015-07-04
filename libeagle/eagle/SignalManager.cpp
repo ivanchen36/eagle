@@ -5,17 +5,14 @@
 
 namespace
 {
-ChildSigManager &childSigManager = ChildSigManagerI::instance();
-MasterSigManager &masterSigManager = MasterSigManagerI::instance();
-
 void masterSaHandler(int sig)
 {
-    masterSigManager.handleSig(sig); 
+    MasterSigManagerI::instance().handleSig(sig); 
 }
 
 void childSaHandler(int sig)
 {
-    childSigManager.handleSig(sig); 
+    ChildSigManagerI::instance().handleSig(sig); 
 }
 }
 

@@ -22,6 +22,7 @@
 #include "MutexLock.h"
 #include "TaskThread.h"
 #include "StrUtil.h"
+#include "EagleTime.h"
 
 class Timer
 {
@@ -73,6 +74,7 @@ private:
     uint64_t m_nextExcuteTime;
     TaskNode *m_taskListHead;
     TaskMap m_taskMap;
+    EagleTime &m_eagleTime;
 
 #ifdef _TEST_
     timer_t m_timer;

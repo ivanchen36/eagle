@@ -4,8 +4,6 @@
 
 namespace
 {
-ChildSigManager &childSigManager = ChildSigManagerI::instance();
-
 void quitEagleNode(void *param)
 {
     EventManager *manager = (EventManager *)param;
@@ -16,6 +14,11 @@ void quitEagleNode(void *param)
 EagleNode::EagleNode()
 {
     m_eventManager = new SelectManager(1); 
+    ChildSigManagerI::instance().init(quitEagleNode);
+}
+
+EagleNode::~EagleNode()
+{
 }
 
 void EagleNode::setNodeAddr(const char *ip, const int port)
