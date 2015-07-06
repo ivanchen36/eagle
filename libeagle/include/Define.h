@@ -53,4 +53,5 @@
 #define LOG_DIR "logs"
 #define CONF_DIR "conf"
 
+#define NODE_SERVER_INDEX 0
 #endif   /* ----- #ifndef _DEFINE_H_  ----- */

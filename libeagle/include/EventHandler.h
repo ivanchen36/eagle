@@ -20,6 +20,7 @@
 #include "SocketEx.h"
 #include "IoBuffer.h"
 #include "Log.h"
+#include "ClassFactory.h"
 
 class EventManager;
 

@@ -107,7 +107,7 @@ int PropertiesParser::handleProgramTag(tinyxml2::XMLElement *root,
 
     if (strcmp(name, program.name) != 0
             || strcmp(ver,program.ver) != 0)
-        return EG_SUCCESS;
+        return EG_AGAIN;
 
     if (NULL == log || strcmp(VAL_DEBUG, log) == 0)
     {
@@ -199,6 +199,7 @@ int PropertiesParser::handlePropertyTag(tinyxml2::XMLElement *root, Properties &
 int PropertiesParser::parseProProperties(std::string &ip, 
         std::map<std::string, int> &serverMap)
 {
+    int ret = EG_FAILED;
     const char *attr;
     char buf[MAX_FILENAME_LEN];
     tinyxml2::XMLDocument doc;
@@ -229,10 +230,18 @@ int PropertiesParser::parseProProperties(std::string &ip,
     for (tmp = root->FirstChildElement(TAG_PROGRAM); NULL != tmp; 
             tmp = tmp->NextSiblingElement(TAG_PROGRAM))
     {
-        handleProgramTag(tmp, serverMap);
+        if (handleProgramTag(tmp, serverMap) == EG_SUCCESS)
+        {
+            ret = EG_SUCCESS;
+        }
     }
 
-    return EG_SUCCESS;
+    if (EG_FAILED == ret)
+    {
+        ERRORLOG("parse program config failed.");
+    }
+
+    return ret;
 }
 
 int PropertiesParser::parseNodeProperties()
@@ -264,6 +273,7 @@ int PropertiesParser::parseNodeProperties()
 
     return EG_SUCCESS;
 }
+
 int PropertiesParser::parseProperties(Properties &properties)
 {
     const char *attr;

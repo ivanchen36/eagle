@@ -18,6 +18,7 @@
 
 #include "Log.h"
 #include "Eagle.h"
+#include "EventHandler.h"
 
 using namespace std;
 
@@ -27,6 +28,17 @@ void notifyQuit(void *pram)
 {
     g_waitQuit = 1;
 }
+
+class TestMessage : public MessageHandler
+{
+public:
+    IoBuffer *handle(IoBuffer *ioBuf)
+    {
+        return ioBuf;
+    }
+};
+
+REGISTER_REFLECTOR("test", TestMessage);
 
 /**
  * @brief main 

@@ -40,6 +40,7 @@ struct Program
         ver = NULL;
         prefix = NULL;
         logLevel = DEBUG_LOG;
+        processNum = 0;
     }
 
     ~Program()
@@ -105,9 +106,9 @@ private:
     void printVer();
     void printPrompt(const char *option);
     void nodeInit();
-    void masterInit();
-    void workerInit(const CallBack &notifyQuitCb);
-    void masterClean();
+    void initMaster();
+    void initWorker(const CallBack &notifyQuitCb);
+    void cleanMaster();
     int masterCycle();
     int initProcess();
     int sendSignal(const char *signal);

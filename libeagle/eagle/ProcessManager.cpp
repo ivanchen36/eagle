@@ -32,7 +32,7 @@ int ProcessManager::reSpawn()
     if (num == 0) return EG_FAILED;
     for (; NULL != process && 0 != process->pid; 
             process = process->next);
-    if (NULL != process) return EG_FAILED;
+    if (NULL == process) return EG_FAILED;
 
     index = process->index;
     while (--num >= 0 && (pid = fork()) > 0)
@@ -42,7 +42,7 @@ int ProcessManager::reSpawn()
         process->pid = pid;
         for (; NULL != process && 0 != process->pid; 
                 process = process->next);
-        if (NULL != process) return EG_FAILED;
+        if (NULL == process) return EG_FAILED;
 
         index = process->index;
     }
@@ -61,7 +61,7 @@ int ProcessManager::spawn(int &processNum)
 {
     int pid;
     int num = -1;
-    int index = m_processNum;
+    int index;
     ProcessNode *process = m_processHead;
 
     while (++num < processNum && (pid = fork()) > 0)
@@ -72,7 +72,7 @@ int ProcessManager::spawn(int &processNum)
 
     if (0 == pid)
     {
-        eagle.setIndex(index);
+        eagle.setIndex(num + m_processNum);
 
         return EG_CHILD;
     }
@@ -101,8 +101,9 @@ void ProcessManager::deleteProcess(const int pid)
     {
         if (pid == process->pid)
         {
-            if (process->index == 0)
+            if (NODE_SERVER_INDEX == process->index)
             {
+                process->pid = 0;
                 quit();
             }else
             {
@@ -156,7 +157,7 @@ void ProcessManager::quit(int processNum)
     {
         if (m_processNum > process->index) break;
 
-        stop(process->pid);
+        if (0 != process->pid) stop(process->pid);
         m_processHead = m_processHead->next;
         delete process;
     }

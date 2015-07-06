@@ -2,6 +2,7 @@
 #include <unistd.h>
 
 #include "Eagle.h"
+#include "Define.h"
 #include "EagleNode.h"
 #include "Log.h"
 #include "ProcessManager.h"
@@ -20,7 +21,6 @@
 
 #define OP_STOP "stop"
 #define OP_RELOAD "reload"
-#define NODE_SERVER_INDEX 0
 
 namespace
 {
@@ -35,7 +35,15 @@ Eagle::Eagle() : m_servers(NULL), m_properties(NULL),
 
 Eagle::~Eagle()
 {
-    if (NULL != m_servers) delete m_servers;
+    if (NULL != m_servers)
+    {
+        Server *server = *m_servers;
+        for (int i = 0; NULL != server; server = *(m_servers + ++i))
+        {
+            delete server;
+        }
+        delete [](char *)m_servers;
+    }
     if (NULL != m_properties) delete m_properties;
     if (NULL != m_acceptManager) delete m_acceptManager;
     if (NULL != m_receiveManager) delete m_receiveManager;
@@ -159,7 +167,7 @@ int Eagle::initServers(std::string &ip, std::map<std::string, int> &serverMap)
     int len = serverMap.size() + 1;
 
     m_servers = (Server **)new char[sizeof(Server *) * len];
-    *(m_servers + len--) = NULL;
+    *(m_servers + --len) = NULL;
     for (iter = serverMap.begin(); iter != serverMap.end(); ++iter)
     {
         socket = new Socket(ip.c_str(), iter->second, 1);
@@ -171,7 +179,7 @@ int Eagle::initServers(std::string &ip, std::map<std::string, int> &serverMap)
             return EG_FAILED;
         }
         server = new Server(iter->first.c_str(), iter->second, socket);
-        *(m_servers + len--) = server;
+        *(m_servers + --len) = server;
     }
 
     return EG_SUCCESS;
@@ -183,7 +191,6 @@ int Eagle::initProcess()
     uint8_t *isStop;
     int processNum;
     std::string ip;
-    ProcessSem sem(processNum + 1);
     std::map<std::string, int> serverMap;
 
     if (PropertiesParser::parseProProperties(ip, serverMap))
@@ -192,8 +199,10 @@ int Eagle::initProcess()
     if (initServers(ip, serverMap) != EG_SUCCESS)
         return EG_FAILED;
 
-    processNum = m_program.processNum;
+    processNum = m_program.processNum + 1;
+    ProcessSem sem(processNum + 1);
     isStop = (uint8_t *)shareMem.calloc(1);
+    *isStop = 0;
     ret = ProcessManagerI::instance().spawn(processNum);
     if (ret == EG_CHILD)
     {
@@ -221,7 +230,7 @@ int Eagle::initProcess()
     return ret;
 }
 
-void Eagle::workerInit(const CallBack &notifyQuitCb)
+void Eagle::initWorker(const CallBack &notifyQuitCb)
 {
     EventHandler *handler;
     Server *server = *m_servers;
@@ -241,14 +250,14 @@ void Eagle::workerInit(const CallBack &notifyQuitCb)
     ChildSigManagerI::instance().init(notifyQuitCb);
 }
 
-void Eagle::masterInit()
+void Eagle::initMaster()
 {
     eagleTime.autoUpdate();
     MasterSigManagerI::instance().init();
     MasterSigManagerI::instance().block();
 }
 
-void Eagle::masterClean()
+void Eagle::cleanMaster()
 {
     MasterSigManagerI::instance().unBlock();
     MasterSigManagerI::instance().clean();
@@ -262,7 +271,7 @@ int Eagle::masterCycle()
     sigset_t set;
     ProcessManager::Status status;
 
-    masterInit();
+    initMaster();
     for (;;)
     {
         sigsuspend(&set);
@@ -280,7 +289,7 @@ int Eagle::masterCycle()
             TimerI::instance().pause();
             if (ProcessManagerI::instance().reSpawn() == EG_SUCCESS)
             {
-                masterClean();
+                cleanMaster();
 
                 return EG_SUCCESS;
             }
@@ -328,7 +337,7 @@ int Eagle::init(const int argc, char *const *argv, const CallBack &notifyQuitCb,
     }
 
     proctitle.setWorker(argc, argv, "%s: worker-%d", m_program.name, m_index);
-    workerInit(notifyQuitCb);
+    initWorker(notifyQuitCb);
 
     return EG_SUCCESS;
 }

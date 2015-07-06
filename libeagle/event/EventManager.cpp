@@ -53,7 +53,7 @@ void EventManager::stop()
 
     for (int i = 0; i < m_workerNum; ++i)
     {
-        m_workers[i].~EventWorker();
+        (m_workers + i)->~EventWorker();
     }
 }
 

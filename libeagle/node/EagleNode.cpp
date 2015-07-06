@@ -11,14 +11,15 @@ void quitEagleNode(void *param)
 }
 }
 
-EagleNode::EagleNode()
+EagleNode::EagleNode() : m_eventManager(new SelectManager(1))
 {
-    m_eventManager = new SelectManager(1); 
-    ChildSigManagerI::instance().init(quitEagleNode);
+    CallBack cb(quitEagleNode, m_eventManager);
+    ChildSigManagerI::instance().init(cb);
 }
 
 EagleNode::~EagleNode()
 {
+    if (NULL != m_eventManager) delete m_eventManager;
 }
 
 void EagleNode::setNodeAddr(const char *ip, const int port)
@@ -59,7 +60,5 @@ void EagleNode::addServer(std::map<std::string, int> &serverMap)
 
 void EagleNode::run()
 {
-#if 0
-    childSigManager.init(notifyQuitCb);
-#endif
+    m_eventManager->loop();
 }
