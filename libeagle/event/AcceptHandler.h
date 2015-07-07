@@ -21,13 +21,13 @@ class AcceptHandler : public EventHandler
 {
 public:
     AcceptHandler(EventManager *const manager, Socket *socket, 
-            const int port);
+            const int port, const int index);
     virtual ~AcceptHandler();
    
     int tryLock()
     {
         if (__sync_bool_compare_and_swap(
-                    const_cast<volatile char *>(m_lock), '\0', '\1')) 
+                    const_cast<volatile char *>(m_lock), '\0', m_index)) 
             return EG_SUCCESS;
 
         return EG_FAILED;
@@ -36,7 +36,7 @@ public:
     void unlock()
     {
         __sync_bool_compare_and_swap(
-                const_cast<volatile char *>(m_lock), '\1', '\0');
+                const_cast<volatile char *>(m_lock), m_index, '\0');
 
     }
 
@@ -44,6 +44,7 @@ public:
     virtual int write();
 
 private:
+    char m_index;
     char *m_lock;
     const int m_port;
     MessageHandlerFactory &m_messageHandlerFactory;

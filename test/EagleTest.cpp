@@ -20,21 +20,26 @@
 #include "Eagle.h"
 #include "EventHandler.h"
 
-using namespace std;
-
-int g_waitQuit;
-
-void notifyQuit(void *pram)
-{
-    g_waitQuit = 1;
-}
-
 class TestMessage : public MessageHandler
 {
 public:
+    ~TestMessage()
+    {
+        write("bye\n", strlen("bye\n"));
+    }
+
     IoBuffer *handle(IoBuffer *ioBuf)
     {
-        return ioBuf;
+        if (strncmp((char *)ioBuf->buf + ioBuf->offset, 
+                    "quit", strlen("quit")) != 0)
+        {
+            write("hello\n", strlen("hello\n"));
+        }else
+        {
+            close();
+        }
+
+        return ioBuf->next;
     }
 };
 
@@ -43,16 +48,4 @@ REGISTER_REFLECTOR("test", TestMessage);
 /**
  * @brief main 
  */
-int main ( int argc, char *argv[] )
-{
-    CallBack cb(notifyQuit);
-    EAGLE_INIT(cb, "0.1.0");
-
-    while (0 == g_waitQuit)
-    {
-        DEBUGLOG1("child %d wait sigquit", EagleI::instance().getIndex());
-        sleep(10);
-    }
-
-    return EXIT_SUCCESS;
-}
+EAGLE_MAIN("0.1.0")

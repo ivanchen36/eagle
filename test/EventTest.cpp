@@ -70,7 +70,7 @@ public:
     {
 
         DEBUGLOG("response");
-        m_eventHandler->write((const uint8_t *)clientContent, clientLen);
+        write(clientContent, clientLen);
     }
 
     IoBuffer *handle(IoBuffer *ioBuf)
@@ -191,7 +191,7 @@ void test()
         return;
     }
 
-    EventHandler *accepter = new AcceptHandler(receiveEpoll, socket, g_helloPort);
+    EventHandler *accepter = new AcceptHandler(receiveEpoll, socket, g_helloPort, 1);
     MessageHandlerFactoryI::instance().registerHandler(g_helloPort, g_helloServer);
     accpetEpoll->registerEvent(READ, accepter);
 

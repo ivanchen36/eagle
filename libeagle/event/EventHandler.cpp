@@ -20,4 +20,7 @@ EventHandler::~EventHandler()
     if (m_socket) delete m_socket;
 }
 
-
+void EventHandler::clearRegisterEvent()
+{
+    m_manager->unregisterEvent(m_registerEvent, this);
+}

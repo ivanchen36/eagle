@@ -18,15 +18,17 @@
 
 class NodeHandler : public MessageHandler
 {
-#if 0
 public:
     NodeHandler();
     ~NodeHandler();
     
+    virtual IoBuffer *handle(IoBuffer *ioBuf) { return ioBuf; }
+    virtual void close() {}
+#if 0
     virtual IoBuffer *handle(IoBuffer *ioBuf) = 0;
     virtual void close() = 0;
-private:
 #endif
+private:
 };
 
 typedef AutoPtr<NodeHandler> NodeHandlerPtr;

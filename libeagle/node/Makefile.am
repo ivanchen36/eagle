@@ -10,4 +10,5 @@ INCLUDES = -I$(LIB_INCLUDE) -I$(EAGLE_PATH) -I$(EVENT_PATH)
 
 noinst_LTLIBRARIES = libnode.la
 libnode_la_SOURCES = Follower.cpp Leader.cpp PropertiesParser.cpp \
-					 EagleNode.cpp
+					 EagleNode.cpp NodeHandler.cpp NodeClient.cpp \
+					 NodeServer.cpp

@@ -94,7 +94,6 @@ Socket::Socket(const char *path, const bool isServer)
         ret = connect(addr);
     }
     EG_SUCCESS == ret ? init(isServer, 1) : close();
-
 }
 
 Socket::Socket(const char *ip, int &port, const bool isServer)
@@ -390,8 +389,13 @@ int Socket::bind(struct sockaddr_in &addr)
 {
     if (-1 == m_fd) return EG_INVAL;
 
+    socklen_t len = sizeof(struct sockaddr_in);
     if (::bind(m_fd, (struct sockaddr *)&addr, sizeof(addr)) == 0)
+    {
+        getsockname(m_fd, (struct sockaddr *)&addr, &len);
+
         return EG_SUCCESS;
+    }
 
     ERRORLOG1("bind err, %s", strerror(errno));
 

@@ -11,7 +11,8 @@ ShareMem &shareMem = ShareMemI::instance();
 }
 
 AcceptHandler::AcceptHandler(EventManager *const manager, Socket *socket,
-        const int port) : EventHandler(manager, socket), m_port(port),
+        const int port, const int index) 
+    : EventHandler(manager, socket), m_index(index), m_port(port),
     m_messageHandlerFactory(MessageHandlerFactoryI::instance()), 
     m_bufPoolManager(IoBufPoolManagerI::instance())
 {

@@ -23,8 +23,15 @@
 #include "EventHandler.h"
 #include "EventManager.h"
 
-#define EAGLE_INIT(cb, ver) \
-    if (EG_SUCCESS != EagleI::instance().init(argc, argv, cb, ver)) return 0
+#define EAGLE_MAIN(ver) \
+int main ( int argc, char *argv[] ) \
+{ \
+    if (EG_SUCCESS != EagleI::instance().init(argc, argv, ver)) \
+    return 0; \
+ \
+    EagleI::instance().runWorker(); \
+    return 0; \
+}
 
 struct Program
 {
@@ -91,8 +98,9 @@ public:
         return m_program;
     } 
 
-    int init(const int argc, char *const *argv, const CallBack &notifyQuitCb, 
-            const char *ver);
+    int init(const int argc, char *const *argv, const char *ver);
+    void runWorker(const int isMasterThread = 1);
+    void stopWorker();
 
 private:
     Eagle();
@@ -107,7 +115,7 @@ private:
     void printPrompt(const char *option);
     void nodeInit();
     void initMaster();
-    void initWorker(const CallBack &notifyQuitCb);
+    void initWorker();
     void cleanMaster();
     int masterCycle();
     int initProcess();

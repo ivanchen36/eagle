@@ -26,6 +26,16 @@ namespace
 {
 ShareMem &shareMem = ShareMemI::instance();
 EagleTime &eagleTime = EagleTimeI::instance();
+
+void startAcceptLoop(void *param)
+{
+    EagleI::instance().runWorker(0);
+}
+
+void stopWorker(void *param)
+{
+    EagleI::instance().stopWorker();
+}
 }
 
 Eagle::Eagle() : m_servers(NULL), m_properties(NULL), 
@@ -161,8 +171,8 @@ void Eagle::printUsage()
 
 int Eagle::initServers(std::string &ip, std::map<std::string, int> &serverMap)
 {
-    Socket *socket;
     Server *server;
+    Socket *socket;
     std::map<std::string, int>::iterator iter;
     int len = serverMap.size() + 1;
 
@@ -174,7 +184,7 @@ int Eagle::initServers(std::string &ip, std::map<std::string, int> &serverMap)
         if (!socket->isAvailable())
         {
             delete socket;
-            ERRORLOG2("create %s:%d socket failed.", ip.c_str(), iter->second);
+            ERRORLOG2("create socket %s:%d failed.", ip.c_str(), iter->second);
 
             return EG_FAILED;
         }
@@ -230,24 +240,41 @@ int Eagle::initProcess()
     return ret;
 }
 
-void Eagle::initWorker(const CallBack &notifyQuitCb)
+void Eagle::initWorker()
 {
-    EventHandler *handler;
+    char buf[48];
+    Socket *unixSocket;
+    AcceptHandler *handler;
     Server *server = *m_servers;
+    CallBack cb(::stopWorker);
 
     m_acceptManager = new SelectManager(1);
     m_receiveManager = new EpollManager(WORKER_THREAD_NUM);
     for (int i = 0; NULL != server; ++i, server = *(m_servers + i))
     {
-
-        handler = new AcceptHandler(m_receiveManager, server->socket, server->port);
+        handler = new AcceptHandler(m_receiveManager, server->socket, server->port, m_index);
+        handler->unlock();
         MessageHandlerFactoryI::instance().registerHandler(server->port, server->name);
         m_acceptManager->registerEvent(READ, handler);
+        snprintf(buf, sizeof(buf), "/tmp/eagle%d.sock", server->port);
+        unixSocket = new Socket(buf, 1);
+        if (!unixSocket->isAvailable())
+        {
+            delete unixSocket;
+            ERRORLOG1("create unix socket %s failed.", buf);
+        }else
+        {
+            handler = new AcceptHandler(m_receiveManager, unixSocket, server->port, m_index);
+            m_acceptManager->registerEvent(READ, handler);
+        }
         server->socket = NULL;
         delete server;
     }
     delete [](char *)m_servers;
-    ChildSigManagerI::instance().init(notifyQuitCb);
+    ChildSigManagerI::instance().init(cb);
+
+    cb = CallBack(startAcceptLoop);
+    Thread thread(cb);
 }
 
 void Eagle::initMaster()
@@ -264,6 +291,25 @@ void Eagle::cleanMaster()
     MasterSigManagerI::del();
     ProcessManagerI::del();
     TimerI::del();
+}
+
+void Eagle::runWorker(const int isMasterThread)
+{
+    if (!isMasterThread)
+    {
+        m_acceptManager->loop();
+
+        return;
+    }
+
+    initWorker();
+    m_receiveManager->loop(); 
+}
+
+void Eagle::stopWorker()
+{
+    m_acceptManager->stopLoop();
+    m_receiveManager->stopLoop(); 
 }
 
 int Eagle::masterCycle()
@@ -301,8 +347,7 @@ int Eagle::masterCycle()
     return EG_EXIT;
 }
 
-int Eagle::init(const int argc, char *const *argv, const CallBack &notifyQuitCb, 
-        const char *ver)
+int Eagle::init(const int argc, char *const *argv, const char *ver)
 {
     int ret;
     Proctitle proctitle;
@@ -337,7 +382,6 @@ int Eagle::init(const int argc, char *const *argv, const CallBack &notifyQuitCb,
     }
 
     proctitle.setWorker(argc, argv, "%s: worker-%d", m_program.name, m_index);
-    initWorker(notifyQuitCb);
 
     return EG_SUCCESS;
 }

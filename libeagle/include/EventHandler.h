@@ -79,6 +79,7 @@ public:
         return m_registerEvent;
     }
 
+    void clearRegisterEvent();
     virtual int read() = 0;
     virtual int write()
     {
@@ -106,6 +107,7 @@ typedef AutoPtr1<EventHandler> EventHandlerPtr;
 class MessageHandler
 {
 public:
+    virtual ~MessageHandler(){}
     virtual IoBuffer *handle(IoBuffer *ioBuf) = 0;
 
     void setEventHandler(EventHandler *eventHandler)
@@ -113,9 +115,22 @@ public:
        m_eventHandler = eventHandler;
     }
 
-    virtual void quit(){}
+    void write(const char *buf, const int len)
+    {
+        m_eventHandler->write((const uint8_t *)buf, len);
+    }
 
-protected:
+    void write(const uint8_t *buf, const int len)
+    {
+        m_eventHandler->write(buf, len);
+    }
+
+    void close()
+    {
+        m_eventHandler->clearRegisterEvent();
+    }
+
+private:
     EventHandler *m_eventHandler;
 };
 #endif   /* ----- #ifndef _EVENTHANDLER_H_  ----- */

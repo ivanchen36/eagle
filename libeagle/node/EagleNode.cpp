@@ -1,6 +1,9 @@
 #include "EagleNode.h"
+#include "NodeServer.h"
+#include "NodeClient.h"
 #include "ChildSigManager.h"
 #include "SelectManager.h"
+#include "PropertiesParser.h"
 
 namespace
 {
@@ -11,7 +14,7 @@ void quitEagleNode(void *param)
 }
 }
 
-EagleNode::EagleNode() : m_eventManager(new SelectManager(1))
+EagleNode::EagleNode() : m_handler(NULL), m_eventManager(new SelectManager(1))
 {
     CallBack cb(quitEagleNode, m_eventManager);
     ChildSigManagerI::instance().init(cb);
@@ -60,5 +63,21 @@ void EagleNode::addServer(std::map<std::string, int> &serverMap)
 
 void EagleNode::run()
 {
+    Socket *socket;
+
+    PropertiesParser::parseNodeProperties();
+    socket = new Socket(m_nodeAddr.ip.c_str(), m_nodeAddr.port, 1);
+    if (!socket->isAvailable())
+    {
+        delete socket;
+        socket = new Socket(m_nodeAddr.ip.c_str(), m_nodeAddr.port, 0);
+        if (socket->isAvailable())
+        {
+            m_handler = new NodeClient();
+        }
+    }else
+    {
+        m_handler = new NodeServer();
+    }
     m_eventManager->loop();
 }

@@ -23,7 +23,6 @@ ReceiveHandler::~ReceiveHandler()
 {
     IoBuffer *ib;
 
-    m_messageHandler->quit();
     if (NULL != m_messageHandler) delete m_messageHandler;
 
     for (ib = m_readBuf; NULL != m_readBuf; ib = m_readBuf)

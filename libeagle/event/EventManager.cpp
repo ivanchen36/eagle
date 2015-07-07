@@ -1,7 +1,7 @@
 #include "EventManager.h"
 
 EventManager::EventManager(const int workerNum)
-    : m_workerNum(1), m_curWorker(-1), m_isStop(0), m_isOverLoad(0)
+    : m_workerNum(workerNum), m_curWorker(-1), m_isStop(0), m_isOverLoad(0)
 {
     int pipeFd[2];
 
@@ -25,6 +25,9 @@ EventManager::EventManager(const int workerNum)
             new(&m_workers[i]) EventWorker(EG_MAX_EVENTHANDLER / workerNum + 1);
         }
         m_workerNum = workerNum;
+    }else
+    {
+        m_workers = NULL;
     }
 }
 
