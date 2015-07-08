@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "Log.h"
 #include "Eagle.h"
 #include "EventHandler.h"
 

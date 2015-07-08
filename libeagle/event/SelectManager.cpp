@@ -9,9 +9,19 @@ SelectManager::SelectManager(const int workerNum)
 
 SelectManager::~SelectManager()
 {
+    EventHandler *handler;
+    EventMap::const_iterator iter;
+
     stop();
     FD_ZERO(&m_readSet);
     FD_ZERO(&m_writeSet);
+
+    for (iter = m_eventMap.begin(); iter != m_eventMap.end(); )
+    {
+        handler = iter->second;
+        if (handler->dec() == 0) delete handler;
+        iter = m_eventMap.erase(iter);
+    }
 }
 
 void SelectManager::loop()
@@ -32,16 +42,14 @@ void SelectManager::loop()
             }
 
             ERRORLOG1("select err, %s", strerror(errno));
-            m_isStop = 2;
 
-            return;
+            break;
         }
         if (0 == ret)
         {
             ERRORLOG("select return 0");
-            m_isStop = 2;
 
-            return;
+            break;
         }
 
         if (FD_ISSET(m_recvNotifyFd, &m_readSet))
@@ -52,7 +60,6 @@ void SelectManager::loop()
             }
             if (0 == *buf)
             {
-                m_isStop = 1;
                 INFOLOG("recv exit notify, exit loop");
             }
             if (ret == 1) continue;

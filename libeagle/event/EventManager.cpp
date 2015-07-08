@@ -62,7 +62,9 @@ void EventManager::stop()
 
 void EventManager::stopLoop()
 {
-    m_isStop = 1;
+    if (!__sync_bool_compare_and_swap(
+                        const_cast<volatile int *>(&m_isStop), 0, 1)) return;
+
     if (write(m_sendNotifyFd, "", 1) == -1)
     {
         ERRORLOG1("write err, %s", strerror(errno));

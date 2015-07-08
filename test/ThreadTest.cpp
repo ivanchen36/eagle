@@ -194,7 +194,7 @@ void doEpollTest()
  */
 int main ( int argc, char *argv[] )
 {
-    doEpollTest(); 
+    test2();
     
     return EXIT_SUCCESS;
 }

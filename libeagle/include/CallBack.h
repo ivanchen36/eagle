@@ -13,6 +13,7 @@
  */
 #ifndef  _CALLBACK_H_
 #define  _CALLBACK_H_
+#include "Log.h"
 #include "AutoPtr.h"
 
 typedef void (*CallBackFunc)(void *param);
@@ -27,11 +28,9 @@ public:
     CallBack(CallBackFunc func, void *param = NULL) 
         : m_cbParam(param), m_cbFunc(func){}
 
-    int excute()
+    void excute()
     {
         (*m_cbFunc)(m_cbParam);
-
-        return 0;
     }
 
     CallBackFunc getCbFunc()

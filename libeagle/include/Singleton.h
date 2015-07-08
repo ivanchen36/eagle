@@ -24,6 +24,8 @@ template<class T> class Singleton
 public:
     static T &instance()
     {
+        static SingletonCleaner s_cleaner;
+
         if (NULL != s_instance) return *s_instance;
 
         LockGuard guard(g_singletonLock);
@@ -48,16 +50,14 @@ private:
     class SingletonCleaner
     {
     public:
-       ~SingletonCleaner()
-       {
-           if (NULL != s_instance) delete s_instance;
-       }
+        ~SingletonCleaner()
+        {
+            if (NULL != s_instance) delete s_instance;
+        }
     };
 
     static T *s_instance;
-    static SingletonCleaner s_cleaner;
 };
 template <class T> T *Singleton<T>::s_instance = NULL;
-template <class T> typename Singleton<T>::SingletonCleaner Singleton<T>::s_cleaner;
 
 #endif   /* ----- #ifndef _SINGLETON_H_  ----- */

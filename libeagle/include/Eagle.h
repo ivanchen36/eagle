@@ -74,7 +74,7 @@ struct Server
     ~Server()
     {
         if (NULL != name) delete []name;
-        if (NULL != socket) delete []socket;
+        if (NULL != socket) delete socket;
     }
 };
 

@@ -757,10 +757,7 @@ int main ( int argc, char *argv[] )
 {
     EagleTimeI::instance().autoUpdate();
 
-    int port = 0;
-    Socket *socket = new Socket("127.0.0.1", port, 1);
-    delete socket;
-    //doTcpTest();
+    doTcpTest();
 
     return EXIT_SUCCESS;
 }

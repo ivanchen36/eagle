@@ -11,9 +11,9 @@ void *threadStart(void *arg)
 
 void *threadStart1(void *arg)
 {
-    CallBack *cb = (CallBack *)arg;
-    cb->excute();
-    delete cb;
+    CallBack cb = (*(CallBack *)arg);
+    delete (CallBack *)arg;
+    cb.excute();
 
     return NULL;
 }
@@ -66,8 +66,7 @@ void Thread::init(const int stackSize, void *(*cbFunc)(void *), void *cbParam)
 
 Thread::~Thread()
 {
-    if (m_isDetach) return;
-    if (0 == m_id) return;
+    if (m_isDetach || 0 == m_id) return;
 
     int ret = pthread_join(m_id, NULL);
     if (ret != 0)

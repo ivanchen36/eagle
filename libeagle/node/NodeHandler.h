@@ -16,18 +16,11 @@
 #include "AutoPtr.h"
 #include "EventHandler.h"
 
-class NodeHandler : public MessageHandler
+class NodeHandler
 {
 public:
     NodeHandler();
     ~NodeHandler();
-    
-    virtual IoBuffer *handle(IoBuffer *ioBuf) { return ioBuf; }
-    virtual void close() {}
-#if 0
-    virtual IoBuffer *handle(IoBuffer *ioBuf) = 0;
-    virtual void close() = 0;
-#endif
 private:
 };
 

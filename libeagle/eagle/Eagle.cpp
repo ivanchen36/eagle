@@ -271,6 +271,7 @@ void Eagle::initWorker()
         delete server;
     }
     delete [](char *)m_servers;
+    m_servers = NULL;
     ChildSigManagerI::instance().init(cb);
 
     cb = CallBack(startAcceptLoop);

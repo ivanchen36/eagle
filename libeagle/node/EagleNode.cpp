@@ -3,6 +3,7 @@
 #include "NodeClient.h"
 #include "ChildSigManager.h"
 #include "SelectManager.h"
+#include "ReceiveHandler.h"
 #include "PropertiesParser.h"
 
 namespace
@@ -74,6 +75,11 @@ void EagleNode::run()
         if (socket->isAvailable())
         {
             m_handler = new NodeClient();
+#if 0
+            m_eventManager->registerEvent(READ, new ReceiveHandler(
+            m_eventManager, socket, new HelloMessage(),
+                bufPoolManager.getBufPool()));
+#endif
         }
     }else
     {
