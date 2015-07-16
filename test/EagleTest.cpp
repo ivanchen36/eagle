@@ -24,7 +24,7 @@ class TestMessage : public MessageHandler
 public:
     ~TestMessage()
     {
-        write("bye\n", strlen("bye\n"));
+        send("bye\n");
     }
 
     IoBuffer *handle(IoBuffer *ioBuf)
@@ -32,7 +32,7 @@ public:
         if (strncmp((char *)ioBuf->buf + ioBuf->offset, 
                     "quit", strlen("quit")) != 0)
         {
-            write("hello\n", strlen("hello\n"));
+            send("hello\n");
         }else
         {
             close();

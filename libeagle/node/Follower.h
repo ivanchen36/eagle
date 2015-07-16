@@ -22,6 +22,7 @@ public:
     Follower();
     ~Follower();
     
+    void campaign();
 private:
 };
 #endif   /* ----- #ifndef _FOLLOWER_H_  ----- */

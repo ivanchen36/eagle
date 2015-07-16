@@ -14,14 +14,20 @@
 #ifndef  _NODESERVER_H_
 #define  _NODESERVER_H_
 
+#include "Partner.h"
 #include "NodeHandler.h"
 
 class NodeServer : public NodeHandler
 {
 public:
     NodeServer();
-    ~NodeServer();
+    virtual ~NodeServer();
     
+    void run();
+    IoBuffer *handle(IoBuffer *ioBuf);
+
 private:
+    Partner *m_partner;
 };
+
 #endif   /* ----- #ifndef _NODESERVER_H_  ----- */

@@ -14,15 +14,14 @@
 #ifndef  _PARTNER_H_
 #define  _PARTNER_H_
 
-#include "NodeServer.h"
-
 class Partner 
 {
 public:
     Partner();
     ~Partner();
-    
-private:
-    NodeServer *m_node;
+
+    int commitPropose(uint8_t *buf, const int len);
+    void acceptPropose();
 };
+
 #endif   /* ----- #ifndef _PARTNER_H_  ----- */

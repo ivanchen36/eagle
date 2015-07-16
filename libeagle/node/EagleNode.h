@@ -18,7 +18,6 @@
 #include <map>
 
 #include "Singleton.h"
-#include "NodeHandler.h"
 #include "EventManager.h"
 
 struct NodeAddress
@@ -65,16 +64,17 @@ public:
     void addNodeAddr(const char *ip, const int port);
     void delNodeAddr(const char *ip, const int port);
     void addServer(std::map<std::string, int> &serverMap);
+    EventHandler *getNodeHanlder(const std::string &node);
     void run();
 
 private:
     EagleNode();
 
-    NodeHandler *m_handler;
     EventManager *m_eventManager;
-    NodeAddress m_nodeAddr;
+    NodeAddress m_addr;
     std::map<std::string, int> m_serverMap;
-    std::vector<NodeAddress> m_otherNodeAddr;
+    std::vector<NodeAddress> m_nodeAddr;
+    std::map<std::string, EventHandler *> m_nodeHanlder;
 
     friend class Singleton<EagleNode>;
 };

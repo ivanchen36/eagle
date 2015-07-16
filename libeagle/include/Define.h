@@ -54,4 +54,5 @@
 #define CONF_DIR "conf"
 
 #define NODE_SERVER_INDEX 0
+#define NODE_SERVER_NAME "node"
 #endif   /* ----- #ifndef _DEFINE_H_  ----- */

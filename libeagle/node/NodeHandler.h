@@ -16,12 +16,14 @@
 #include "AutoPtr.h"
 #include "EventHandler.h"
 
-class NodeHandler
+class NodeHandler : public MessageHandler
 {
 public:
-    NodeHandler();
-    ~NodeHandler();
-private:
+    NodeHandler() {}
+    virtual ~NodeHandler() {}
+
+    virtual void run() = 0;
+    virtual IoBuffer *handle(IoBuffer *ioBuf) = 0;
 };
 
 typedef AutoPtr<NodeHandler> NodeHandlerPtr;

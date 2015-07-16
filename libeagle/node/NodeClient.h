@@ -21,7 +21,8 @@ class NodeClient : public NodeHandler
 public:
     NodeClient();
     ~NodeClient();
-    
-private:
+
+    void run();
+    IoBuffer *handle(IoBuffer *ioBuf);
 };
 #endif   /* ----- #ifndef _NODECLIENT_H_  ----- */

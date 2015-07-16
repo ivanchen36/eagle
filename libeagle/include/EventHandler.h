@@ -115,12 +115,17 @@ public:
        m_eventHandler = eventHandler;
     }
 
-    void write(const char *buf, const int len)
+    void send(const char *buf)
+    {
+        m_eventHandler->write((const uint8_t *)buf, strlen(buf));
+    }
+
+    void send(const char *buf, const int len)
     {
         m_eventHandler->write((const uint8_t *)buf, len);
     }
 
-    void write(const uint8_t *buf, const int len)
+    void send(const uint8_t *buf, const int len)
     {
         m_eventHandler->write(buf, len);
     }

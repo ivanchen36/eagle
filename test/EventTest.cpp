@@ -70,7 +70,7 @@ public:
     {
 
         DEBUGLOG("response");
-        write(clientContent, clientLen);
+        send(clientContent, clientLen);
     }
 
     IoBuffer *handle(IoBuffer *ioBuf)
