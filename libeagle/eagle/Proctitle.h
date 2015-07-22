@@ -11,8 +11,12 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _PROCTITLE_H_
-#define  _PROCTITLE_H_
+#ifndef _EAGLE_PROCTITLE_H_
+#define _EAGLE_PROCTITLE_H_
+
+namespace eagle
+{
+
 class Proctitle 
 {
 public:
@@ -27,4 +31,6 @@ private:
     char *m_environ;
     char *m_last;
 };
-#endif   /* ----- #ifndef _PROCTITLE_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_PROCTITLE_H_  ----- */

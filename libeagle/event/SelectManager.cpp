@@ -1,5 +1,8 @@
 #include "SelectManager.h"
 
+namespace eagle
+{
+
 SelectManager::SelectManager(const int workerNum) 
     : EventManager(workerNum), m_maxFd(m_recvNotifyFd)
 {
@@ -169,4 +172,6 @@ void SelectManager::handleFdSet()
         if (hasEvent) handleEvent(handler);
         ++iter;
     }
+}
+
 }

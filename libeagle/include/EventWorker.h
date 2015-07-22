@@ -11,12 +11,15 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _EVENTWORKER_H_
-#define  _EVENTWORKER_H_
+#ifndef _EAGLE_EVENTWORKER_H_
+#define _EAGLE_EVENTWORKER_H_
 
 #include "EventHandler.h"
 #include "TaskThread.h"
 #include "CycleQueue.h"
+
+namespace eagle
+{
 
 class EventWorker : public Task
 {
@@ -47,4 +50,6 @@ private:
     EventQueue m_queue;
     TaskThread *m_thread;
 };
-#endif   /* ----- #ifndef _EVENTWORKER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_EVENTWORKER_H_  ----- */

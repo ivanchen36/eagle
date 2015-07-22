@@ -11,8 +11,11 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _DEFINE_H_
-#define  _DEFINE_H_
+#ifndef _EAGLE_DEFINE_H_
+#define _EAGLE_DEFINE_H_
+
+namespace eagle
+{
 
 #define ALIGN(d, a) ((((d) - 1) / (a) + 1) * (a))
 #define MUL_TWO_ALIGN(d, a) (((d) + ((a) - 1)) & ~((a) - 1))
@@ -55,4 +58,6 @@
 
 #define NODE_SERVER_INDEX 0
 #define NODE_SERVER_NAME "node"
-#endif   /* ----- #ifndef _DEFINE_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_DEFINE_H_  ----- */

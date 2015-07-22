@@ -11,13 +11,16 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _EAGLETIME_H_
-#define  _EAGLETIME_H_
+#ifndef _EAGLE_EAGLETIME_H_
+#define _EAGLE_EAGLETIME_H_
 #include <time.h>
 #include <stdint.h>
 
 #include "Singleton.h"
 #include "ShareMem.h"
+
+namespace eagle
+{
 
 #define LOGTIMELEN sizeof("1970-09-28 12:00:00")
 #define ISO8601LEN sizeof("1970/09/28 12:00:00")
@@ -60,4 +63,6 @@ private:
 };
 
 typedef Singleton<EagleTime> EagleTimeI;
-#endif   /* ----- #ifndef _EAGLETIME_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_EAGLETIME_H_  ----- */

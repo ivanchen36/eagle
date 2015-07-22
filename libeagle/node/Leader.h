@@ -11,10 +11,13 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _LEADER_H_
-#define  _LEADER_H_
+#ifndef _EAGLE_LEADER_H_
+#define _EAGLE_LEADER_H_
 
 #include "Partner.h"
+
+namespace eagle
+{
 
 class Leader : public Partner
 {
@@ -25,4 +28,6 @@ public:
 private:
     PropertiesManager *m_propertiesManager;
 };
-#endif   /* ----- #ifndef _LEADER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_LEADER_H_  ----- */

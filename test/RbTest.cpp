@@ -22,6 +22,7 @@
 #include "EagleTime.h"
 
 using namespace std;
+using namespace eagle;
 
 void print(RbTree<int, int> &tree)
 {

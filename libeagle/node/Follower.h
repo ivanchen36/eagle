@@ -11,10 +11,13 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _FOLLOWER_H_
-#define  _FOLLOWER_H_
+#ifndef _EAGLE_FOLLOWER_H_
+#define _EAGLE_FOLLOWER_H_
 
 #include "Partner.h"
+
+namespace eagle
+{
 
 class Follower : public Partner
 {
@@ -25,4 +28,6 @@ public:
     void campaign();
 private:
 };
-#endif   /* ----- #ifndef _FOLLOWER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_FOLLOWER_H_  ----- */

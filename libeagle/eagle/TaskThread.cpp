@@ -2,6 +2,9 @@
 #include "StrUtil.h"
 #include "TaskThread.h"
 
+namespace eagle
+{
+
 Task::Task(const char *taskName) : m_name(NULL)
 {
     StrUtil::copy(m_name, taskName);
@@ -96,4 +99,6 @@ void TaskThread::run()
         while (RUN == m_status && m_task->excute() == EG_SUCCESS);
     }
     m_status = EXIT;
+}
+
 }

@@ -25,7 +25,7 @@
 #include "ShareMem.h"
 
 using namespace std;
-
+using namespace eagle;
 
 void test(int isFree)
 {

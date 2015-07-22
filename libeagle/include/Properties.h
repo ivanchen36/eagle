@@ -11,14 +11,17 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _PROPERTIES_H_
-#define  _PROPERTIES_H_
+#ifndef _EAGLE_PROPERTIES_H_
+#define _EAGLE_PROPERTIES_H_
 #include <map>
 #include <vector>
 #include <string>
 #include <algorithm>
 
 #include "AutoPtr.h"
+
+namespace eagle
+{
 
 class PropertiesParser;
 
@@ -53,4 +56,6 @@ private:
 };
 
 typedef AutoPtr<Properties> PropertiesPtr;
-#endif   /* ----- #ifndef _PROPERTIES_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_PROPERTIES_H_  ----- */

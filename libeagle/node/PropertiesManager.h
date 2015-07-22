@@ -11,11 +11,14 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _PROPERTIESMANAGER_H_
-#define  _PROPERTIESMANAGER_H_
+#ifndef _EAGLE_PROPERTIESMANAGER_H_
+#define _EAGLE_PROPERTIESMANAGER_H_
 
 #include <map>
 #include <string>
+
+namespace eagle
+{
 
 class PropertiesManager
 {
@@ -36,4 +39,6 @@ private:
 };
 
 typedef AutoPtr<PropertiesManager> PropertiesManagerPtr;
-#endif   /* ----- #ifndef _PROPERTIESMANAGER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_PROPERTIESMANAGER_H_  ----- */

@@ -1,6 +1,9 @@
 #include "ChildSigManager.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 ChildSigManager::ChildSigManager()
 {
     m_handleMap[SIGQUIT] = (SaHandle)&ChildSigManager::sigQuit;  
@@ -25,4 +28,6 @@ ChildSigManager::Type ChildSigManager::getType()
 void ChildSigManager::sigQuit()
 {
     m_notifyQuitCb.excute();
+}
+
 }

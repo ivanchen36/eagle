@@ -11,12 +11,15 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _SELECTMANAGER_H_
-#define  _SELECTMANAGER_H_
+#ifndef _EAGLE_SELECTMANAGER_H_
+#define _EAGLE_SELECTMANAGER_H_
 
 #include <tr1/unordered_map>
 
 #include "EventManager.h"
+
+namespace eagle
+{
 
 class SelectManager : public EventManager
 {
@@ -40,4 +43,6 @@ private:
     fd_set m_writeSet;
     EventMap m_eventMap;
 };
-#endif   /* ----- #ifndef _SELECTMANAGER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_SELECTMANAGER_H_  ----- */

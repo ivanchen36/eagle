@@ -11,13 +11,16 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _THREADSEM_H_
-#define  _THREADSEM_H_
+#ifndef _EAGLE_THREADSEM_H_
+#define _EAGLE_THREADSEM_H_
 
 #include <semaphore.h>
 
 #include "SemEx.h"
 #include "EagleTime.h"
+
+namespace eagle
+{
 
 class ThreadSem : public Semaphore
 {
@@ -37,4 +40,5 @@ private:
 
 typedef AutoPtr<ThreadSem> ThreadSemPtr;
 
-#endif   /* ----- #ifndef _THREADSEM_H_  ----- */
+}
+#endif   /* ----- #ifndef _EAGLE_THREADSEM_H_  ----- */

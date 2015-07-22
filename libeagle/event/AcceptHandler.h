@@ -11,11 +11,14 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _ACCEPTHANDLER_H_
-#define  _ACCEPTHANDLER_H_
+#ifndef _EAGLE_ACCEPTHANDLER_H_
+#define _EAGLE_ACCEPTHANDLER_H_
 
 #include "EventHandler.h"
 #include "MessageHandlerFactory.h"
+
+namespace eagle
+{
 
 class AcceptHandler : public EventHandler
 {
@@ -50,4 +53,6 @@ private:
     MessageHandlerFactory &m_messageHandlerFactory;
     IoBufPoolManager &m_bufPoolManager;
 };
-#endif   /* ----- #ifndef _ACCEPTHANDLER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_ACCEPTHANDLER_H_  ----- */

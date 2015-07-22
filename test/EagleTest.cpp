@@ -19,6 +19,8 @@
 #include "Eagle.h"
 #include "EventHandler.h"
 
+using namespace eagle;
+
 class TestMessage : public MessageHandler
 {
 public:

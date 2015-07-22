@@ -11,10 +11,13 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _CALLBACK_H_
-#define  _CALLBACK_H_
+#ifndef _EAGLE_CALLBACK_H_
+#define _EAGLE_CALLBACK_H_
 #include "Log.h"
 #include "AutoPtr.h"
+
+namespace eagle
+{
 
 typedef void (*CallBackFunc)(void *param);
 class CallBack
@@ -49,4 +52,6 @@ private:
 };
 
 typedef AutoPtr<CallBack> CallBackPtr;
-#endif   /* ----- #ifndef _CALLBACK_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_CALLBACK_H_  ----- */

@@ -5,6 +5,9 @@
 #include "MmapFile.h"
 #include "StrUtil.h"
 
+namespace eagle
+{
+
 namespace
 {
 const int F_MODE[] = {O_RDONLY, O_WRONLY | O_CREAT, O_RDWR | O_CREAT};
@@ -31,7 +34,7 @@ MmapFile::MmapFile(const char *fileName, const int isShm,
 
     StrUtil::copy(m_fileName, fileName);
     m_prot = M_MODE[mode];
-    m_fileSize = FileEx::getSize(m_fd);
+    m_fileSize = File::getSize(m_fd);
     mapByOffset(0);
 }
 
@@ -99,7 +102,7 @@ int MmapFile::setSize(const int size)
 {
     if ((PROT_WRITE & m_prot) == 0) return -1;
 
-    return FileEx::setSize(m_fd, size);
+    return File::setSize(m_fd, size);
 }
 
 int MmapFile::mapByOffset(const int startOffset)
@@ -198,4 +201,6 @@ int MmapFile::write(const uint8_t *buf, const int len, const int offset)
     } while (len != writeLen);
 
     return 0;
+}
+
 }

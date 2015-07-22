@@ -20,6 +20,7 @@
 #include "AutoPtr1.h"
 
 using namespace std;
+using namespace eagle;
 
 class AutoPtrTest
 {

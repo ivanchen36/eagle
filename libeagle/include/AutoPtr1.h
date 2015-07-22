@@ -11,13 +11,16 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _AutoPtr11_H_
-#define  _AutoPtr11_H_
+#ifndef _EAGLE_AutoPtr11_H_
+#define _EAGLE_AutoPtr11_H_
 
 #include <algorithm>
 #include <stdio.h>
 
 #include "Log.h"
+
+namespace eagle
+{
 
 class Reference
 {
@@ -226,4 +229,6 @@ inline bool operator>=(const AutoPtr1<T> &l, const AutoPtr1<Y> &r)
 {
     return !(l < r);
 }
-#endif   /* ----- #ifndef _AutoPtr11_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_AutoPtr11_H_  ----- */

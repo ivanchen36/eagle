@@ -2,6 +2,9 @@
 #include "ClassFactory.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 void MessageHandlerFactory::registerHandler(const int port, const std::string &name)
 {
     createClassFunc func =  ClassFactoryI::instance().getCreateFunc(name);
@@ -13,4 +16,6 @@ void MessageHandlerFactory::registerHandler(const int port, const std::string &n
     }
 
     m_funcMap[port] = func;
+}
+
 }

@@ -11,8 +11,11 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _RbTree_H_
-#define  _RbTree_H_
+#ifndef _EAGLE_RbTree_H_
+#define _EAGLE_RbTree_H_
+
+namespace eagle
+{
 
 template<class K, class V> class RbTree
 {
@@ -584,4 +587,5 @@ private:
     Node *m_iterListHead;
 };
 
-#endif   /* ----- #ifndef _RbTree_H_  ----- */
+}
+#endif   /* ----- #ifndef _EAGLE_RbTree_H_  ----- */

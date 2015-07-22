@@ -1,5 +1,8 @@
 #include "ClassFactory.h"
 
+namespace eagle
+{
+
 void ClassFactory::registerClass(const std::string &name, createClassFunc func)
 {
     if (m_funcMap.find(name) != m_funcMap.end()) return;
@@ -15,4 +18,6 @@ createClassFunc ClassFactory::getCreateFunc(const std::string &name)
     if (m_funcMap.find(name) == m_funcMap.end()) return NULL;
 
     return iter->second;
+}
+
 }

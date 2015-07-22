@@ -1,6 +1,9 @@
 #include "Thread.h"
 #include "NodeClient.h"
 
+namespace eagle
+{
+
 namespace
 {
 void startNodeClient(void *param)
@@ -27,4 +30,6 @@ void NodeClient::run()
 IoBuffer *NodeClient::handle(IoBuffer *ioBuf)
 {
     return ioBuf;
+}
+
 }

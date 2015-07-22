@@ -6,6 +6,9 @@
 #include "Define.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 namespace
 {
 Timer *timer;
@@ -294,4 +297,6 @@ int Timer::delTask(const char *name)
     }
 
     return -1;
+}
+
 }

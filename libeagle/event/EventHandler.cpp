@@ -1,6 +1,9 @@
 #include "EventHandler.h"
 #include "EventManager.h"
 
+namespace eagle
+{
+
 const uint16_t IoBuffer::size = EG_IO_BUF_SIZE - offsetof(IoBuffer, buf);
 
 EventHandler::EventHandler(EventManager *const manager, const int fd)
@@ -23,4 +26,6 @@ EventHandler::~EventHandler()
 void EventHandler::clearRegisterEvent()
 {
     m_manager->unregisterEvent(m_registerEvent, this);
+}
+
 }

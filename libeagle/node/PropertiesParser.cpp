@@ -6,6 +6,9 @@
 #include "Eagle.h"
 #include "EagleNode.h"
 
+namespace eagle
+{
+
 namespace
 {
 const char *TAG_EAGLE = "eagle";
@@ -286,7 +289,7 @@ int PropertiesParser::parseProperties(Properties &properties)
 
     snprintf(buf, MAX_FILENAME_LEN, "%s/%s/%s.xml", program.prefix, 
             CONF_DIR, programName);
-    if (!FileEx::isExist(buf))
+    if (!File::isExist(buf))
     {
         INFOLOG1("proProperties file %s isn't exist.", buf);
 
@@ -396,4 +399,6 @@ void PropertiesParser::formatToProperties(const std::string &str,
             properties.setProperties(name + 1, val);
         }
     }
+}
+
 }

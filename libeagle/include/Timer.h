@@ -11,8 +11,8 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _TIMER_H_
-#define  _TIMER_H_
+#ifndef _EAGLE_TIMER_H_
+#define _EAGLE_TIMER_H_
 #include <stdint.h>
 #include <string.h>
 
@@ -23,6 +23,9 @@
 #include "TaskThread.h"
 #include "StrUtil.h"
 #include "EagleTime.h"
+
+namespace eagle
+{
 
 class Timer
 {
@@ -82,4 +85,6 @@ private:
 };
 
 typedef Singleton<Timer> TimerI;
-#endif   /* ----- #ifndef _TIMER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_TIMER_H_  ----- */

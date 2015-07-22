@@ -2,6 +2,9 @@
 #include "EventManager.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 ReceiveHandler::ReceiveHandler(EventManager *const manager, const int fd, 
         MessageHandler *handler, Pool<IoBufferUnion> *bufPool)
     :EventHandler(manager, fd), m_readMutex('\0'), m_writeMutex('\0'),
@@ -216,4 +219,6 @@ void ReceiveHandler::waitWrite(const uint8_t *buf, int size)
         len = ib->size;
     }
     writeUnlock();
+}
+
 }

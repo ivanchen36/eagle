@@ -8,6 +8,9 @@
 #include "Eagle.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 namespace
 {
 Eagle &eagle = EagleI::instance();
@@ -161,4 +164,6 @@ void ProcessManager::quit(int processNum)
         m_processHead = m_processHead->next;
         delete process;
     }
+}
+
 }

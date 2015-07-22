@@ -5,6 +5,9 @@
 #include "Eagle.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 namespace
 {
 ShareMem &shareMem = ShareMemI::instance();
@@ -66,4 +69,6 @@ int AcceptHandler::write()
     ERRORLOG("accept handler no wrtie");
 
     return EG_SUCCESS;
+}
+
 }

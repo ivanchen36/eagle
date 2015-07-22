@@ -7,6 +7,9 @@
 #include "Log.h"
 #include "ShareMem.h"
 
+namespace eagle
+{
+
 namespace
 {
 ShareMem &shareMem = ShareMemI::instance();
@@ -123,4 +126,6 @@ int ProcessSem::wait()
 int ProcessSem::timedWait(const int sec)
 {
     return op(-1, sec);
+}
+
 }

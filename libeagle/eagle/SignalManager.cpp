@@ -3,6 +3,9 @@
 #include "ChildSigManager.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 namespace
 {
 void masterSaHandler(int sig)
@@ -101,4 +104,6 @@ void SignalManager::handleSig(const int sig)
         return;
     }
     ERRORLOG1("can't find signal %d handle", sig);
+}
+
 }

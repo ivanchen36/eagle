@@ -11,11 +11,14 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _EPOLLMANAGER_H_
-#define  _EPOLLMANAGER_H_
+#ifndef _EAGLE_EPOLLMANAGER_H_
+#define _EAGLE_EPOLLMANAGER_H_
 #include <sys/epoll.h>
 
 #include "EventManager.h"
+
+namespace eagle
+{
 
 class EpollManager : public EventManager
 {
@@ -35,4 +38,6 @@ private:
     int m_fd; 
     struct epoll_event m_epollEvents[EG_EPOLL_MAX_EVENT];
 };
-#endif   /* ----- #ifndef _EPOLLMANAGER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_EPOLLMANAGER_H_  ----- */

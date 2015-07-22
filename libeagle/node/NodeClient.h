@@ -11,10 +11,13 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _NODECLIENT_H_
-#define  _NODECLIENT_H_
+#ifndef _EAGLE_NODECLIENT_H_
+#define _EAGLE_NODECLIENT_H_
 
 #include "NodeHandler.h"
+
+namespace eagle
+{
 
 class NodeClient : public NodeHandler
 {
@@ -25,4 +28,6 @@ public:
     void run();
     IoBuffer *handle(IoBuffer *ioBuf);
 };
-#endif   /* ----- #ifndef _NODECLIENT_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_NODECLIENT_H_  ----- */

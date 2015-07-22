@@ -11,11 +11,14 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _MESSAGEHANDLERFACTORY_H_
-#define  _MESSAGEHANDLERFACTORY_H_
+#ifndef _EAGLE_MESSAGEHANDLERFACTORY_H_
+#define _EAGLE_MESSAGEHANDLERFACTORY_H_
 
 #include "ClassFactory.h"
 #include "Define.h"
+
+namespace eagle
+{
 
 class MessageHandlerFactory 
 {
@@ -49,4 +52,6 @@ private:
 };
 
 typedef Singleton<MessageHandlerFactory> MessageHandlerFactoryI;
-#endif   /* ----- #ifndef _MESSAGEHANDLERFACTORY_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_MESSAGEHANDLERFACTORY_H_  ----- */

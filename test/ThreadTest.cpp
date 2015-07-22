@@ -22,6 +22,7 @@
 #include "TaskThread.h"
 
 using namespace std;
+using namespace eagle;
 
 int g_isQuit = 0;
 

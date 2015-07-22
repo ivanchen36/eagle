@@ -15,6 +15,9 @@
 
 #include "ShareMem.h"
 
+namespace eagle
+{
+
 template <class T> class ShmAllocator : public std::allocator <T>
 {
 public:  
@@ -64,3 +67,5 @@ public:
 };
 
 template <class T> int ShmAllocator<T>::s_objectSize = sizeof(T);
+
+}

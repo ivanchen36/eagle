@@ -8,26 +8,29 @@
 #include "Define.h"
 #include "StrUtil.h"
 
+namespace eagle
+{
+
 namespace
 {
 const char *MODE[] = {"r", "r+", "w", "w+", "a", "a+"};
 }
 
-int FileEx::isExist(const char *fileName)
+int File::isExist(const char *fileName)
 {
     if (access(fileName, F_OK) == 0) return 1;
 
     return 0;
 }
 
-int FileEx::del(const char *fileName)
+int File::del(const char *fileName)
 {
     if (remove(fileName) == 0) return EG_SUCCESS;
 
     return EG_FAILED;
 }
 
-int FileEx::getSize(const int fd)
+int File::getSize(const int fd)
 {
     struct stat st;
 
@@ -42,7 +45,7 @@ int FileEx::getSize(const int fd)
     return st.st_size;
 }
 
-int FileEx::setSize(const int fd, const unsigned int size)
+int File::setSize(const int fd, const unsigned int size)
 {
     struct statvfs vfs;
 
@@ -67,7 +70,7 @@ int FileEx::setSize(const int fd, const unsigned int size)
     return EG_SUCCESS;
 }
 
-FileEx::FileEx(const char *fileName, const Mode mode) 
+File::File(const char *fileName, const Mode mode) 
     : m_file(NULL), m_fileName(NULL)
 {
     m_mode = mode;
@@ -92,7 +95,7 @@ FileEx::FileEx(const char *fileName, const Mode mode)
     }
 }
 
-FileEx::~FileEx()
+File::~File()
 {
     if (NULL != m_file)
     {
@@ -102,38 +105,38 @@ FileEx::~FileEx()
     if (NULL != m_fileName) delete []m_fileName;
 }
 
-int FileEx::getSize()
+int File::getSize()
 {
     return getSize(fileno(m_file));
 }
 
-int FileEx::setSize(const int size)
+int File::setSize(const int size)
 {
     if (RDONLY == m_mode) return EG_FAILED;
 
     return setSize(fileno(m_file), size);
 }
 
-int FileEx::getFd()
+int File::getFd()
 {
     return fileno(m_file);
 }
 
-void FileEx::flush()
+void File::flush()
 {
     if (NULL == m_file) return;
 
     fflush(m_file);
 }
 
-int FileEx::seek(const int offset, const int pos)
+int File::seek(const int offset, const int pos)
 {
     if (NULL == m_file) return EG_FAILED;
 
     return fseek(m_file, offset, pos);
 }
 
-int FileEx::read(uint8_t *buf, const int len)
+int File::read(uint8_t *buf, const int len)
 {
     if (NULL == m_file) return EG_FAILED;
 
@@ -152,7 +155,7 @@ int FileEx::read(uint8_t *buf, const int len)
     return rs;
 }
 
-int FileEx::write(const uint8_t *buf, const int len)
+int File::write(const uint8_t *buf, const int len)
 {
     if (NULL == m_file) return EG_FAILED;
 
@@ -171,7 +174,7 @@ int FileEx::write(const uint8_t *buf, const int len)
     return rs;
 }
 
-int FileEx::writeStr(const char *str)
+int File::writeStr(const char *str)
 {
     if (NULL == m_file) return EG_FAILED;
 
@@ -180,7 +183,7 @@ int FileEx::writeStr(const char *str)
     return writeByLen((const uint8_t *)str, len);
 }
 
-int FileEx::readByLen(uint8_t *buf, const int len)
+int File::readByLen(uint8_t *buf, const int len)
 {
     if (NULL == m_file) return EG_FAILED;
 
@@ -204,7 +207,7 @@ int FileEx::readByLen(uint8_t *buf, const int len)
     return EG_FAILED;
 }
 
-int FileEx::writeByLen(const uint8_t *buf, const int len)
+int File::writeByLen(const uint8_t *buf, const int len)
 {
     if (NULL == m_file) return EG_FAILED;
 
@@ -228,7 +231,7 @@ int FileEx::writeByLen(const uint8_t *buf, const int len)
     return EG_FAILED;
 }
 
-int FileEx::readByOffset(uint8_t *buf, const int len, const int offset)
+int File::readByOffset(uint8_t *buf, const int len, const int offset)
 {
     if (NULL == m_file) return EG_FAILED;
 
@@ -238,11 +241,13 @@ int FileEx::readByOffset(uint8_t *buf, const int len, const int offset)
 
 }
 
-int FileEx::writeByOffset(const uint8_t *buf, const int len, const int offset)
+int File::writeByOffset(const uint8_t *buf, const int len, const int offset)
 {
     if (NULL == m_file) return EG_FAILED;
 
     if (fseek(m_file, offset, SEEK_SET) != 0) return EG_FAILED;
 
     return writeByLen(buf, len);
+}
+
 }

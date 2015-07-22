@@ -2,6 +2,9 @@
 #include "ProcessManager.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 MasterSigManager::MasterSigManager()
 {
     m_handleMap[SIGQUIT] = (SaHandle)&MasterSigManager::sigQuit;  
@@ -27,4 +30,6 @@ void MasterSigManager::sigQuit()
 void MasterSigManager::sigChld()
 {
     ProcessManagerI::instance().check();
+}
+
 }

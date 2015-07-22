@@ -11,10 +11,13 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _PROCESSSEM_H_
-#define  _PROCESSSEM_H_
+#ifndef _EAGLE_PROCESSSEM_H_
+#define _EAGLE_PROCESSSEM_H_
 
 #include "SemEx.h"
+
+namespace eagle
+{
 
 class ProcessSem : public Semaphore
 {
@@ -35,4 +38,5 @@ private:
 
 typedef AutoPtr<ProcessSem> ProcessSemPtr;
 
-#endif   /* ----- #ifndef _PROCESSSEM_H_  ----- */
+}
+#endif   /* ----- #ifndef _EAGLE_PROCESSSEM_H_  ----- */

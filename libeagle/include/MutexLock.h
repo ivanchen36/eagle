@@ -11,12 +11,15 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _MUTEXLOCK_H_
-#define  _MUTEXLOCK_H_
+#ifndef _EAGLE_MUTEXLOCK_H_
+#define _EAGLE_MUTEXLOCK_H_
 
 #include <pthread.h>
 
 #include "AutoPtr.h"
+
+namespace eagle
+{
 
 class MutexLock
 {
@@ -46,4 +49,5 @@ private:
     MutexLock &m_lock;
 };
 
-#endif   /* ----- #ifndef _MUTEXLOCK_H_  ----- */
+}
+#endif   /* ----- #ifndef _EAGLE_MUTEXLOCK_H_  ----- */

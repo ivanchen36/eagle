@@ -1,5 +1,8 @@
 #include "EventWorker.h"
 
+namespace eagle
+{
+
 EventWorker::EventWorker(const int maxEventSize) 
     : Task("event worker"), m_status(FREE), m_queue(maxEventSize)
 {
@@ -71,4 +74,6 @@ int EventWorker::addEvent(EventHandler *handler)
     }
 
     return EG_SUCCESS;
+}
+
 }

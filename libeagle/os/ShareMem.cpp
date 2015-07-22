@@ -3,6 +3,9 @@
 #include "Log.h"
 #include "ShareMem.h"
 
+namespace eagle
+{
+
 ShareMem::~ShareMem()
 {
     ShareMemMap::iterator it;
@@ -80,4 +83,6 @@ void ShareMem::free(void *ptr)
 
     free(ptr, iter->second);
     m_shmMap.erase(iter);
+}
+
 }

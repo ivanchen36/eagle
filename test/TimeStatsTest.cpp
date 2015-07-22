@@ -19,6 +19,7 @@
 #include "TimeStats.h"
 
 using namespace std;
+using namespace eagle;
 
 /**
  * @brief main 

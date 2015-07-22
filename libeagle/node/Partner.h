@@ -11,8 +11,11 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _PARTNER_H_
-#define  _PARTNER_H_
+#ifndef _EAGLE_PARTNER_H_
+#define _EAGLE_PARTNER_H_
+
+namespace eagle
+{
 
 class Partner 
 {
@@ -24,4 +27,5 @@ public:
     void acceptPropose();
 };
 
-#endif   /* ----- #ifndef _PARTNER_H_  ----- */
+}
+#endif   /* ----- #ifndef _EAGLE_PARTNER_H_  ----- */

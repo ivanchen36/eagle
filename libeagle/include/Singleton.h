@@ -12,10 +12,13 @@
  *   Organization:  
  */
 
-#ifndef  _SINGLETON_H_
-#define  _SINGLETON_H_
+#ifndef _EAGLE_SINGLETON_H_
+#define _EAGLE_SINGLETON_H_
 
 #include "MutexLock.h"
+
+namespace eagle
+{
 
 extern MutexLock g_singletonLock;
 
@@ -60,4 +63,5 @@ private:
 };
 template <class T> T *Singleton<T>::s_instance = NULL;
 
-#endif   /* ----- #ifndef _SINGLETON_H_  ----- */
+}
+#endif   /* ----- #ifndef _EAGLE_SINGLETON_H_  ----- */

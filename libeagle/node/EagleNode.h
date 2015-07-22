@@ -11,14 +11,17 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _EAGLENODE_H_
-#define  _EAGLENODE_H_
+#ifndef _EAGLE_EAGLENODE_H_
+#define _EAGLE_EAGLENODE_H_
 #include <string>
 #include <vector>
 #include <map>
 
 #include "Singleton.h"
 #include "EventManager.h"
+
+namespace eagle
+{
 
 struct NodeAddress
 {
@@ -80,4 +83,6 @@ private:
 };
 
 typedef Singleton<EagleNode> EagleNodeI;
-#endif   /* ----- #ifndef _EAGLENODE_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_EAGLENODE_H_  ----- */

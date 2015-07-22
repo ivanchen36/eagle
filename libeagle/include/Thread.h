@@ -11,12 +11,15 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _THREAD_H_
-#define  _THREAD_H_
+#ifndef _EAGLE_THREAD_H_
+#define _EAGLE_THREAD_H_
 #include <pthread.h>
 
 #include "AutoPtr.h"
 #include "CallBack.h"
+
+namespace eagle
+{
 
 class Thread
 {
@@ -41,4 +44,6 @@ private:
 };
 
 typedef AutoPtr<Thread> ThreadPtr;
-#endif   /* ----- #ifndef _THREAD_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_THREAD_H_  ----- */

@@ -11,11 +11,14 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _AUTOPTR_H_
-#define  _AUTOPTR_H_
+#ifndef _EAGLE_AUTOPTR_H_
+#define _EAGLE_AUTOPTR_H_
 
 #include <algorithm>
 #include <stdio.h>
+
+namespace eagle
+{
 
 template<class T> class AutoPtr 
 {
@@ -222,4 +225,6 @@ inline bool operator>=(const AutoPtr<T> &l, const AutoPtr<Y> &r)
 {
     return !(l < r);
 }
-#endif   /* ----- #ifndef _AUTOPTR_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_AUTOPTR_H_  ----- */

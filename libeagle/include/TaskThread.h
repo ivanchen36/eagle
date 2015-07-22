@@ -11,13 +11,16 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _TASKTHREAD_H_
-#define  _TASKTHREAD_H_
+#ifndef _EAGLE_TASKTHREAD_H_
+#define _EAGLE_TASKTHREAD_H_
 
 #include "Log.h"
 #include "Thread.h"
 #include "ThreadSem.h"
 #include "MutexLock.h"
+
+namespace eagle
+{
 
 class Task
 {
@@ -63,4 +66,6 @@ private:
 };
 
 typedef AutoPtr<TaskThread> TaskThreadPtr;
-#endif   /* ----- #ifndef _TASKTHREAD_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_TASKTHREAD_H_  ----- */

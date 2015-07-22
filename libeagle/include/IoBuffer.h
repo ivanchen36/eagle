@@ -11,13 +11,16 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _IOBUFFER_H_
-#define  _IOBUFFER_H_
+#ifndef _EAGLE_IOBUFFER_H_
+#define _EAGLE_IOBUFFER_H_
 #include <sched.h>
 
 #include "Define.h"
 #include "Pool.h"
 #include "Singleton.h"
+
+namespace eagle
+{
 
 struct IoBuffer
 {
@@ -109,4 +112,6 @@ private:
 };
 
 typedef Singleton<IoBufPoolManager> IoBufPoolManagerI;
-#endif   /* ----- #ifndef _IOBUFFER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_IOBUFFER_H_  ----- */

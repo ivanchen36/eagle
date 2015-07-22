@@ -1,6 +1,9 @@
 #include "EpollManager.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 EpollManager::EpollManager(const int workerNum)
     : EventManager(workerNum)
 {
@@ -191,3 +194,5 @@ int EpollManager::delEvent(int event, EventHandler *handler)
     return EG_FAILED;
 }
 
+
+}

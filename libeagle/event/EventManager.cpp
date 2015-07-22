@@ -1,5 +1,8 @@
 #include "EventManager.h"
 
+namespace eagle
+{
+
 EventManager::EventManager(const int workerNum)
     : m_workerNum(workerNum), m_curWorker(-1), m_isStop(0), m_isOverLoad(0)
 {
@@ -107,4 +110,6 @@ void EventManager::handleEvent(EventHandler *handler)
         sched_yield();
     }
     m_isOverLoad = 0;
+}
+
 }

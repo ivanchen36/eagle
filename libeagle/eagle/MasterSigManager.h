@@ -11,10 +11,13 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _MASTERSIGMANAGER_H_
-#define  _MASTERSIGMANAGER_H_
+#ifndef _EAGLE_MASTERSIGMANAGER_H_
+#define _EAGLE_MASTERSIGMANAGER_H_
 #include "Singleton.h"
 #include "SignalManager.h"
+
+namespace eagle
+{
 
 class MasterSigManager : public SignalManager
 {
@@ -28,4 +31,6 @@ public:
 };
 
 typedef Singleton<MasterSigManager> MasterSigManagerI;
-#endif   /* ----- #ifndef _MASTERSIGMANAGER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_MASTERSIGMANAGER_H_  ----- */

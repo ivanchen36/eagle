@@ -11,14 +11,17 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _SHAREMEM_H_
-#define  _SHAREMEM_H_
+#ifndef _EAGLE_SHAREMEM_H_
+#define _EAGLE_SHAREMEM_H_
 
 #include <stdint.h>
 #include <tr1/unordered_map>
 
 #include "AutoPtr.h"
 #include "Singleton.h"
+
+namespace eagle
+{
 
 class ShareMem
 {
@@ -42,4 +45,5 @@ private:
 
 typedef Singleton<ShareMem> ShareMemI;
 
-#endif   /* ----- #ifndef _SHAREMEM_H_  ----- */
+}
+#endif   /* ----- #ifndef _EAGLE_SHAREMEM_H_  ----- */

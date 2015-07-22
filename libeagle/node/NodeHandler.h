@@ -11,10 +11,13 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _NODEHANDLER_H_
-#define  _NODEHANDLER_H_
+#ifndef _EAGLE_NODEHANDLER_H_
+#define _EAGLE_NODEHANDLER_H_
 #include "AutoPtr.h"
 #include "EventHandler.h"
+
+namespace eagle
+{
 
 class NodeHandler : public MessageHandler
 {
@@ -27,4 +30,6 @@ public:
 };
 
 typedef AutoPtr<NodeHandler> NodeHandlerPtr;
-#endif   /* ----- #ifndef _NODEHANDLER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_NODEHANDLER_H_  ----- */

@@ -11,11 +11,14 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _PROCESSMANAGER_H_
-#define  _PROCESSMANAGER_H_
+#ifndef _EAGLE_PROCESSMANAGER_H_
+#define _EAGLE_PROCESSMANAGER_H_
 #include <vector>
 
 #include "Singleton.h"
+
+namespace eagle
+{
 
 class ProcessManager
 {
@@ -67,4 +70,6 @@ private:
 };
 
 typedef Singleton<ProcessManager> ProcessManagerI;
-#endif   /* ----- #ifndef _PROCESSMANAGER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_PROCESSMANAGER_H_  ----- */

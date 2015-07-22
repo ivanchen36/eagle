@@ -1,6 +1,9 @@
 #include "Log.h"
 #include "Thread.h"
 
+namespace eagle
+{
+
 void *threadStart(void *arg)
 {
     Thread *thread = (Thread *)arg;
@@ -73,4 +76,6 @@ Thread::~Thread()
     {
         ERRORLOG1("pthread_join err, ret %d", ret);
     }
+}
+
 }

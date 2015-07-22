@@ -12,15 +12,18 @@
  *   Organization:  
  */
 
-#ifndef _FILE_EX_H_
-#define _FILE_EX_H_
+#ifndef _EAGLE_FILE_H_
+#define _EAGLE_FILE_H_
 
 #include <stdint.h>
 #include <stdio.h>
 
 #include "AutoPtr.h"
 
-class FileEx
+namespace eagle
+{
+
+class File
 {
 public:
     enum Mode
@@ -32,8 +35,8 @@ public:
         WRONLY_CREATE_APPEND,
         RDWR_CREATE_APPEND
     };
-    FileEx(const char *fileName, const Mode mode);
-    ~FileEx();
+    File(const char *fileName, const Mode mode);
+    ~File();
 
 	void flush();
     int getFd();
@@ -59,5 +62,7 @@ private:
     char *m_fileName;
 };
 
-typedef AutoPtr<FileEx> FileExPtr;
+typedef AutoPtr<File> FilePtr;
+
+}
 #endif

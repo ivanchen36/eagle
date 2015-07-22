@@ -1,6 +1,9 @@
 #include "MutexLock.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 MutexLock::MutexLock(const int isRecursive, const int isPshared)
 {
     int ret;
@@ -77,4 +80,6 @@ LockGuard::LockGuard(MutexLock &lock) : m_lock(lock)
 LockGuard::~LockGuard()
 {
     m_lock.unLock();
+}
+
 }

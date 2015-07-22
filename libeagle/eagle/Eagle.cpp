@@ -19,6 +19,9 @@
 #include "AcceptHandler.h"
 #include "MessageHandlerFactory.h"
 
+namespace eagle
+{
+
 #define OP_STOP "stop"
 #define OP_RELOAD "reload"
 
@@ -67,10 +70,10 @@ int Eagle::checkDir()
     for (; ; )
     {
         snprintf(buf, MAX_FILENAME_LEN, "%s/%s", m_program.prefix, CONF_DIR);
-        if (!FileEx::isExist(buf)) break;
+        if (!File::isExist(buf)) break;
 
         snprintf(buf, MAX_FILENAME_LEN, "%s/%s", m_program.prefix, LOG_DIR);
-        if (!FileEx::isExist(buf)) break;
+        if (!File::isExist(buf)) break;
 
         ret = EG_SUCCESS;
         break;
@@ -103,14 +106,14 @@ int Eagle::writePid()
 
     pid_t pid;
     int len = sizeof(pid);
-    FileEx file(buf, FileEx::RDWR_CREATE_RESET);
+    File file(buf, File::RDWR_CREATE_RESET);
 
     if (file.readByOffset((uint8_t *)&pid, len, 0) == EG_FAILED)
     {
         pid = 0;
     }
     snprintf(buf, MAX_FILENAME_LEN, "/proc/%d", pid);
-    if (FileEx::isExist(buf)) 
+    if (File::isExist(buf)) 
     {
         ERRORLOG2("%s %s has ran", m_program.name, m_program.ver);
 
@@ -130,7 +133,7 @@ int Eagle::readPid()
             m_program.name, m_program.ver);
 
     pid_t pid;
-    FileEx file(buf, FileEx::RDWR);
+    File file(buf, File::RDWR);
 
     if (file.readByOffset((uint8_t *)&pid, sizeof(pid_t), 0) == EG_FAILED)
         return 0;
@@ -144,7 +147,7 @@ int Eagle::delPid()
     snprintf(buf, MAX_FILENAME_LEN, "%s/%s%s.pid", m_program.prefix, 
             m_program.name, m_program.ver);
 
-    return FileEx::del(buf);
+    return File::del(buf);
 }
 
 void Eagle::printPrompt(const char *option)
@@ -246,7 +249,7 @@ void Eagle::initWorker()
     Socket *unixSocket;
     AcceptHandler *handler;
     Server *server = *m_servers;
-    CallBack cb(::stopWorker);
+    CallBack cb(::eagle::stopWorker);
 
     m_acceptManager = new SelectManager(1);
     m_receiveManager = new EpollManager(WORKER_THREAD_NUM);
@@ -507,4 +510,6 @@ int Eagle::parseOptions(const int argc, char *const *argv)
     }
 
     return ret;
+}
+
 }

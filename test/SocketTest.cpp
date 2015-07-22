@@ -26,6 +26,7 @@
 #include "Thread.h"
 
 using namespace std;
+using namespace eagle;
 
 const char *CLIENTDIALOGARR[] = 
 {

@@ -21,6 +21,7 @@
 #include "Thread.h"
 
 using namespace std;
+using namespace eagle;
 
 void consumer(void *param)
 {

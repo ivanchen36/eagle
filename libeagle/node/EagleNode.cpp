@@ -7,6 +7,9 @@
 #include "ReceiveHandler.h"
 #include "PropertiesParser.h"
 
+namespace eagle
+{
+
 namespace
 {
 void quitEagleNode(void *param)
@@ -99,4 +102,6 @@ void EagleNode::run()
 
     handler->run();
     m_eventManager->loop();
+}
+
 }

@@ -11,12 +11,15 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _CYCLEQUEUE_H_
-#define  _CYCLEQUEUE_H_
+#ifndef _EAGLE_CYCLEQUEUE_H_
+#define _EAGLE_CYCLEQUEUE_H_
 
 #include "Define.h"
 #include "MutexLock.h"
 #include "Log.h"
+
+namespace eagle
+{
 
 #define STATS_SIZE_MAX 0x6FFFFFFF
 
@@ -124,4 +127,6 @@ private:
     Node *m_nodeHead;
     MutexLock m_lock;
 };
-#endif   /* ----- #ifndef _CYCLEQUEUE_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_CYCLEQUEUE_H_  ----- */

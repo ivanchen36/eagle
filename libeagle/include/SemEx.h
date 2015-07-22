@@ -11,10 +11,13 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _SEMEX_H_
-#define  _SEMEX_H_
+#ifndef _EAGLE_SEMEX_H_
+#define _EAGLE_SEMEX_H_
 #include "AutoPtr.h"
 #include "Define.h"
+
+namespace eagle
+{
 
 class Semaphore
 {
@@ -27,4 +30,6 @@ public:
 };
 
 typedef AutoPtr<Semaphore> SemaphorePtr;
-#endif   /* ----- #ifndef _SEMEX_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_SEMEX_H_  ----- */

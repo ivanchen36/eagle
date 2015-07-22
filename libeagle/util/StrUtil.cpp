@@ -2,6 +2,9 @@
 
 #include "StrUtil.h"
 
+namespace eagle
+{
+
 void StrUtil::copy(char *&dest, const char *src)
 {
     int len = strlen(src) + 1;
@@ -115,4 +118,6 @@ void StrUtil::split(const char *sep1, const char *sep2,
 
     *s3 = 0;
     map[s1] = s3 + len2;
+}
+
 }

@@ -11,11 +11,14 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _PROPERTIESPARSER_H_
-#define  _PROPERTIESPARSER_H_
+#ifndef _EAGLE_PROPERTIESPARSER_H_
+#define _EAGLE_PROPERTIESPARSER_H_
 
 #include "tinyxml2.h"
 #include "Properties.h"
+
+namespace eagle
+{
 
 class PropertiesParser 
 {
@@ -37,4 +40,6 @@ private:
             std::map<std::string, int> &serverMap);
     static int handlePropertyTag(tinyxml2::XMLElement *root, Properties &properties);
 };
-#endif   /* ----- #ifndef _PROPERTIESPARSER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_PROPERTIESPARSER_H_  ----- */

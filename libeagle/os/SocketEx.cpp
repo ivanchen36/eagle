@@ -8,6 +8,9 @@
 #include "Define.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 Socket::Socket(const int fd, const int isUinx) : m_fd(fd)
 {
     if (-1 == m_fd) return;
@@ -753,4 +756,6 @@ int Socket::recvMsg(int &fd, uint8_t *buf, int &len,
     }
 
     return EG_SUCCESS;
+}
+
 }

@@ -11,8 +11,8 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _EAGLE_H_
-#define  _EAGLE_H_
+#ifndef _EAGLE_EAGLE_H_
+#define _EAGLE_EAGLE_H_
 #include <string>
 
 #include "CallBack.h"
@@ -22,6 +22,9 @@
 #include "Properties.h"
 #include "EventHandler.h"
 #include "EventManager.h"
+
+namespace eagle
+{
 
 #define EAGLE_MAIN(ver) \
 int main ( int argc, char *argv[] ) \
@@ -134,4 +137,6 @@ private:
 };
 
 typedef Singleton<Eagle> EagleI;
-#endif   /* ----- #ifndef _EAGLE_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_EAGLE_H_  ----- */

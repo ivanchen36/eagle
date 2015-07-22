@@ -21,6 +21,8 @@
 #include "EagleTime.h"
 #include "ShmAllocator.h"
 
+using namespace eagle;
+
 void doTest()
 {
     ShmAllocator<int> alloc;

@@ -11,12 +11,15 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _STRUTIL_H_
-#define  _STRUTIL_H_
+#ifndef _EAGLE_STRUTIL_H_
+#define _EAGLE_STRUTIL_H_
 
 #include <string>
 #include <vector>
 #include <map>
+
+namespace eagle
+{
 
 class StrUtil 
 {
@@ -33,4 +36,5 @@ public:
             char *str, std::map<char *, char *> &map);
 };
 
-#endif   /* ----- #ifndef _STRUTIL_H_  ----- */
+}
+#endif   /* ----- #ifndef _EAGLE_STRUTIL_H_  ----- */

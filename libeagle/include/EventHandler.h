@@ -11,8 +11,8 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _EVENTHANDLER_H_
-#define  _EVENTHANDLER_H_
+#ifndef _EAGLE_EVENTHANDLER_H_
+#define _EAGLE_EVENTHANDLER_H_
 
 #include "AutoPtr.h"
 #include "AutoPtr1.h"
@@ -21,6 +21,9 @@
 #include "IoBuffer.h"
 #include "Log.h"
 #include "ClassFactory.h"
+
+namespace eagle
+{
 
 class EventManager;
 
@@ -138,4 +141,6 @@ public:
 private:
     EventHandler *m_eventHandler;
 };
-#endif   /* ----- #ifndef _EVENTHANDLER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_EVENTHANDLER_H_  ----- */

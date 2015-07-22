@@ -1,12 +1,13 @@
 #include "Thread.h"
 #include "NodeServer.h"
 
+namespace eagle
+{
+
 namespace
 {
 void startNodeServer(void *param)
 {
-    NodeServer *nodeServer = (NodeServer *)param;
-    nodeServer->send("");
 }
 }
 
@@ -29,4 +30,6 @@ void NodeServer::run()
 IoBuffer *NodeServer::handle(IoBuffer *ioBuf)
 {
     return ioBuf;
+}
+
 }

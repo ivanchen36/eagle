@@ -11,10 +11,13 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _POOL_H_
-#define  _POOL_H_
+#ifndef _EAGLE_POOL_H_
+#define _EAGLE_POOL_H_
 
 #include "MutexLock.h"
+
+namespace eagle
+{
 
 template <class T> class Pool
 {
@@ -105,4 +108,6 @@ private:
     Bucket *m_btHead;
     MutexLock m_lock;
 };
-#endif   /* ----- #ifndef _POOL_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_POOL_H_  ----- */

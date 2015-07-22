@@ -11,11 +11,14 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _EVENTMANAGER_H_
-#define  _EVENTMANAGER_H_
+#ifndef _EAGLE_EVENTMANAGER_H_
+#define _EAGLE_EVENTMANAGER_H_
 
 #include "EventHandler.h"
 #include "EventWorker.h"
+
+namespace eagle
+{
 
 class EventManager
 {
@@ -48,4 +51,6 @@ protected:
 };
 
 typedef AutoPtr<EventManager> EventManagerPtr;
-#endif   /* ----- #ifndef _EVENTMANAGER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_EVENTMANAGER_H_  ----- */

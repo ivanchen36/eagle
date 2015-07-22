@@ -11,10 +11,13 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _RECEIVEHANDLER_H_
-#define  _RECEIVEHANDLER_H_
+#ifndef _EAGLE_RECEIVEHANDLER_H_
+#define _EAGLE_RECEIVEHANDLER_H_
 
 #include "EventHandler.h"
+
+namespace eagle
+{
 
 class ReceiveHandler : public EventHandler
 {
@@ -88,4 +91,6 @@ private:
     MessageHandler *m_messageHandler;
     Pool<IoBufferUnion> *m_bufPool;
 };
-#endif   /* ----- #ifndef _RECEIVEHANDLER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_RECEIVEHANDLER_H_  ----- */

@@ -19,6 +19,7 @@
 #include "Singleton.h"
 
 using namespace std;
+using namespace eagle;
 
 class SingleTest
 {

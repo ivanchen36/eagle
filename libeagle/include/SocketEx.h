@@ -11,8 +11,8 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _SOCKET_H_
-#define  _SOCKET_H_
+#ifndef _EAGLE_SOCKET_H_
+#define _EAGLE_SOCKET_H_
 #include <stdint.h>
 #include <unistd.h>
 #include <netinet/in.h>
@@ -20,6 +20,9 @@
 #include <arpa/inet.h>
 
 #include "AutoPtr.h"
+
+namespace eagle
+{
 
 class Socket
 {
@@ -85,4 +88,6 @@ private:
 };
 
 typedef AutoPtr<Socket> SocketPtr;
-#endif   /* ----- #ifndef _SOCKET_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_SOCKET_H_  ----- */

@@ -3,6 +3,9 @@
 #include "ThreadSem.h"
 #include "Log.h"
 
+namespace eagle
+{
+
 ThreadSem::ThreadSem(const int val) : m_isInit(0), 
     m_eagleTime(EagleTimeI::instance())
 {
@@ -83,4 +86,6 @@ int ThreadSem::timedWait(const int sec)
     }
 
     return EG_SUCCESS;
+}
+
 }

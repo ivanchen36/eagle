@@ -1,5 +1,8 @@
 #include "TimeStats.h"
 
+namespace eagle
+{
+
 TimeStats::TimeStats()
 {
    m_unit = MSEC; 
@@ -41,4 +44,6 @@ long TimeStats::stop()
     }
 
     return 0;
+}
+
 }

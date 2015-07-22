@@ -13,8 +13,8 @@
  */
 
 
-#ifndef _TIME_STATS_H_
-#define _TIME_STATS_H_
+#ifndef _EAGLE_TIME_STATS_H_
+#define _EAGLE_TIME_STATS_H_
 
 #include <sys/time.h>
 #include <stdlib.h>
@@ -56,6 +56,8 @@
     ts->stop()                                       \
 )
 
+namespace eagle
+{
 
 class TimeStats
 {
@@ -85,4 +87,5 @@ private:
 
 typedef AutoPtr<TimeStats> TimeStatsPtr;
 
+}
 #endif

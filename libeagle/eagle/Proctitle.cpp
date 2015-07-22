@@ -8,6 +8,9 @@
 
 extern char **environ;
 
+namespace eagle
+{
+
 Proctitle::Proctitle() : m_environ(NULL), m_last(NULL)
 {
 }
@@ -101,4 +104,6 @@ void Proctitle::setMaster(const int argc, char *const *argv, const char *format,
     {
         *--tmp = 0;
     }
+}
+
 }

@@ -11,11 +11,14 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _NODESERVER_H_
-#define  _NODESERVER_H_
+#ifndef _EAGLE_NODESERVER_H_
+#define _EAGLE_NODESERVER_H_
 
 #include "Partner.h"
 #include "NodeHandler.h"
+
+namespace eagle
+{
 
 class NodeServer : public NodeHandler
 {
@@ -30,4 +33,5 @@ private:
     Partner *m_partner;
 };
 
-#endif   /* ----- #ifndef _NODESERVER_H_  ----- */
+}
+#endif   /* ----- #ifndef _EAGLE_NODESERVER_H_  ----- */

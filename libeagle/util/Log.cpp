@@ -7,6 +7,9 @@
 #include "Define.h"
 #include "EagleTime.h"
 
+namespace eagle
+{
+
 LogPtr g_sysLog = new Log("/dev/null", DEBUG_LOG);
 
 namespace
@@ -21,7 +24,7 @@ __attribute__((constructor)) void initLog()
 }
 
 Log::Log(const char *fileName, int level)
-    : m_file(fileName, FileEx::RDWR_CREATE_APPEND)
+    : m_file(fileName, File::RDWR_CREATE_APPEND)
 {
     m_level = level;
 }
@@ -100,4 +103,6 @@ void Log::error(const char *format, ...)
     va_start(args, format);
     write(ERROR_LOG, format, args);
     va_end(args);
+}
+
 }

@@ -19,6 +19,8 @@
 #include "EagleTime.h"
 #include "PropertiesParser.h"
 
+using namespace eagle;
+
 void doTest()
 {
     Properties properties;

@@ -11,13 +11,16 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _CLASSFACTORY_H_
-#define  _CLASSFACTORY_H_
+#ifndef _EAGLE_CLASSFACTORY_H_
+#define _EAGLE_CLASSFACTORY_H_
 #include <map>
 #include <string>
 
 #include "Define.h"
 #include "Singleton.h"
+
+namespace eagle
+{
 
 typedef void *(*createClassFunc)();
 
@@ -65,4 +68,5 @@ __attribute__((constructor)) void reflector##classname()\
     ClassFactoryI::instance().registerClass(name, create##classname); \
 } \
 
-#endif   /* ----- #ifndef _CLASSFACTORY_H_  ----- */
+}
+#endif   /* ----- #ifndef _EAGLE_CLASSFACTORY_H_  ----- */

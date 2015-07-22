@@ -11,12 +11,15 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _CHILDSIGMANAGER_H_
-#define  _CHILDSIGMANAGER_H_
+#ifndef _EAGLE_CHILDSIGMANAGER_H_
+#define _EAGLE_CHILDSIGMANAGER_H_
 
 #include "CallBack.h"
 #include "Singleton.h"
 #include "SignalManager.h"
+
+namespace eagle
+{
 
 class ChildSigManager : public SignalManager
 {
@@ -33,4 +36,6 @@ private:
 };
 
 typedef Singleton<ChildSigManager> ChildSigManagerI;
-#endif   /* ----- #ifndef _CHILDSIGMANAGER_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_CHILDSIGMANAGER_H_  ----- */

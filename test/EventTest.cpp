@@ -27,6 +27,7 @@
 #include "MessageHandlerFactory.h"
 
 using namespace std;
+using namespace eagle;
 
 namespace
 {

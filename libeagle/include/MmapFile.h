@@ -11,12 +11,15 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _MMAPFILE_H_
-#define  _MMAPFILE_H_
+#ifndef _EAGLE_MMAPFILE_H_
+#define _EAGLE_MMAPFILE_H_
 #include <stdint.h>
 
 #include "Log.h"
 #include "AutoPtr.h"
+
+namespace eagle
+{
 
 class MmapFile
 {
@@ -57,4 +60,6 @@ private:
 };
 
 typedef AutoPtr<MmapFile> MmapFilePtr;
-#endif   /* ----- #ifndef _MMAPFILE_H_  ----- */
+
+}
+#endif   /* ----- #ifndef _EAGLE_MMAPFILE_H_  ----- */

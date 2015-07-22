@@ -11,10 +11,13 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef  _SIGNALMANAGER_H_
-#define  _SIGNALMANAGER_H_
+#ifndef _EAGLE_SIGNALMANAGER_H_
+#define _EAGLE_SIGNALMANAGER_H_
 #include <signal.h>
 #include <map>
+
+namespace eagle
+{
 
 class SignalManager
 {
@@ -42,4 +45,5 @@ protected:
     SaHandleMap m_handleMap;
 };
 
-#endif   /* ----- #ifndef _SIGNALMANAGER_H_  ----- */
+}
+#endif   /* ----- #ifndef _EAGLE_SIGNALMANAGER_H_  ----- */

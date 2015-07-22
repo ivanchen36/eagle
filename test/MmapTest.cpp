@@ -23,6 +23,7 @@
 #include "MmapFile.h"
 
 using namespace std;
+using namespace eagle;
 
 void test()
 {
