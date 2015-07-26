@@ -1,5 +1,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
+#include <google/protobuf/stubs/common.h>
 
 #include "Eagle.h"
 #include "Define.h"
@@ -39,6 +40,11 @@ void stopWorker(void *param)
 {
     EagleI::instance().stopWorker();
 }
+}
+
+__attribute__((destructor)) void destoryEagle()  
+{ 
+    google::protobuf::ShutdownProtobufLibrary();
 }
 
 Eagle::Eagle() : m_servers(NULL), m_properties(NULL), 

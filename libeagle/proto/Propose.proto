@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package eagle;
+
+message Propose
+{
+    string name = 1;
+    string value = 2;
+    int32 seq = 3;
+}
+
+message ProposeReq
+{
+    string node = 1;
+    Propose propose = 2;
+}
+
+message ProposeResp
+{
+    int32 retcode = 1;
+    Propose propose = 2;
+}

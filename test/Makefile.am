@@ -11,14 +11,15 @@ LIB_INCLUDE = $(top_srcdir)/libeagle/include
 LIBEAGLE_INCLUDE = $(top_srcdir)/libeagle/eagle
 LIBEVENT_INCLUDE = $(top_srcdir)/libeagle/event
 LIBNODE_INCLUDE = $(top_srcdir)/libeagle/node
+LIBPROTO_INCLUDE = $(top_srcdir)/libeagle/proto
 
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
 				  logtest psemtest threadtest shmtest mmaptest \
 				  eagletest rbtest locktest sockettest queuetest \
-				  classtest eventtest proptest alloctest
+				  classtest eventtest proptest alloctest prototest
 
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBEAGLE_INCLUDE) \
-		   -I$(LIBEVENT_INCLUDE) -I$(LIBNODE_INCLUDE)
+		   -I$(LIBEVENT_INCLUDE) -I$(LIBNODE_INCLUDE) -I$(LIBPROTO_INCLUDE)
 
 autoptrtest_SOURCES = AutoPtrTest.cpp
 autoptrtest_LDFLAGS = $(TEST_LD)
@@ -70,3 +71,6 @@ proptest_LDFLAGS = $(TEST_LD)
 
 alloctest_SOURCES = ShmAllocatorTest.cpp
 alloctest_LDFLAGS = $(TEST_LD)
+
+prototest_SOURCES = ProtoTest.cpp
+prototest_LDFLAGS = $(TEST_LD)

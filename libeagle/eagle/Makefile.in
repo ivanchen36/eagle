@@ -17,6 +17,7 @@
 
 # Process this file with automake to produce Makefile.in
 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -37,7 +38,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = libeagle/eagle
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(libeagle_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -67,15 +69,18 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__installdirs = "$(DESTDIR)$(libdir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(libeagledir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libeagle_la_DEPENDENCIES = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
 	$(EVENT_PATH)/libevent.la $(NODE_PATH)/libnode.la \
-	$(OPEN_PATH)/libopen.la
+	$(OPEN_PATH)/libopen.la $(PROTO_PATH)/libproto.la
 am_libeagle_la_OBJECTS = Eagle.lo TaskThread.lo SignalManager.lo \
 	MasterSigManager.lo ChildSigManager.lo ProcessManager.lo \
 	EagleTime.lo Timer.lo Proctitle.lo
 libeagle_la_OBJECTS = $(am_libeagle_la_OBJECTS)
+libeagle_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(libeagle_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -91,6 +96,7 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libeagle_la_SOURCES)
 DIST_SOURCES = $(libeagle_la_SOURCES)
+HEADERS = $(libeagle_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -148,6 +154,7 @@ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
@@ -215,7 +222,41 @@ UTIL_PATH = $(top_srcdir)/libeagle/util
 EVENT_PATH = $(top_srcdir)/libeagle/event
 NODE_PATH = $(top_srcdir)/libeagle/node
 OPEN_PATH = $(top_srcdir)/libeagle/open
-INCLUDES = -I$(LIB_INCLUDE) -I$(NODE_PATH) -I$(EVENT_PATH)
+PROTO_PATH = $(top_srcdir)/libeagle/proto
+INCLUDES = -I$(LIB_INCLUDE) -I$(NODE_PATH) -I$(EVENT_PATH) -I$(NODE_PATH)
+libeagledir = $(includedir)/
+libeagle_HEADERS = $(top_srcdir)/libeagle/include/AutoPtr.h \
+				   $(top_srcdir)/libeagle/include/CallBack.h \
+				   $(top_srcdir)/libeagle/include/ClassFactory.h \
+				   $(top_srcdir)/libeagle/include/CycleQueue.h \
+				   $(top_srcdir)/libeagle/include/Define.h \
+				   $(top_srcdir)/libeagle/include/Eagle.h \
+				   $(top_srcdir)/libeagle/include/EagleTime.h \
+				   $(top_srcdir)/libeagle/include/EventHandler.h \
+				   $(top_srcdir)/libeagle/include/EventManager.h \
+				   $(top_srcdir)/libeagle/include/EventWorker.h \
+				   $(top_srcdir)/libeagle/include/FileEx.h \
+				   $(top_srcdir)/libeagle/include/IoBuffer.h \
+				   $(top_srcdir)/libeagle/include/Log.h \
+				   $(top_srcdir)/libeagle/include/MmapFile.h \
+				   $(top_srcdir)/libeagle/include/MutexLock.h \
+				   $(top_srcdir)/libeagle/include/Pool.h \
+				   $(top_srcdir)/libeagle/include/ProcessSem.h \
+				   $(top_srcdir)/libeagle/include/Properties.h \
+				   $(top_srcdir)/libeagle/include/RbTree.h \
+				   $(top_srcdir)/libeagle/include/SemEx.h \
+				   $(top_srcdir)/libeagle/include/ShareMem.h \
+				   $(top_srcdir)/libeagle/include/ShmAllocator.h \
+				   $(top_srcdir)/libeagle/include/Singleton.h \
+				   $(top_srcdir)/libeagle/include/SocketEx.h \
+				   $(top_srcdir)/libeagle/include/StrUtil.h \
+				   $(top_srcdir)/libeagle/include/TaskThread.h \
+				   $(top_srcdir)/libeagle/include/Thread.h \
+				   $(top_srcdir)/libeagle/include/ThreadSem.h \
+				   $(top_srcdir)/libeagle/include/Timer.h \
+				   $(top_srcdir)/libeagle/include/TimeStats.h \
+				   $(top_srcdir)/libeagle/include/tinyxml2.h
+
 lib_LTLIBRARIES = libeagle.la
 libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
 					  MasterSigManager.cpp ChildSigManager.cpp \
@@ -224,8 +265,9 @@ libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
 
 libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
 					 $(EVENT_PATH)/libevent.la $(NODE_PATH)/libnode.la \
-					 $(OPEN_PATH)/libopen.la
+					 $(OPEN_PATH)/libopen.la $(PROTO_PATH)/libproto.la
 
+libeagle_la_LDFLAGS = -version-info  1:0:1 --export-dynamic -no-undefined
 all: all-am
 
 .SUFFIXES:
@@ -292,7 +334,7 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libeagle.la: $(libeagle_la_OBJECTS) $(libeagle_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(libdir) $(libeagle_la_OBJECTS) $(libeagle_la_LIBADD) $(LIBS)
+	$(libeagle_la_LINK) -rpath $(libdir) $(libeagle_la_OBJECTS) $(libeagle_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -336,6 +378,26 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-libeagleHEADERS: $(libeagle_HEADERS)
+	@$(NORMAL_INSTALL)
+	test -z "$(libeagledir)" || $(MKDIR_P) "$(DESTDIR)$(libeagledir)"
+	@list='$(libeagle_HEADERS)'; test -n "$(libeagledir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libeagledir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libeagledir)" || exit $$?; \
+	done
+
+uninstall-libeagleHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(libeagle_HEADERS)'; test -n "$(libeagledir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	test -n "$$files" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(libeagledir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(libeagledir)" && rm -f $$files
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -421,9 +483,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(libeagledir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -474,7 +536,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-libeagleHEADERS
 
 install-dvi: install-dvi-am
 
@@ -520,7 +582,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES
+uninstall-am: uninstall-libLTLIBRARIES uninstall-libeagleHEADERS
 
 .MAKE: install-am install-strip
 
@@ -531,12 +593,13 @@ uninstall-am: uninstall-libLTLIBRARIES
 	install install-am install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-libLTLIBRARIES
+	install-libLTLIBRARIES install-libeagleHEADERS install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-libLTLIBRARIES uninstall-libeagleHEADERS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

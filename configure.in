@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([eagle], [1.0], [228268157@qq.com])
-AM_INIT_AUTOMAKE(eagle, 1.0-beta)
+AC_INIT([eagle], [0.1.0], [228268157@qq.com])
+AM_INIT_AUTOMAKE(eagle, 0.1.0-beta)
 
 AC_CONFIG_SRCDIR([])
 AC_CONFIG_HEADERS([config.h])
@@ -30,5 +30,6 @@ AC_CHECK_FUNCS([memset strcasecmp])
 AC_CONFIG_FILES([Makefile libeagle/Makefile test/Makefile
                  libeagle/os/Makefile libeagle/util/Makefile
                  libeagle/eagle/Makefile libeagle/event/Makefile 
-                 libeagle/node/Makefile libeagle/open/Makefile])
+                 libeagle/node/Makefile libeagle/open/Makefile
+                 libeagle/proto/Makefile])
 AC_OUTPUT

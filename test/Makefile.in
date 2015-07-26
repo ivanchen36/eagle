@@ -39,7 +39,8 @@ noinst_PROGRAMS = autoptrtest$(EXEEXT) timestatstest$(EXEEXT) \
 	threadtest$(EXEEXT) shmtest$(EXEEXT) mmaptest$(EXEEXT) \
 	eagletest$(EXEEXT) rbtest$(EXEEXT) locktest$(EXEEXT) \
 	sockettest$(EXEEXT) queuetest$(EXEEXT) classtest$(EXEEXT) \
-	eventtest$(EXEEXT) proptest$(EXEEXT) alloctest$(EXEEXT)
+	eventtest$(EXEEXT) proptest$(EXEEXT) alloctest$(EXEEXT) \
+	prototest$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -105,6 +106,12 @@ proptest_LDADD = $(LDADD)
 proptest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(proptest_LDFLAGS) $(LDFLAGS) -o $@
+am_prototest_OBJECTS = ProtoTest.$(OBJEXT)
+prototest_OBJECTS = $(am_prototest_OBJECTS)
+prototest_LDADD = $(LDADD)
+prototest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(prototest_LDFLAGS) $(LDFLAGS) -o $@
 am_psemtest_OBJECTS = PSemTest.$(OBJEXT)
 psemtest_OBJECTS = $(am_psemtest_OBJECTS)
 psemtest_LDADD = $(LDADD)
@@ -169,17 +176,17 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 SOURCES = $(alloctest_SOURCES) $(autoptrtest_SOURCES) \
 	$(classtest_SOURCES) $(eagletest_SOURCES) $(eventtest_SOURCES) \
 	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
-	$(proptest_SOURCES) $(psemtest_SOURCES) $(queuetest_SOURCES) \
-	$(rbtest_SOURCES) $(shmtest_SOURCES) $(singletontest_SOURCES) \
-	$(sockettest_SOURCES) $(threadtest_SOURCES) \
-	$(timestatstest_SOURCES)
+	$(proptest_SOURCES) $(prototest_SOURCES) $(psemtest_SOURCES) \
+	$(queuetest_SOURCES) $(rbtest_SOURCES) $(shmtest_SOURCES) \
+	$(singletontest_SOURCES) $(sockettest_SOURCES) \
+	$(threadtest_SOURCES) $(timestatstest_SOURCES)
 DIST_SOURCES = $(alloctest_SOURCES) $(autoptrtest_SOURCES) \
 	$(classtest_SOURCES) $(eagletest_SOURCES) $(eventtest_SOURCES) \
 	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
-	$(proptest_SOURCES) $(psemtest_SOURCES) $(queuetest_SOURCES) \
-	$(rbtest_SOURCES) $(shmtest_SOURCES) $(singletontest_SOURCES) \
-	$(sockettest_SOURCES) $(threadtest_SOURCES) \
-	$(timestatstest_SOURCES)
+	$(proptest_SOURCES) $(prototest_SOURCES) $(psemtest_SOURCES) \
+	$(queuetest_SOURCES) $(rbtest_SOURCES) $(shmtest_SOURCES) \
+	$(singletontest_SOURCES) $(sockettest_SOURCES) \
+	$(threadtest_SOURCES) $(timestatstest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -237,6 +244,7 @@ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
@@ -309,8 +317,9 @@ LIB_INCLUDE = $(top_srcdir)/libeagle/include
 LIBEAGLE_INCLUDE = $(top_srcdir)/libeagle/eagle
 LIBEVENT_INCLUDE = $(top_srcdir)/libeagle/event
 LIBNODE_INCLUDE = $(top_srcdir)/libeagle/node
+LIBPROTO_INCLUDE = $(top_srcdir)/libeagle/proto
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBEAGLE_INCLUDE) \
-		   -I$(LIBEVENT_INCLUDE) -I$(LIBNODE_INCLUDE)
+		   -I$(LIBEVENT_INCLUDE) -I$(LIBNODE_INCLUDE) -I$(LIBPROTO_INCLUDE)
 
 autoptrtest_SOURCES = AutoPtrTest.cpp
 autoptrtest_LDFLAGS = $(TEST_LD)
@@ -346,6 +355,8 @@ proptest_SOURCES = PropertiesTest.cpp
 proptest_LDFLAGS = $(TEST_LD)
 alloctest_SOURCES = ShmAllocatorTest.cpp
 alloctest_LDFLAGS = $(TEST_LD)
+prototest_SOURCES = ProtoTest.cpp
+prototest_LDFLAGS = $(TEST_LD)
 all: all-am
 
 .SUFFIXES:
@@ -416,6 +427,9 @@ mmaptest$(EXEEXT): $(mmaptest_OBJECTS) $(mmaptest_DEPENDENCIES)
 proptest$(EXEEXT): $(proptest_OBJECTS) $(proptest_DEPENDENCIES) 
 	@rm -f proptest$(EXEEXT)
 	$(proptest_LINK) $(proptest_OBJECTS) $(proptest_LDADD) $(LIBS)
+prototest$(EXEEXT): $(prototest_OBJECTS) $(prototest_DEPENDENCIES) 
+	@rm -f prototest$(EXEEXT)
+	$(prototest_LINK) $(prototest_OBJECTS) $(prototest_LDADD) $(LIBS)
 psemtest$(EXEEXT): $(psemtest_OBJECTS) $(psemtest_DEPENDENCIES) 
 	@rm -f psemtest$(EXEEXT)
 	$(psemtest_LINK) $(psemtest_OBJECTS) $(psemtest_LDADD) $(LIBS)
@@ -457,6 +471,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MmapTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PSemTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PropertiesTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProtoTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RbTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShmAllocatorTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShmTest.Po@am__quote@
