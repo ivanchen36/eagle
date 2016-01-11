@@ -203,6 +203,15 @@ int main ( int argc, char *argv[] )
 {
     EagleTimeI::instance().autoUpdate();
 
+    Propose propose;
+    if (!propose.has_seq())
+    {
+        printf("no seq");
+    }
+    printf("%d", propose.seq());
+
+    return 0;
+
     test5();
 
     return EXIT_SUCCESS;

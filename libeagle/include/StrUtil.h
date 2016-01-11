@@ -30,9 +30,9 @@ public:
             std::vector<std::string> &vec);
     static void split(const char *sep, char *str, 
             std::vector<char *> &vec);
-    static void split(const char *sep1, const char *sep2, 
+    static int split(const char *sep1, const char *sep2, 
             const char *str, std::map<std::string, std::string> &map);
-    static void split(const char *sep1, const char *sep2, 
+    static int split(const char *sep1, const char *sep2, 
             char *str, std::map<char *, char *> &map);
 };
 

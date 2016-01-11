@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <vector>
 #include <tr1/unordered_map>
 
 #include "AutoPtr.h"
@@ -100,17 +101,28 @@ void doTest()
 
 void doTest1()
 {
+    vector<APTestPtr> vec;
     tr1::unordered_map<int, APTestPtr> map;
     APTestPtr child = new AutoPtrTestChild("");
+
     map[1] = child;
+    vec.push_back(new AutoPtrTestChild(""));
 }
 
 void doTest2()
 {
+    vector<APTestPtr> vec;
     tr1::unordered_map<int, APTestPtr> map;
     APTestPtr child = new AutoPtrTestChild("");
-    map[1] = child;
-    map.erase(1);
+
+    for (int i = 0; i < 10; ++i)
+    {
+        cout << "i  " << i << endl;
+        map[i] = child;
+        map.erase(i);
+        vec.push_back(new AutoPtrTestChild(""));
+        vec.clear();
+    }
 }
 
 class AutoPtr1Test : public Reference

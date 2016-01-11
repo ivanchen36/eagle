@@ -30,9 +30,9 @@ public:
         m_ref = 0;
     }
     
-    void inc()
+    int inc()
     {
-        __sync_fetch_and_add(const_cast<volatile int *>(&m_ref), 1);
+        return __sync_add_and_fetch(const_cast<volatile int *>(&m_ref), 1);
     }
 
     int dec()

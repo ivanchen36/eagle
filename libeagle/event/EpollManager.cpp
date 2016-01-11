@@ -81,8 +81,12 @@ void EpollManager::loop()
                 break;
             }
 
-            /* bug : when handler delete by unregisterEvent at the same time */
-            handler->inc(); 
+            if (handler->inc() == 1)
+            {
+                delete handler;
+                continue;
+            }
+
             events = m_epollEvents[i].events;
 
             if ((events & (EPOLLERR | EPOLLHUP))

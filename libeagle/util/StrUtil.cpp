@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "StrUtil.h"
+#include "Define.h"
 
 namespace eagle
 {
@@ -59,7 +60,7 @@ void StrUtil::split(const char *sep, char *str,
     vec.push_back(s1);
 }
 
-void StrUtil::split(const char *sep1, const char *sep2, 
+int StrUtil::split(const char *sep1, const char *sep2, 
         const char *str, std::map<std::string, std::string> &map)
 {
     const char *s1 = str;
@@ -72,10 +73,11 @@ void StrUtil::split(const char *sep1, const char *sep2,
     while ((s2 = strstr(s1, sep1)))
     {
         s3 = strstr(s1, sep2);
-        if (NULL == s3 || s2 < s3) 
+        if (NULL == s3 || s2 < s3)
         {
             s1 = s2 + len1;
-            continue;
+
+            return EG_FAILED;
         }
 
         key.assign(s1, s3 - s1);
@@ -83,13 +85,15 @@ void StrUtil::split(const char *sep1, const char *sep2,
         s1 = s2 + len1;
     }
     s3 = strstr(s1, sep2);
-    if (NULL == s3) return;
+    if (NULL == s3) return EG_FAILED;
 
     key.assign(s1, s3 - s1);
-    map[key].assign(s3 + len2, s2 - s3 - len2);
+    map[key].assign(s3 + len2, strlen(s3) - len2);
+
+    return EG_SUCCESS;
 }
 
-void StrUtil::split(const char *sep1, const char *sep2, 
+int StrUtil::split(const char *sep1, const char *sep2, 
         char *str, std::map<char *, char *> &map)
 {
     char *s1 = str;
@@ -105,7 +109,8 @@ void StrUtil::split(const char *sep1, const char *sep2,
         if (NULL == s3 || s2 < s3) 
         {
             s1 = s2 + len1;
-            continue;
+
+            return EG_FAILED;
         }
 
         *s3 = 0;
@@ -114,10 +119,35 @@ void StrUtil::split(const char *sep1, const char *sep2,
         s1 = s2 + len1;
     }
     s3 = strstr(s1, sep2);
-    if (NULL == s3) return;
+    if (NULL == s3) return EG_FAILED;
 
     *s3 = 0;
     map[s1] = s3 + len2;
+
+    return EG_SUCCESS;
 }
+#if 0
+int gbkToUtf8(const std::string &src, std::string &dest)
+{
+    int len = src.length();
+    char *tmp = new char[len];
+    char *buf = new char[len * 2];
+    memcpy(tmp, src.c_str(), len);
+    if (charsetConvert("gbk","utf-8", tmp, len, buf, len * 2))
+    {
+        delete[] tmp;
+        delete[] buf;
+
+        return -1;
+    }
+
+    dest = buf;
+    delete[] tmp;
+    delete[] buf;
+
+    return 0;
+}
+
+#endif
 
 }

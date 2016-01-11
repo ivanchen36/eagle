@@ -46,12 +46,16 @@ public:
 
     void inc()
     {
-        __sync_fetch_and_add(const_cast<volatile int *>(m_ref), 1);
+        __sync_add_and_fetch(const_cast<volatile int *>(m_ref), 1);
     }
 
-    int dec()
+    void dec()
     {
-        return __sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1);
+        if (0 == __sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1))
+        {
+            delete m_ref;
+            delete m_ptr;
+        }
     }
 
     template<class Y> AutoPtr(const AutoPtr<Y> &r)
@@ -72,11 +76,7 @@ public:
     {
         if (NULL == m_ptr) return;
 
-        if (dec() == 0)
-        {
-            delete m_ref;
-            delete m_ptr;
-        }
+        dec();
     }
 
     T *operator->() const
@@ -103,11 +103,7 @@ public:
     {
         if (NULL != m_ptr)
         {
-            if (dec() == 0)
-            {
-                delete m_ref;
-                delete m_ptr;
-            }
+            dec();
         }
 
         m_ptr = p;
@@ -122,11 +118,7 @@ public:
 
         if (NULL != m_ptr)
         {
-            if (dec() == 0)
-            {
-                delete m_ref;
-                delete m_ptr;
-            }
+            dec();
         }
 
         m_ptr = r.m_ptr;
@@ -144,11 +136,7 @@ public:
 
         if (NULL != m_ptr)
         {
-            if (dec() == 0)
-            {
-                delete m_ref;
-                delete m_ptr;
-            }
+            dec();
         }
 
         m_ptr = r.m_ptr;
