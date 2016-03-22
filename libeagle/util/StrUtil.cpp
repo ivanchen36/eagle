@@ -8,25 +8,43 @@ namespace eagle
 
 void StrUtil::copy(char *&dest, const char *src)
 {
-    int len = strlen(src) + 1;
+    int len = NULL == src ? 0 : strlen(src);
 
-    dest = new char[len];
+    dest = new char[len + 1];
     if (dest == NULL) return;
+
+    if (0 != len)
+    {
+        *dest = 0;
+
+        return;
+    }
 
     strcpy(dest, src);
 }
 
 void StrUtil::copy(char *&dest, const char *src, const int len)
 {
-    dest = new char[len + 1];
+    int l = NULL == src ? 0 : len;
+
+    dest = new char[l + 1];
     if (dest == NULL) return;
 
-    strcpy(dest, src);
+    if (0 != l)
+    {
+        *dest = 0;
+
+        return;
+    }
+
+    strncpy(dest, src, l);
 }
 
 void StrUtil::split(const char *sep, const char *str, 
         std::vector<std::string> &vec)
 {
+    if (NULL == sep || NULL == str) return;
+
     const char *s1 = str;
     const char *s2;
     int len = strlen(sep);
@@ -46,6 +64,8 @@ void StrUtil::split(const char *sep, const char *str,
 void StrUtil::split(const char *sep, char *str, 
         std::vector<char *> &vec)
 {
+    if (NULL == sep || NULL == str) return;
+
     char *s1 = str;
     char *s2;
     int len = strlen(sep);
@@ -63,6 +83,8 @@ void StrUtil::split(const char *sep, char *str,
 int StrUtil::split(const char *sep1, const char *sep2, 
         const char *str, std::map<std::string, std::string> &map)
 {
+    if (NULL == sep1 || NULL == sep2 || NULL == str) return EG_FAILED;
+
     const char *s1 = str;
     const char *s2;
     const char *s3;
@@ -96,6 +118,8 @@ int StrUtil::split(const char *sep1, const char *sep2,
 int StrUtil::split(const char *sep1, const char *sep2, 
         char *str, std::map<char *, char *> &map)
 {
+    if (NULL == sep1 || NULL == sep2 || NULL == str) return EG_FAILED;
+
     char *s1 = str;
     char *s2;
     char *s3;
@@ -126,6 +150,7 @@ int StrUtil::split(const char *sep1, const char *sep2,
 
     return EG_SUCCESS;
 }
+
 #if 0
 int gbkToUtf8(const std::string &src, std::string &dest)
 {
@@ -147,7 +172,6 @@ int gbkToUtf8(const std::string &src, std::string &dest)
 
     return 0;
 }
-
 #endif
 
 }
