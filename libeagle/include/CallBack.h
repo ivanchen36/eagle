@@ -31,7 +31,7 @@ public:
     CallBack(CallBackFunc func, void *param = NULL) 
         : m_cbParam(param), m_cbFunc(func){}
 
-    void excute()
+    void execute()
     {
         (*m_cbFunc)(m_cbParam);
     }

@@ -1,3 +1,3 @@
 # Process this file with automake to produce Makefile.in
 
-SUBDIRS = os util event node open proto eagle
+SUBDIRS = os util event node open proto frame

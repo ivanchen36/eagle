@@ -16,7 +16,7 @@ void *threadStart1(void *arg)
 {
     CallBack cb = (*(CallBack *)arg);
     delete (CallBack *)arg;
-    cb.excute();
+    cb.execute();
 
     return NULL;
 }

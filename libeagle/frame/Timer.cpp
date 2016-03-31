@@ -187,7 +187,7 @@ void Timer::excute()
                     Thread thread(cur->cb);
                 }else
                 {
-                    cur->cb.excute();
+                    cur->cb.execute();
                 }
                 if (-1 == cur->times || --cur->times > 0)
                 {
