@@ -3,6 +3,7 @@
 #include <google/protobuf/stubs/common.h>
 
 #include "Eagle.h"
+#include "ShareMem.h"
 #include "Define.h"
 #include "EagleNode.h"
 #include "Log.h"

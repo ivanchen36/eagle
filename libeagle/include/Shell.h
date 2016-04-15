@@ -16,7 +16,7 @@
 
 #include <string>
 
-namespace ealge
+namespace eagle
 {
 
 class Shell 

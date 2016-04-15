@@ -13,16 +13,16 @@ namespace
 {
 Timer *timer;
 #ifdef _TEST_
-void excuteTimer(union sigval val)
+void executeTimer(union sigval val)
 #else
-void excuteTimer(int sig)
+void executeTimer(int sig)
 #endif
 {
-    timer->excute();
+    timer->execute();
 }
 }
 
-Timer::Timer() : m_isPause(0), m_nextExcuteTime((uint64_t)-1), 
+Timer::Timer() : m_isPause(0), m_nextExecuteTime((uint64_t)-1), 
     m_taskListHead(NULL), m_eagleTime(EagleTimeI::instance())
 { 
 #ifdef _TEST_
@@ -31,7 +31,7 @@ Timer::Timer() : m_isPause(0), m_nextExcuteTime((uint64_t)-1),
     memset (&evp, 0, sizeof (evp));
     evp.sigev_value.sival_ptr = &m_timer;
     evp.sigev_notify = SIGEV_THREAD;
-    evp.sigev_notify_function = excuteTimer;
+    evp.sigev_notify_function = executeTimer;
 
     if (0 != timer_create(CLOCK_REALTIME, &evp, &m_timer))
     {
@@ -41,7 +41,7 @@ Timer::Timer() : m_isPause(0), m_nextExcuteTime((uint64_t)-1),
     struct sigaction sa;
 
     bzero(&sa, sizeof(struct sigaction)); 
-    sa.sa_handler = excuteTimer;
+    sa.sa_handler = executeTimer;
     sigemptyset(&sa.sa_mask); 
     if (sigaction(SIGALRM, &sa, NULL) == -1) 
     {
@@ -109,9 +109,9 @@ void Timer::start()
     LockGuard guard(m_lock);
     if (m_taskMap.empty()) return;
 
-    if (m_nextExcuteTime > curTime)
+    if (m_nextExecuteTime > curTime)
     {
-        setTimer(m_nextExcuteTime - curTime);
+        setTimer(m_nextExecuteTime - curTime);
     }else
     {
         setTimer(1);
@@ -156,7 +156,7 @@ void Timer::addTimer(const uint64_t startTime, TaskNode *task)
     }
 }
 
-void Timer::excute()
+void Timer::execute()
 {
     TaskNode *cur;
     TaskNode *next;
@@ -167,7 +167,7 @@ void Timer::excute()
     LockGuard guard(m_lock);
     TaskMap::Iterator iter = m_taskMap.getMin();
 
-    if (curTime < m_nextExcuteTime) curTime = m_nextExcuteTime;
+    if (curTime < m_nextExecuteTime) curTime = m_nextExecuteTime;
     for (; iter != m_taskMap.end(); iter = m_taskMap.getMin())
     {
         if (curTime < iter->key) break;
@@ -217,7 +217,7 @@ void Timer::excute()
         startTime = iter->key;
     }
     setTimer(startTime - curTime);
-    m_nextExcuteTime = startTime;
+    m_nextExecuteTime = startTime;
 }
 
 int Timer::addTask(const char *name, const int msec,
@@ -241,10 +241,10 @@ int Timer::addTask(const char *name, const int msec,
     tmp->nextTask = m_taskListHead;
     m_taskListHead = tmp;
     addTimer(startTime, tmp);
-    if (m_nextExcuteTime > startTime)
+    if (m_nextExecuteTime > startTime)
     {
         setTimer(startTime - curTime);
-        m_nextExcuteTime = startTime;
+        m_nextExecuteTime = startTime;
     }
 
     return 0;

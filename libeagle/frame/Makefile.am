@@ -49,8 +49,7 @@ lib_LTLIBRARIES = libeagle.la
 
 libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
 					  MasterSigManager.cpp ChildSigManager.cpp \
-					  ProcessManager.cpp EagleTime.cpp Timer.cpp \
-					  Proctitle.cpp
+					  ProcessManager.cpp Timer.cpp Proctitle.cpp
 libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
 					 $(EVENT_PATH)/libevent.la $(NODE_PATH)/libnode.la \
 					 $(OPEN_PATH)/libopen.la $(PROTO_PATH)/libproto.la

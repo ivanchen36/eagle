@@ -40,7 +40,7 @@ noinst_PROGRAMS = autoptrtest$(EXEEXT) timestatstest$(EXEEXT) \
 	eagletest$(EXEEXT) rbtest$(EXEEXT) locktest$(EXEEXT) \
 	sockettest$(EXEEXT) queuetest$(EXEEXT) classtest$(EXEEXT) \
 	eventtest$(EXEEXT) proptest$(EXEEXT) alloctest$(EXEEXT) \
-	prototest$(EXEEXT)
+	prototest$(EXEEXT) chtest$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -64,6 +64,12 @@ autoptrtest_LDADD = $(LDADD)
 autoptrtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(autoptrtest_LDFLAGS) $(LDFLAGS) -o $@
+am_chtest_OBJECTS = CHTest.$(OBJEXT)
+chtest_OBJECTS = $(am_chtest_OBJECTS)
+chtest_LDADD = $(LDADD)
+chtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(chtest_LDFLAGS) $(LDFLAGS) -o $@
 am_classtest_OBJECTS = ClassTest.$(OBJEXT)
 classtest_OBJECTS = $(am_classtest_OBJECTS)
 classtest_LDADD = $(LDADD)
@@ -174,19 +180,21 @@ CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(alloctest_SOURCES) $(autoptrtest_SOURCES) \
-	$(classtest_SOURCES) $(eagletest_SOURCES) $(eventtest_SOURCES) \
-	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
-	$(proptest_SOURCES) $(prototest_SOURCES) $(psemtest_SOURCES) \
-	$(queuetest_SOURCES) $(rbtest_SOURCES) $(shmtest_SOURCES) \
-	$(singletontest_SOURCES) $(sockettest_SOURCES) \
-	$(threadtest_SOURCES) $(timestatstest_SOURCES)
+	$(chtest_SOURCES) $(classtest_SOURCES) $(eagletest_SOURCES) \
+	$(eventtest_SOURCES) $(locktest_SOURCES) $(logtest_SOURCES) \
+	$(mmaptest_SOURCES) $(proptest_SOURCES) $(prototest_SOURCES) \
+	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
+	$(shmtest_SOURCES) $(singletontest_SOURCES) \
+	$(sockettest_SOURCES) $(threadtest_SOURCES) \
+	$(timestatstest_SOURCES)
 DIST_SOURCES = $(alloctest_SOURCES) $(autoptrtest_SOURCES) \
-	$(classtest_SOURCES) $(eagletest_SOURCES) $(eventtest_SOURCES) \
-	$(locktest_SOURCES) $(logtest_SOURCES) $(mmaptest_SOURCES) \
-	$(proptest_SOURCES) $(prototest_SOURCES) $(psemtest_SOURCES) \
-	$(queuetest_SOURCES) $(rbtest_SOURCES) $(shmtest_SOURCES) \
-	$(singletontest_SOURCES) $(sockettest_SOURCES) \
-	$(threadtest_SOURCES) $(timestatstest_SOURCES)
+	$(chtest_SOURCES) $(classtest_SOURCES) $(eagletest_SOURCES) \
+	$(eventtest_SOURCES) $(locktest_SOURCES) $(logtest_SOURCES) \
+	$(mmaptest_SOURCES) $(proptest_SOURCES) $(prototest_SOURCES) \
+	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
+	$(shmtest_SOURCES) $(singletontest_SOURCES) \
+	$(sockettest_SOURCES) $(threadtest_SOURCES) \
+	$(timestatstest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -357,6 +365,8 @@ alloctest_SOURCES = ShmAllocatorTest.cpp
 alloctest_LDFLAGS = $(TEST_LD)
 prototest_SOURCES = ProtoTest.cpp
 prototest_LDFLAGS = $(TEST_LD)
+chtest_SOURCES = CHTest.cpp
+chtest_LDFLAGS = $(TEST_LD)
 all: all-am
 
 .SUFFIXES:
@@ -406,6 +416,9 @@ alloctest$(EXEEXT): $(alloctest_OBJECTS) $(alloctest_DEPENDENCIES)
 autoptrtest$(EXEEXT): $(autoptrtest_OBJECTS) $(autoptrtest_DEPENDENCIES) 
 	@rm -f autoptrtest$(EXEEXT)
 	$(autoptrtest_LINK) $(autoptrtest_OBJECTS) $(autoptrtest_LDADD) $(LIBS)
+chtest$(EXEEXT): $(chtest_OBJECTS) $(chtest_DEPENDENCIES) 
+	@rm -f chtest$(EXEEXT)
+	$(chtest_LINK) $(chtest_OBJECTS) $(chtest_LDADD) $(LIBS)
 classtest$(EXEEXT): $(classtest_OBJECTS) $(classtest_DEPENDENCIES) 
 	@rm -f classtest$(EXEEXT)
 	$(classtest_LINK) $(classtest_OBJECTS) $(classtest_LDADD) $(LIBS)
@@ -462,6 +475,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AutoPtrTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CHTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClassTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CyQueueTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EagleTest.Po@am__quote@

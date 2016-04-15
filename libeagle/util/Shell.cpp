@@ -1,7 +1,7 @@
 #include "Shell.h"
 #include <stdio.h>
 
-namespace ealge
+namespace eagle
 {
 
 int Shell::execute(const std::string &cmd, std::string &rs)

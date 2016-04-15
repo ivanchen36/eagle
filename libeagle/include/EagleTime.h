@@ -15,15 +15,12 @@
 #define _EAGLE_EAGLETIME_H_
 #include <time.h>
 #include <stdint.h>
+#include <string>
 
 #include "Singleton.h"
-#include "ShareMem.h"
 
 namespace eagle
 {
-
-#define LOGTIMELEN sizeof("1970-09-28 12:00:00")
-#define ISO8601LEN sizeof("1970/09/28 12:00:00")
 
 class EagleTime
 {
@@ -33,17 +30,34 @@ public:
     void update();
     void autoUpdate();
     void cancelUpdate();
-    void *operator new(size_t size);
-    void operator delete(void* ptr);
 
-    const char *getLogTime()
+    const std::string &getTimeStr()
     {
-        return m_logTime;
+        return *m_timeStr;
+    }
+
+    const std::string getTimeStr(const char *format)
+    {
+        char buf[32];
+        strftime(buf, 32, format, &m_tm);
+
+        return buf;
+    }
+
+    const std::string getUTCTimeStr(const char *format)
+    {
+        char buf[32];
+        struct tm tm;
+
+        gmtime_r(&m_tv.tv_sec, &tm);
+        strftime(buf, 32, format, &tm);
+
+        return buf;
     }
 
     const time_t getSec()
     {
-        return m_sec;
+        return m_tv.tv_sec;
     }
 
     const uint64_t getMsec()
@@ -51,13 +65,19 @@ public:
         return m_msec;
     }
 
+    const struct tm &getTm()
+    {
+        return m_tm;
+    }
+
 private:
     EagleTime();
 
-    time_t m_sec;
     uint64_t m_msec;
-    char m_logTime[LOGTIMELEN];
-    char m_iso8601[ISO8601LEN];
+    struct tm m_tm;
+    struct timeval m_tv;
+    std::string *m_tmpStr;
+    std::string *m_timeStr;
 
     friend class Singleton<EagleTime>;
 };

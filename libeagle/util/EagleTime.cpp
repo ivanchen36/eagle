@@ -1,7 +1,6 @@
 #include <sys/time.h>
 #include <stdio.h>
 
-#include "Log.h"
 #include "EagleTime.h"
 #include "CallBack.h"
 #include "Define.h"
@@ -12,7 +11,7 @@ namespace eagle
 
 namespace
 {
-ShareMem &shareMem = ShareMemI::instance();
+const char *TIME_UPDATE_TIMERTASK = "updatetime";
 EagleTime &eagleTime = EagleTimeI::instance();
 }
 
@@ -21,52 +20,43 @@ void updateEagleTime(void *param)
     eagleTime.update();
 }
 
-void *EagleTime::operator new(size_t size)
+EagleTime::EagleTime() : m_msec(0)
 {
-    return shareMem.alloc(size);
-}
-
-void EagleTime::operator delete(void* ptr)
-{
-    shareMem.free(ptr);
-}
-
-EagleTime::EagleTime() : m_sec(0), m_msec(0)
-{
+    m_tmpStr = new std::string("1970-09-28 12:00:00");
+    m_timeStr = new std::string("1970-09-28 12:00:00");
     update();
-    Log::setLogTime(m_logTime);
 }
 
 EagleTime::~EagleTime()
 {
-    Log::setLogTime("1970-09-28 12:00:00");
 }
 
 void EagleTime::cancelUpdate()
 {
-    TimerI::instance().delTask("updatetime");
+    TimerI::instance().delTask(TIME_UPDATE_TIMERTASK);
 }
 
 void EagleTime::autoUpdate()
 {
     CallBack cb(updateEagleTime);
-    TimerI::instance().addTask("updatetime", MIN_TIMER_INTERVAL, cb);
+    TimerI::instance().addTask(TIME_UPDATE_TIMERTASK, MIN_TIMER_INTERVAL, cb);
 }
 
 void EagleTime::update()
 {
-    struct tm t;
-    struct timeval tv;
+    std::string *tmp;
 
-    gettimeofday(&tv, NULL);
-    m_msec = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-    if (m_sec == tv.tv_sec) return;
+    gettimeofday(&m_tv, NULL);
+    m_msec = m_tv.tv_sec * 1000 + m_tv.tv_usec / 1000;
+    if (m_tv.tv_sec == m_tv.tv_sec) return;
 
-    m_sec = tv.tv_sec;
-    localtime_r(&tv.tv_sec, &t);
-    snprintf(m_logTime, LOGTIMELEN, "%04d-%02d-%02d %02d:%02d:%02d",
-            t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, t.tm_hour, 
-            t.tm_min, t.tm_sec);
+    localtime_r(&m_tv.tv_sec, &m_tm);
+    sprintf((char *)m_tmpStr->c_str(), "%04d-%02d-%02d %02d:%02d:%02d",
+            m_tm.tm_year + 1900, m_tm.tm_mon + 1, m_tm.tm_mday, m_tm.tm_hour, 
+            m_tm.tm_min, m_tm.tm_sec);
+    tmp = m_timeStr;
+    m_timeStr = m_tmpStr;
+    m_tmpStr = tmp;
 }
 
 }

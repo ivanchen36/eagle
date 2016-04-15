@@ -630,9 +630,9 @@ m4trace:configure.in:28: -1- AH_OUTPUT([HAVE_STRCASECMP], [/* Define to 1 if you
 @%:@undef HAVE_STRCASECMP])
 m4trace:configure.in:30: -1- AC_CONFIG_FILES([Makefile libeagle/Makefile test/Makefile
                  libeagle/os/Makefile libeagle/util/Makefile
-                 libeagle/eagle/Makefile libeagle/event/Makefile 
+                 libeagle/frame/Makefile libeagle/event/Makefile 
                  libeagle/node/Makefile libeagle/open/Makefile
-                 libeagle/proto/Makefile])
+                 libeagle/proto/Makefile libeagle/algorithm/Makefile])
 m4trace:configure.in:35: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
 m4trace:configure.in:35: -1- AC_SUBST_TRACE([LIB@&t@OBJS])
 m4trace:configure.in:35: -1- m4_pattern_allow([^LIB@&t@OBJS$])

@@ -119,8 +119,6 @@ public:
     void warn(const char *format, ...);
     void error(const char *format, ...);
 
-    static void setLogTime(const char *logTime);
-
 private:
     void write(int level, const char *format, va_list args);
 

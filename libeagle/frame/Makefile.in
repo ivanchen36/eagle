@@ -37,7 +37,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = libeagle/eagle
+subdir = libeagle/frame
 DIST_COMMON = $(libeagle_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -76,7 +76,7 @@ libeagle_la_DEPENDENCIES = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
 	$(OPEN_PATH)/libopen.la $(PROTO_PATH)/libproto.la
 am_libeagle_la_OBJECTS = Eagle.lo TaskThread.lo SignalManager.lo \
 	MasterSigManager.lo ChildSigManager.lo ProcessManager.lo \
-	EagleTime.lo Timer.lo Proctitle.lo
+	Timer.lo Proctitle.lo
 libeagle_la_OBJECTS = $(am_libeagle_la_OBJECTS)
 libeagle_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -260,8 +260,7 @@ libeagle_HEADERS = $(top_srcdir)/libeagle/include/AutoPtr.h \
 lib_LTLIBRARIES = libeagle.la
 libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
 					  MasterSigManager.cpp ChildSigManager.cpp \
-					  ProcessManager.cpp EagleTime.cpp Timer.cpp \
-					  Proctitle.cpp
+					  ProcessManager.cpp Timer.cpp Proctitle.cpp
 
 libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
 					 $(EVENT_PATH)/libevent.la $(NODE_PATH)/libnode.la \
@@ -281,9 +280,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign libeagle/eagle/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign libeagle/frame/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign libeagle/eagle/Makefile
+	  $(AUTOMAKE) --foreign libeagle/frame/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -344,7 +343,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChildSigManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Eagle.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EagleTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MasterSigManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProcessManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Proctitle.Plo@am__quote@

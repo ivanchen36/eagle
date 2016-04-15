@@ -28,7 +28,7 @@ namespace eagle
 {
 #define WORKER_SCALING 100
 
-template<typename T> class ConsistentHashing 
+template<class T> class ConsistentHashing 
 {
 public:
     class Operator

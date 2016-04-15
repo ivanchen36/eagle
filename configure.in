@@ -29,7 +29,7 @@ AC_CHECK_FUNCS([memset strcasecmp])
 
 AC_CONFIG_FILES([Makefile libeagle/Makefile test/Makefile
                  libeagle/os/Makefile libeagle/util/Makefile
-                 libeagle/eagle/Makefile libeagle/event/Makefile 
+                 libeagle/frame/Makefile libeagle/event/Makefile 
                  libeagle/node/Makefile libeagle/open/Makefile
-                 libeagle/proto/Makefile])
+                 libeagle/proto/Makefile libeagle/algorithm/Makefile])
 AC_OUTPUT

@@ -16,7 +16,8 @@ LIBPROTO_INCLUDE = $(top_srcdir)/libeagle/proto
 noinst_PROGRAMS = autoptrtest timestatstest singletontest \
 				  logtest psemtest threadtest shmtest mmaptest \
 				  eagletest rbtest locktest sockettest queuetest \
-				  classtest eventtest proptest alloctest prototest
+				  classtest eventtest proptest alloctest prototest \
+				  chtest
 
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBEAGLE_INCLUDE) \
 		   -I$(LIBEVENT_INCLUDE) -I$(LIBNODE_INCLUDE) -I$(LIBPROTO_INCLUDE)
@@ -74,3 +75,6 @@ alloctest_LDFLAGS = $(TEST_LD)
 
 prototest_SOURCES = ProtoTest.cpp
 prototest_LDFLAGS = $(TEST_LD)
+
+chtest_SOURCES = CHTest.cpp
+chtest_LDFLAGS = $(TEST_LD)

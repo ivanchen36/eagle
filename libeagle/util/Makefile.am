@@ -8,4 +8,4 @@ INCLUDES = -I$(LIB_INCLUDE)
 
 noinst_LTLIBRARIES = libutil.la
 libutil_la_SOURCES = TimeStats.cpp Singleton.cpp Log.cpp ClassFactory.cpp \
-					 StrUtil.cpp
+					 StrUtil.cpp EagleTime.cpp ServerReport.cpp Shell.cpp 

@@ -58,7 +58,7 @@ public:
 
     void start();
     void pause();
-    void excute();
+    void execute();
     int addTask(const char *name, const int msec,
             const CallBack &cb, const int isAsync = 0, 
             const int times = -1);
@@ -74,7 +74,7 @@ private:
 
     int m_isPause;
     MutexLock m_lock;
-    uint64_t m_nextExcuteTime;
+    uint64_t m_nextExecuteTime;
     TaskNode *m_taskListHead;
     TaskMap m_taskMap;
     EagleTime &m_eagleTime;
