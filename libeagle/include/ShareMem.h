@@ -15,6 +15,7 @@
 #define _EAGLE_SHAREMEM_H_
 
 #include <stdint.h>
+#include <unistd.h>
 #include <tr1/unordered_map>
 
 #include "AutoPtr.h"
@@ -33,10 +34,15 @@ public:
     void free(void *ptr);
 
 private:
-    typedef std::tr1::unordered_map<uintptr_t, int> ShareMemMap;
+    struct ShmInfo
+    {
+        int id;
+        int pid;
+    };
+    typedef std::tr1::unordered_map<uintptr_t, ShmInfo> ShareMemMap;
 
     ShareMem(){};
-    void free(void *ptr, int id);
+    void free(void *ptr, const ShmInfo &info);
 
     ShareMemMap m_shmMap;
 

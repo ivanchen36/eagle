@@ -27,7 +27,7 @@ using namespace eagle;
 void test(MutexLock &lock, int level)
 {
     DEBUGLOG1("lock level %d", level);
-    LockGuard guard(lock);
+    LockGuard<MutexLock> guard(lock);
     if (--level > 0)
     {
         test(lock, level);
@@ -72,8 +72,6 @@ void doTest1()
  */
 int main ( int argc, char *argv[] )
 {
-    EagleTimeI::instance().autoUpdate();
-
     doTest1();
 
     return EXIT_SUCCESS;

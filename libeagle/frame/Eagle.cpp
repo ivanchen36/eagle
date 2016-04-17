@@ -11,7 +11,6 @@
 #include "ChildSigManager.h"
 #include "MasterSigManager.h"
 #include "ProcessSem.h"
-#include "EagleTime.h"
 #include "Timer.h"
 #include "StrUtil.h"
 #include "Proctitle.h"
@@ -29,8 +28,6 @@ namespace eagle
 
 namespace
 {
-ShareMem &shareMem = ShareMemI::instance();
-EagleTime &eagleTime = EagleTimeI::instance();
 
 void startAcceptLoop(void *param)
 {
@@ -208,9 +205,10 @@ int Eagle::initServers(std::string &ip, std::map<std::string, int> &serverMap)
 int Eagle::initProcess()
 {
     int ret;
+    int key;
     uint8_t *isStop;
-    int processNum;
     std::string ip;
+    int processNum;
     std::map<std::string, int> serverMap;
 
     if (PropertiesParser::parseProProperties(ip, serverMap))
@@ -219,13 +217,15 @@ int Eagle::initProcess()
     if (initServers(ip, serverMap) != EG_SUCCESS)
         return EG_FAILED;
 
-    processNum = m_program.processNum + 1;
-    ProcessSem sem(processNum + 1);
+    ShareMem &shareMem = ShareMemI::instance();
     isStop = (uint8_t *)shareMem.calloc(1);
     *isStop = 0;
+    processNum = m_program.processNum + 1;
+    key = INT_MAX - getpid();
     ret = ProcessManagerI::instance().spawn(processNum);
     if (ret == EG_CHILD)
     {
+        ProcessSem sem(key);
         ProcessManagerI::del();
         sem.wait();
         if(*isStop) ret = EG_FAILED;
@@ -244,6 +244,7 @@ int Eagle::initProcess()
         *isStop = 1;
         ERRORLOG("spawnprocess err");
     }
+    ProcessSem sem(key);
     sem.op(processNum);
     shareMem.free(isStop);
 
@@ -290,7 +291,6 @@ void Eagle::initWorker()
 
 void Eagle::initMaster()
 {
-    eagleTime.autoUpdate();
     MasterSigManagerI::instance().init();
     MasterSigManagerI::instance().block();
 }

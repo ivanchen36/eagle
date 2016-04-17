@@ -86,7 +86,7 @@ int SelectManager::registerEvent(int event, EventHandler *handler)
 
     if (NONE == reEvent)
     {
-        LockGuard guard(m_lock);
+        LockGuard<SpinLock> guard(m_lock);
         reEvent = event;
         handler->inc();
         if (m_maxFd < handler->getFd()) m_maxFd = handler->getFd();
@@ -151,7 +151,7 @@ void SelectManager::handleFdSet()
         handler = iter->second;
         if (handler->getRegisterEvent() == NONE)
         {
-            LockGuard guard(m_lock);
+            LockGuard<SpinLock> guard(m_lock);
             if (handler->dec() == 0) delete handler;
             iter = m_eventMap.erase(iter);
 

@@ -25,7 +25,7 @@ EventManager::EventManager(const int workerNum)
         m_workers = (EventWorker *)new char[sizeof(EventWorker) * m_workerNum];
         for (int i = 0; i < m_workerNum; ++i)
         {
-            new(&m_workers[i]) EventWorker(EG_MAX_EVENTHANDLER / workerNum + 1);
+            new(&m_workers[i]) EventWorker(EG_MAX_EVENTHANDLER);
         }
         m_workerNum = workerNum;
     }else

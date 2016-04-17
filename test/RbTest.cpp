@@ -109,7 +109,6 @@ void test1()
  */
 int main ( int argc, char *argv[] )
 {
-    EagleTimeI::instance().update();
     test();
 
     return EXIT_SUCCESS;

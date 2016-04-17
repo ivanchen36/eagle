@@ -22,6 +22,7 @@
 #include "MutexLock.h"
 #include "TaskThread.h"
 #include "StrUtil.h"
+#include "SpinLock.h"
 #include "EagleTime.h"
 
 namespace eagle
@@ -57,7 +58,9 @@ public:
     ~Timer();
 
     void start();
+    void stop();
     void pause();
+    void loop();
     void execute();
     int addTask(const char *name, const int msec,
             const CallBack &cb, const int isAsync = 0, 
@@ -65,23 +68,28 @@ public:
     int delTask(const char *name);
 
 private:
+    enum Status
+    {
+        START,
+        PAUSE,
+        STOP
+    };
     typedef RbTree<uint64_t, Timer::TaskNode *> TaskMap;
 
+    void quitThread();
     int setTimer(int msec);
     void addTimer(const uint64_t startTime, TaskNode *task);
     TaskNode *find(const char *name);
     void delTask(TaskNode *task);
 
-    int m_isPause;
-    MutexLock m_lock;
+    Status m_status;
+    SpinLock m_lock;
     uint64_t m_nextExecuteTime;
     TaskNode *m_taskListHead;
     TaskMap m_taskMap;
+    ThreadSem m_sem;
+    Thread *m_thread;
     EagleTime &m_eagleTime;
-
-#ifdef _TEST_
-    timer_t m_timer;
-#endif
 };
 
 typedef Singleton<Timer> TimerI;

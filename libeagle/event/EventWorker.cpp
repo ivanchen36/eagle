@@ -19,10 +19,6 @@ int EventWorker::excute()
     if (handleEvent() == EG_SUCCESS)
         return EG_SUCCESS;
 
-    sched_yield();
-    if (handleEvent() == EG_SUCCESS)
-        return EG_SUCCESS;
-
     m_status = FREE;
     sched_yield();
     if (handleEvent() == EG_SUCCESS)

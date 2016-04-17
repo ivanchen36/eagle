@@ -36,6 +36,10 @@ void doTest()
     vec.push_back(2);
     DEBUGLOG1("%d", vec.capacity());
     sleep(5);
+}
+
+void doTest1()
+{
     ShmAllocator< std::pair<int, int> > alloc1;
     std::less<int> less1;
     std::map<int, int, std::less<int>, ShmAllocator< std::pair<int, int> > > m(less1, alloc1);
@@ -53,9 +57,7 @@ void doTest()
  */
 int main ( int argc, char *argv[] )
 {
-    EagleTimeI::instance().autoUpdate();
-
-    doTest();
+    doTest1();
 
     return EXIT_SUCCESS;
 }

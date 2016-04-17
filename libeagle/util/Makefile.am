@@ -7,5 +7,5 @@ LIB_INCLUDE = $(top_srcdir)/libeagle/include
 INCLUDES = -I$(LIB_INCLUDE)
 
 noinst_LTLIBRARIES = libutil.la
-libutil_la_SOURCES = TimeStats.cpp Singleton.cpp Log.cpp ClassFactory.cpp \
-					 StrUtil.cpp EagleTime.cpp ServerReport.cpp Shell.cpp 
+libutil_la_SOURCES = TimeStats.cpp Log.cpp ClassFactory.cpp \
+					 StrUtil.cpp ServerReport.cpp Shell.cpp 

@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "Singleton.h"
+#include "SpinLock.h"
 #include "tinyxml2.h"
 
 namespace eagle
@@ -89,14 +90,14 @@ private:
     };
     typedef AutoPtr<Stats> StatsPtr;
 
-    ServerReport() :  m_mutex('\0')
+    ServerReport()
     {
     } 
 
     int createSavePathDir();
     void checkAndSaveFile();
 
-    char m_mutex;
+    SpinLock m_lock;
     int m_nextHour;
     int m_nextFiveMinute;
     struct tm m_tm;

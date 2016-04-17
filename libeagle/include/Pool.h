@@ -14,7 +14,7 @@
 #ifndef _EAGLE_POOL_H_
 #define _EAGLE_POOL_H_
 
-#include "MutexLock.h"
+#include "SpinLock.h"
 
 namespace eagle
 {
@@ -40,7 +40,7 @@ public:
 
     T *pop()
     {
-        LockGuard guard(m_lock);
+        LockGuard<SpinLock> guard(m_lock);
 
         if (0 == m_size)
         {
@@ -56,7 +56,7 @@ public:
 
     void push(T *val)
     {
-        LockGuard guard(m_lock);
+        LockGuard<SpinLock> guard(m_lock);
 
         Node *n = (Node *)val;
 
@@ -106,7 +106,7 @@ private:
     int m_capacity;
     Node *m_head;
     Bucket *m_btHead;
-    MutexLock m_lock;
+    SpinLock m_lock;
 };
 
 }

@@ -17,6 +17,7 @@
 #include <pthread.h>
 
 #include "AutoPtr.h"
+#include "LockGuard.h"
 
 namespace eagle
 {
@@ -36,18 +37,6 @@ private:
 };
 
 typedef AutoPtr<MutexLock> MutexLockPtr;
-
-class LockGuard
-{
-public:
-    LockGuard(MutexLock &lock);
-    ~LockGuard();
-
-private:
-    void *operator new(size_t size);
-
-    MutexLock &m_lock;
-};
 
 }
 #endif   /* ----- #ifndef _EAGLE_MUTEXLOCK_H_  ----- */

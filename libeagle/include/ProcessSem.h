@@ -22,17 +22,18 @@ namespace eagle
 class ProcessSem : public Semaphore
 {
 public:
-    ProcessSem(const int preceesNum = 1, const int val = 0);
-    ~ProcessSem();
+    ProcessSem(const int key, const int val = 0);
+    virtual ~ProcessSem();
 
     virtual int post();
     virtual int wait();
-    virtual int timedWait(const int sec);
-    int op(const int val, const int sec = 0);
+    virtual int timedWait(const int msec);
+    int op(const int val, const int msec = 0);
 
 private:
     int init(int val);
     int m_semId;
+    int m_pid;
     int *m_ref;
 };
 

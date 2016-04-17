@@ -1,6 +1,6 @@
 # Process this file with automake to produce Makefile.in
 
-CXXFLAGS = -g -O0 -pedantic -Wall -Werror -Wfloat-equal -Wshadow -Wno-invalid-offsetof -D_TEST_
+CXXFLAGS = -g -O0 -pedantic -Wall -Werror -Wfloat-equal -Wshadow -Wno-invalid-offsetof
 
 LIB_INCLUDE = $(top_srcdir)/libeagle/include
 OS_PATH = $(top_srcdir)/libeagle/os
@@ -49,7 +49,8 @@ lib_LTLIBRARIES = libeagle.la
 
 libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
 					  MasterSigManager.cpp ChildSigManager.cpp \
-					  ProcessManager.cpp Timer.cpp Proctitle.cpp
+					  ProcessManager.cpp Timer.cpp Proctitle.cpp \
+					  EagleTime.cpp
 libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
 					 $(EVENT_PATH)/libevent.la $(NODE_PATH)/libnode.la \
 					 $(OPEN_PATH)/libopen.la $(PROTO_PATH)/libproto.la

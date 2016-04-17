@@ -22,7 +22,7 @@
 
 #include "AlgoBase.h"
 #include "AutoPtr.h"
-#include "MutexLock.h"
+#include "SpinLock.h"
 
 namespace eagle
 {
@@ -59,7 +59,7 @@ public:
         AutoPtr<Operator> nullOperator;
         typename std::map<int, VirtualObj*>::iterator iter; 
 
-        LockGuard lock(m_lock);
+        LockGuard<SpinLock> lock(m_lock);
         iter = m_indexMap.find(index); 
         if (m_indexMap.end() != iter) return -1;
 
@@ -73,7 +73,7 @@ public:
         VirtualObj *arr;
         typename std::map<int, VirtualObj*>::iterator iter; 
 
-        LockGuard lock(m_lock);
+        LockGuard<SpinLock> lock(m_lock);
         iter = m_indexMap.find(index); 
         if (m_indexMap.end() != iter) return -1;
 
@@ -88,7 +88,7 @@ public:
         typename std::map<int, VirtualObj*>::iterator iter; 
         std::vector<uint64_t *>::iterator iter1;
 
-        LockGuard lock(m_lock);
+        LockGuard<SpinLock> lock(m_lock);
         iter = m_indexMap.find(index); 
         if (m_indexMap.end() == iter) return -1;
 
@@ -218,7 +218,7 @@ private:
     }
 
     int m_scalling;
-    MutexLock m_lock;
+    SpinLock m_lock;
     std::vector<uint64_t *> m_virList;
     std::map<int, VirtualObj*> m_indexMap;
 };

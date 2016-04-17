@@ -756,8 +756,6 @@ void doPaireTest()
  */
 int main ( int argc, char *argv[] )
 {
-    EagleTimeI::instance().autoUpdate();
-
     doTcpTest();
 
     return EXIT_SUCCESS;

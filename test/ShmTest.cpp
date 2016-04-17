@@ -21,8 +21,9 @@
 #include <fcntl.h>
 
 #include "Log.h"
-#include "EagleTime.h"
+#include "Timer.h"
 #include "ShareMem.h"
+#include "ProcessSem.h"
 
 using namespace std;
 using namespace eagle;
@@ -73,23 +74,21 @@ const char *PARENTDIALOGARR[] =
 
 void child(char *str)
 {
-    for (int i = 0; i < 5; ++i)
+    strcpy(str, CHILDDIALOGARR[0]);
+    for (int i = 1; i < 4; ++i)
     {
-        if (0 == i)
-        {
-            strcpy(str, CHILDDIALOGARR[i]);
-
-            continue;
-        }
-        while (strcmp(str, PARENTDIALOGARR[i - 1]))
+        while (strcmp(str, PARENTDIALOGARR[i -1]))
         {
             sleep(1);
         }
         DEBUGLOG1("parent say : %s", str);
-        if (4 == i) return;
-
         strcpy(str, CHILDDIALOGARR[i]);
     }
+    while (strcmp(str, PARENTDIALOGARR[3]))
+    {
+        sleep(1);
+    }
+    DEBUGLOG1("parent say : %s", str);
 }
 
 void parent(char *str)
@@ -133,14 +132,64 @@ void test1()
     }
 }
 
+void test2()
+{
+    int ret;
+    char *str;
+    int dialogKey = 888;
+
+    str = (char *)ShareMemI::instance().alloc(48, dialogKey);
+    pid_t pid=fork();
+    if(pid<0)
+    {
+        ERRORLOG("fork err");
+    }
+    else if(pid == 0)
+    {
+        str[0] = 0;
+        child(str);
+        ShareMemI::instance().free(str);
+    }
+    else
+    {
+        parent(str);
+        ShareMemI::instance().free(str);
+        waitpid(-1, NULL, 0);
+    }
+}
+
+void test3()
+{
+    int ret;
+    char *str;
+
+    str = (char *)ShareMemI::instance().alloc(48);
+    pid_t pid=fork();
+    if(pid<0)
+    {
+        ERRORLOG("fork err");
+    }
+    else if(pid == 0)
+    {
+        TimerI::del();
+        str[0] = 0;
+        child(str);
+        ShareMemI::instance().free(str);
+    }
+    else
+    {
+        parent(str);
+        ShareMemI::instance().free(str);
+        waitpid(-1, NULL, 0);
+    }
+}
+
 /**
  * @brief main 
  */
 int main ( int argc, char *argv[] )
 {
-    EagleTimeI::instance().autoUpdate();
-
-    test1();
+    test3();
 
     return EXIT_SUCCESS;
 }

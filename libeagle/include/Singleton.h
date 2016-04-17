@@ -20,7 +20,7 @@
 namespace eagle
 {
 
-extern MutexLock g_singletonLock;
+static MutexLock s_singletonLock(1, 1);
 
 template<class T> class Singleton 
 {
@@ -31,10 +31,11 @@ public:
 
         if (NULL != s_instance) return *s_instance;
 
-        LockGuard guard(g_singletonLock);
+        LockGuard<MutexLock> guard(s_singletonLock);
         if (NULL != s_instance) return *s_instance;
 
         s_instance = new T();
+
         return *s_instance;
     }
 
@@ -42,11 +43,16 @@ public:
     {
         if (NULL == s_instance) return;
 
-        LockGuard guard(g_singletonLock);
+        LockGuard<MutexLock> guard(s_singletonLock);
         if (NULL == s_instance) return;
 
         delete s_instance;
         s_instance = NULL;
+    }
+
+    static bool isExist()
+    {
+        return NULL != s_instance;
     }
     
 private:
@@ -56,6 +62,7 @@ private:
         ~SingletonCleaner()
         {
             if (NULL != s_instance) delete s_instance;
+            s_instance = NULL;
         }
     };
 

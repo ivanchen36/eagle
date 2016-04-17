@@ -6,8 +6,7 @@
 namespace eagle
 {
 
-ThreadSem::ThreadSem(const int val) : m_isInit(0), 
-    m_eagleTime(EagleTimeI::instance())
+ThreadSem::ThreadSem(const int val) : m_isInit(0)
 {
     if (sem_init(&m_sem, 0, 0) != 0) 
     {   
@@ -61,16 +60,17 @@ int ThreadSem::wait()
     return EG_SUCCESS;
 }
 
-int ThreadSem::timedWait(const int sec)
+int ThreadSem::timedWait(const int msec)
 {
     if (!m_isInit) return EG_INVAL;
 
     int ret;
     struct timespec t;
+    static const uint64_t &curMsec = EagleTimeI::instance().getMsec();
+    uint64_t ms = curMsec + msec;
 
-    t.tv_sec = m_eagleTime.getSec() + sec;
-    t.tv_nsec = 0;
-    t.tv_sec += sec;
+    t.tv_sec = ms / 1000;
+    t.tv_nsec = (ms % 1000) * 1000 * 1000;
     for (; ;)
     {
         ret = sem_timedwait(&m_sem, &t);

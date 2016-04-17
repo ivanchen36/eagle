@@ -74,7 +74,7 @@ void test1(SemaphorePtr &semPtr)
     else if(pid == 0)
     {
         DEBUGLOG("child wait");
-        while ((ret = semPtr->timedWait(1)))
+        while ((ret = semPtr->timedWait(1000)))
         {
             if (ret < 0)
             {
@@ -115,8 +115,6 @@ void doTest()
  */
 int main (int argc, char *argv[] )
 {
-    EagleTimeI::instance().autoUpdate();
-
     doTest();
 
     return EXIT_SUCCESS;

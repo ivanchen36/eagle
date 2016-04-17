@@ -59,5 +59,7 @@ namespace eagle
 #define NODE_SERVER_INDEX 0
 #define NODE_SERVER_NAME "node"
 
+#define SHM_KEY_TIME 1
+
 }
 #endif   /* ----- #ifndef _EAGLE_DEFINE_H_  ----- */

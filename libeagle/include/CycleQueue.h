@@ -15,7 +15,7 @@
 #define _EAGLE_CYCLEQUEUE_H_
 
 #include "Define.h"
-#include "MutexLock.h"
+#include "SpinLock.h"
 #include "Log.h"
 
 namespace eagle
@@ -42,7 +42,7 @@ public:
 
     int size()
     {
-        LockGuard guard(m_lock);
+        LockGuard<SpinLock> guard(m_lock);
 
         return m_pushSize - m_popSize;
     }
@@ -76,7 +76,7 @@ public:
         ++m_pushSize;
         if (m_popSize > STATS_SIZE_MAX)
         {
-            LockGuard guard(m_lock);
+            LockGuard<SpinLock> guard(m_lock);
             m_pushSize -= m_popSize;
             m_popSize = 0;
         }
@@ -92,7 +92,7 @@ public:
         m_tail = m_tail->next;
         if (m_popSize > STATS_SIZE_MAX)
         {
-            LockGuard guard(m_lock);
+            LockGuard<SpinLock> guard(m_lock);
             ++m_popSize;
 
             return EG_SUCCESS;
@@ -125,7 +125,7 @@ private:
     Node *m_head;
     Node *m_tail;
     Node *m_nodeHead;
-    MutexLock m_lock;
+    SpinLock m_lock;
 };
 
 }

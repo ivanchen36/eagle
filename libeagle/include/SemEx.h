@@ -25,7 +25,7 @@ public:
     virtual ~Semaphore() {};
     virtual int post() = 0;
     virtual int wait() = 0;
-    virtual int timedWait(const int sec) = 0;
+    virtual int timedWait(const int msec) = 0;
 
 };
 

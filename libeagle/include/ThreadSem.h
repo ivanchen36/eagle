@@ -26,16 +26,15 @@ class ThreadSem : public Semaphore
 {
 public:
     ThreadSem(const int val = 0);
-    ~ThreadSem();
+    virtual ~ThreadSem();
 
     virtual int post();
     virtual int wait();
-    virtual int timedWait(const int sec);
+    virtual int timedWait(const int msec);
 
 private:
     int m_isInit;
     sem_t m_sem;
-    EagleTime &m_eagleTime;
 };
 
 typedef AutoPtr<ThreadSem> ThreadSemPtr;

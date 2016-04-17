@@ -61,17 +61,28 @@ void *ShareMem::alloc(const int size, const int key)
         return NULL;
     }
 
-    m_shmMap[(uintptr_t)ptr] = isNew ? id : -1;
+    ShmInfo &info = m_shmMap[(uintptr_t)ptr];
+    if (isNew) 
+    {
+        memset(ptr, 0, size);
+        info.id = id;
+        info.pid = getpid();
+    }else
+    {
+        info.id = -1;
+    }
 
     return ptr;
 }
 
-void ShareMem::free(void *ptr, int id)
+void ShareMem::free(void *ptr, const ShmInfo &info)
 {
     if (shmdt(ptr) == -1) ERRORLOG1("shmdt err, %s!", strerror(errno));
 
-    if (-1 != id && shmctl(id, IPC_RMID, NULL) == -1) 
-        ERRORLOG2("shmctl IPC_RMID  %d err, %s!", id, strerror(errno));
+    if (-1 == info.id || getpid() != info.pid) return;
+
+    if (shmctl(info.id, IPC_RMID, NULL) == -1) 
+        ERRORLOG2("shmctl IPC_RMID  %d err, %s!", info.id, strerror(errno));
 }
 
 void ShareMem::free(void *ptr)

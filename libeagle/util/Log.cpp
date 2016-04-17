@@ -8,8 +8,6 @@
 #include "EagleTime.h"
 namespace
 {
-eagle::EagleTime &eagleTime = eagle::EagleTimeI::instance();
-const std::string &g_logTime = eagleTime.getTimeStr();
 const char *LOG_LEVEL_STR[] = {"debug", "info", "warn", "error"};
 }
 
@@ -21,6 +19,11 @@ LogPtr g_sysLog = new Log("/dev/null", DEBUG_LOG);
 __attribute__((constructor)) void initLog()  
 { 
     g_sysLog->redirectToOther(STDOUT_FILENO);
+}
+
+__attribute__((destructor)) void destroyLog()  
+{ 
+    g_sysLog = NULL;
 }
 
 Log::Log(const char *fileName, int level)
@@ -51,8 +54,9 @@ void Log::write(int level, const char *format, va_list args)
 {
     int len;
     char buf[MAX_LOG_LINE_LEN];
+    const std::string &logTimeStr = EagleTimeI::instance().getTimeStr();
 
-    snprintf(buf, MAX_LOG_LINE_LEN, "[%s %s]", g_logTime.c_str(), LOG_LEVEL_STR[level]);
+    snprintf(buf, MAX_LOG_LINE_LEN, "[%s %s]", logTimeStr.c_str(), LOG_LEVEL_STR[level]);
     len = strlen(buf);
     vsnprintf(buf +len, MAX_LOG_LINE_LEN - len, format, args);
     len += strlen(buf + len);

@@ -72,14 +72,4 @@ int MutexLock::tryLock()
     return 0;
 }
 
-LockGuard::LockGuard(MutexLock &lock) : m_lock(lock)
-{
-    m_lock.lock();
-}
-
-LockGuard::~LockGuard()
-{
-    m_lock.unLock();
-}
-
 }

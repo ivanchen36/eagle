@@ -6,59 +6,72 @@
 #include "Define.h"
 #include "Log.h"
 
+namespace
+{
+void startTimerThread(void *param)
+{
+    ((eagle::Timer *)param)->loop();
+}
+}
+
 namespace eagle
 {
 
-namespace
+__attribute__((constructor)) void startTimer()
 {
-Timer *timer;
-#ifdef _TEST_
-void executeTimer(union sigval val)
-#else
-void executeTimer(int sig)
-#endif
-{
-    timer->execute();
-}
+    TimerI::instance().start();
 }
 
-Timer::Timer() : m_isPause(0), m_nextExecuteTime((uint64_t)-1), 
-    m_taskListHead(NULL), m_eagleTime(EagleTimeI::instance())
+Timer::Timer() : m_status(STOP), m_nextExecuteTime((uint64_t)-1), 
+    m_taskListHead(NULL), m_thread(NULL), m_eagleTime(EagleTimeI::instance())
 { 
-#ifdef _TEST_
-    struct sigevent evp;
-
-    memset (&evp, 0, sizeof (evp));
-    evp.sigev_value.sival_ptr = &m_timer;
-    evp.sigev_notify = SIGEV_THREAD;
-    evp.sigev_notify_function = executeTimer;
-
-    if (0 != timer_create(CLOCK_REALTIME, &evp, &m_timer))
-    {
-        ERRORLOG1("timer_create err, %s", strerror(errno));
-    }
-#else
-    struct sigaction sa;
-
-    bzero(&sa, sizeof(struct sigaction)); 
-    sa.sa_handler = executeTimer;
-    sigemptyset(&sa.sa_mask); 
-    if (sigaction(SIGALRM, &sa, NULL) == -1) 
-    {
-        ERRORLOG2("sigaction %d err, %s", 
-                SIGALRM, strerror(errno));
-    }
-#endif
-    timer = this;
 }
 
 Timer::~Timer()
 {
+    stop();
+}
+
+void Timer::start()
+{
+    LockGuard<SpinLock> guard(m_lock);
+    CallBack cb(startTimerThread, (void *)this);
+
+    m_status = START; 
+    m_thread = new Thread(cb, 0);
+}
+
+void Timer::pause()
+{
+    LockGuard<SpinLock> guard(m_lock);
+    if (m_status != START) return;
+
+    m_status = PAUSE;
+    quitThread();
+}
+
+void Timer::quitThread()
+{
+    if (NULL == m_thread) return;
+
+    m_sem.post();
+    if (sched_yield() != 0) 
+        ERRORLOG1("sched_yield err, %s", strerror(errno));
+    if (NULL != m_thread) delete m_thread;
+    m_thread = NULL;
+}
+
+void Timer::stop()
+{
+    LockGuard<SpinLock> guard(m_lock);
+    if (m_status == STOP) return;
+
     TaskNode *cur;
     TaskNode *next;
     TaskMap::Iterator iter;
 
-    pause();
+    m_status = STOP;
+    quitThread();
     for (iter = m_taskMap.begin(); iter != m_taskMap.end(); ++iter)
     {
         cur = iter->val;
@@ -69,63 +82,28 @@ Timer::~Timer()
         }
     }
     m_taskMap.clear();
-#ifdef _TEST_
-    if (0 != m_timer) timer_delete(m_timer);
-#else
-    signal(SIGALRM, SIG_DFL);
-#endif
+    m_taskListHead = NULL;
 }
 
-int Timer::setTimer(int msec)
+void Timer::loop()
 {
-#ifdef _TEST_
-    struct itimerspec ts;
+    int ret;
+    static const uint64_t &curTime = EagleTimeI::instance().getMsec();
 
-    m_isPause = msec > 0 ? 0 : 1;
-    ts.it_interval.tv_sec = 0;
-    ts.it_interval.tv_nsec = 0;
-    ts.it_value.tv_sec = msec / 1000;
-    ts.it_value.tv_nsec = (msec % 1000) * 1000000;
-
-    if (0 == timer_settime(m_timer, 0, &ts, NULL)) return 0;
-#else
-    struct itimerval   itv;
-
-    itv.it_interval.tv_sec = 0;
-    itv.it_interval.tv_usec = 0;
-    itv.it_value.tv_sec = msec / 1000;
-    itv.it_value.tv_usec = (msec % 1000) * 1000;
-    if (0 == setitimer(ITIMER_REAL, &itv, NULL)) return 0;
-#endif
-
-    ERRORLOG1("setitimer error: %s!", strerror(errno));
-
-    return -1;
-}
-
-void Timer::start()
-{
-    uint64_t curTime = m_eagleTime.getMsec();
-    LockGuard guard(m_lock);
-    if (m_taskMap.empty()) return;
-
-    if (m_nextExecuteTime > curTime)
+    for (;;)
     {
-        setTimer(m_nextExecuteTime - curTime);
-    }else
-    {
-        setTimer(1);
+        ret = m_sem.timedWait(m_nextExecuteTime - curTime);
+
+        if (EG_FAILED == ret) break;
+        if (EG_AGAIN == ret)
+        {
+            execute();
+
+            continue;
+        }
+
+        if (m_status != START) break;
     }
-}
-
-void Timer::pause()
-{
-    LockGuard guard(m_lock);
-    if (m_isPause) return;
-
-    setTimer(0);
-    if (sched_yield() != 0) 
-        ERRORLOG1("sched_yield err, %s", strerror(errno));
 }
 
 Timer::TaskNode *Timer::find(const char *name)
@@ -162,12 +140,12 @@ void Timer::execute()
     TaskNode *next;
     uint64_t tmp;
     uint64_t startTime = (uint64_t)-1;
-    uint64_t curTime = m_eagleTime.getMsec();
+    static const uint64_t &msec = EagleTimeI::instance().getMsec();
+    uint64_t curTime = msec < m_nextExecuteTime ? m_nextExecuteTime : msec;
 
-    LockGuard guard(m_lock);
+    LockGuard<SpinLock> guard(m_lock);
     TaskMap::Iterator iter = m_taskMap.getMin();
 
-    if (curTime < m_nextExecuteTime) curTime = m_nextExecuteTime;
     for (; iter != m_taskMap.end(); iter = m_taskMap.getMin())
     {
         if (curTime < iter->key) break;
@@ -205,25 +183,19 @@ void Timer::execute()
         }
     }
 
-    if (m_taskMap.end() == iter && (uint64_t)-1 == startTime)
-    {
-        m_isPause = 1;
-        
-        return;
-    }
-
     if (m_taskMap.end() != iter && iter->key < startTime)
     {
         startTime = iter->key;
     }
-    setTimer(startTime - curTime);
     m_nextExecuteTime = startTime;
 }
 
 int Timer::addTask(const char *name, const int msec,
         const CallBack &cb, const int isAsync, const int times)
 {
-    LockGuard guard(m_lock);
+    static const uint64_t &curTime = EagleTimeI::instance().getMsec();
+
+    LockGuard<SpinLock> guard(m_lock);
     TaskNode *tmp = find(name);
 
     if (NULL != tmp)
@@ -233,7 +205,6 @@ int Timer::addTask(const char *name, const int msec,
         return -1;
     }
 
-    uint64_t curTime = m_eagleTime.getMsec();
     uint64_t startTime = curTime + 1;
 
     startTime = ALIGN(startTime, msec);
@@ -243,8 +214,8 @@ int Timer::addTask(const char *name, const int msec,
     addTimer(startTime, tmp);
     if (m_nextExecuteTime > startTime)
     {
-        setTimer(startTime - curTime);
         m_nextExecuteTime = startTime;
+        m_sem.post();
     }
 
     return 0;
@@ -273,11 +244,12 @@ void Timer::delTask(TaskNode *task)
 
 int Timer::delTask(const char *name)
 {
-    LockGuard guard(m_lock);
+    LockGuard<SpinLock> guard(m_lock);
     TaskNode *tmp = m_taskListHead;   
 
     if (NULL == tmp) return -1;
-    if (0 == strcmp(name, tmp->name))
+
+    if (NULL != tmp->name && 0 == strcmp(name, tmp->name))
     {
         *(tmp->name) = 0;
         m_taskListHead = tmp->nextTask;
@@ -287,7 +259,7 @@ int Timer::delTask(const char *name)
 
     for (; NULL != tmp->nextTask; tmp = tmp->nextTask)
     {
-        if (0 == strcmp(name, tmp->nextTask->name))      
+        if (NULL != tmp->name && 0 == strcmp(name, tmp->nextTask->name))      
         {
             *(tmp->nextTask->name) = 0;
             tmp->nextTask = tmp->nextTask->nextTask;

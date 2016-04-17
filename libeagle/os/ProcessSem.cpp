@@ -2,6 +2,7 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #include "ProcessSem.h"
 #include "Log.h"
@@ -9,11 +10,6 @@
 
 namespace eagle
 {
-
-namespace
-{
-ShareMem &shareMem = ShareMemI::instance();
-}
 
 union semun 
 {
@@ -24,10 +20,10 @@ union semun
                                  (Linux-specific) */
 };
 
-ProcessSem::ProcessSem(const int preceesNum, const int val) 
+ProcessSem::ProcessSem(const int key, const int val) 
     : m_semId(-1), m_ref(NULL)
 {
-    m_semId = semget(IPC_PRIVATE, 1, IPC_CREAT | S_IRUSR | S_IWUSR);
+    m_semId = semget(key, 1, IPC_CREAT | S_IRUSR | S_IWUSR);
     if (-1 == m_semId) 
     {
         ERRORLOG1("semget err, %s", strerror(errno));
@@ -36,29 +32,21 @@ ProcessSem::ProcessSem(const int preceesNum, const int val)
     }
 
     init(val);
-    if (preceesNum > 1)
-    {
-        m_ref = (int *)shareMem.alloc(sizeof(int));
-        *m_ref = preceesNum;
-    }
+    ShareMem &shareMem = ShareMemI::instance();
+    m_ref = (int *)shareMem.alloc(sizeof(int), key);
+    __sync_add_and_fetch(const_cast<volatile int *>(m_ref), 1);
+    m_pid = getpid();
 }
 
 ProcessSem::~ProcessSem()
 {
-    int isDelete = 1;
+    if (-1 == m_semId) return;
+    if (getpid() != m_pid) return;
 
-    if (NULL != m_ref)
-    {
-        if (__sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1) != 0)
-        {
-            isDelete = 0;
-        }else
-        {
-            shareMem.free(m_ref);
-        }
-    }
-    if (!isDelete) return;
+    if (__sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1) != 0) return;
 
+    ShareMem &shareMem = ShareMemI::instance();
+    shareMem.free(m_ref);
     if (semctl(m_semId, 0, IPC_RMID) != 0)
     {
         ERRORLOG1("semctl err, %s", strerror(errno));
@@ -80,7 +68,7 @@ int ProcessSem::init(int val)
     return EG_SUCCESS;
 }
 
-int ProcessSem::op(const int val, const int sec)
+int ProcessSem::op(const int val, const int msec)
 {
     if (-1 == m_semId) return EG_INVAL;
 
@@ -91,10 +79,10 @@ int ProcessSem::op(const int val, const int sec)
     buf.sem_num = 0;
     buf.sem_op = val;
     buf.sem_flg = SEM_UNDO;
-    if (sec > 0)
+    if (msec > 0)
     {
-        t.tv_sec = sec;
-        t.tv_nsec = 0;
+        t.tv_sec = msec / 1000;
+        t.tv_nsec = (msec % 1000) * 1000 * 1000;
         timeOut = &t;
     }
     for (; ;)
@@ -123,9 +111,9 @@ int ProcessSem::wait()
     return op(-1);
 }
 
-int ProcessSem::timedWait(const int sec)
+int ProcessSem::timedWait(const int msec)
 {
-    return op(-1, sec);
+    return op(-1, msec);
 }
 
 }

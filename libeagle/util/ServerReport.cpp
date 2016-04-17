@@ -18,8 +18,6 @@ const char *SUCCESS = "success";
 const char *DATE = "date";
 const char *FAIL = "fail";
 const char *ERRCODE = "errcode";
-
-eagle::EagleTime &eagleTime = eagle::EagleTimeI::instance();
 }
 
 namespace eagle
@@ -174,6 +172,8 @@ int ServerReport::createSavePathDir()
 
 int ServerReport::init(const std::string &reportPath, const std::string &serverName)
 {
+    static eagle::EagleTime &eagleTime = eagle::EagleTimeI::instance();
+
     int t = eagleTime.getSec();
     int tmp = reportPath.length() -1;
 
@@ -205,16 +205,17 @@ void ServerReport::destroy()
 
 void ServerReport::checkAndSaveFile()
 {
+    static eagle::EagleTime &eagleTime = eagle::EagleTimeI::instance();
+
     int tmp = eagleTime.getSec();
 
     if (tmp < m_nextFiveMinute) return;
 
-    if (!__sync_bool_compare_and_swap(
-                const_cast<volatile char *>(&m_mutex), '\0', '\1')) return;
+    if (m_lock.tryLock() != EG_SUCCESS) return;
 
     if (tmp < m_nextFiveMinute) 
     {
-        m_mutex = '\0';
+        m_lock.unLock();
 
         return;
     }
@@ -232,7 +233,7 @@ void ServerReport::checkAndSaveFile()
         m_hourStats->saveXmlFile();
     }
 
-    m_mutex = '\0';
+    m_lock.unLock();
 }
 
 void ServerReport::sendSuccReq(const std::string &reqName)

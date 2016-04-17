@@ -41,8 +41,6 @@ void doTest()
  */
 int main ( int argc, char *argv[] )
 {
-    EagleTimeI::instance().autoUpdate();
-
     doTest();
 
     return EXIT_SUCCESS;

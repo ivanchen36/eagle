@@ -46,7 +46,7 @@ protected:
     int m_curWorker;
     int m_isStop;
     int m_isOverLoad;
-    MutexLock m_lock;
+    SpinLock m_lock;
     EventWorker *m_workers;
 };
 

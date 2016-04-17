@@ -36,9 +36,6 @@ AcceptHandler::~AcceptHandler()
 
 int AcceptHandler::read()
 {
-    if (m_manager->isOverLoad())
-        return EG_SUCCESS;
-
     if (tryLock() == EG_FAILED)
         return EG_SUCCESS;
 
@@ -51,6 +48,12 @@ int AcceptHandler::read()
     {
         ret = m_socket->accept(fd, addr);
         if (EG_SUCCESS != ret) break;
+        if (m_manager->isOverLoad())
+        {
+            ::close(fd);
+            continue;
+        }
+
         if (m_messageHandlerFactory.createHandler(
                     m_port, message) != EG_SUCCESS) continue;
 

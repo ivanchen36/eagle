@@ -66,16 +66,10 @@ void test2()
  */
 int main ( int argc, char *argv[] )
 {
-    int i;
-
-    DEBUGLOG1("%d", sizeof(EagleTime));
-    EagleTimeI::instance().autoUpdate();
     test1();
     sleep(5);
-    TimerI::del();
-    EagleTimeI::instance().autoUpdate();
     test1();
-    EagleTimeI::instance().cancelUpdate();
+    TimerI::del();
     sleep(5);
     test1();
 

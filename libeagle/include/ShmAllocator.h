@@ -11,6 +11,10 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
+
+#ifndef _SHMALLOCATOR_H_
+#define _SHMALLOCATOR_H_
+
 #include <memory>
 
 #include "ShareMem.h"
@@ -55,7 +59,7 @@ public:
 
     void construct(T *p, const T &val)
     {
-        :: new ((void *)p) T(val);
+        new ((void *)p) T(val);
     }
 
     void destroy(T *p)
@@ -69,3 +73,4 @@ public:
 template <class T> int ShmAllocator<T>::s_objectSize = sizeof(T);
 
 }
+#endif   /* ----- #ifndef _SHMALLOCATOR_H_  ----- */

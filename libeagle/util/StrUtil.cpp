@@ -13,7 +13,7 @@ void StrUtil::copy(char *&dest, const char *src)
     dest = new char[len + 1];
     if (dest == NULL) return;
 
-    if (0 != len)
+    if (0 == len)
     {
         *dest = 0;
 
@@ -30,7 +30,7 @@ void StrUtil::copy(char *&dest, const char *src, const int len)
     dest = new char[l + 1];
     if (dest == NULL) return;
 
-    if (0 != l)
+    if (0 == l)
     {
         *dest = 0;
 

@@ -18,28 +18,43 @@
 #include <string>
 
 #include "Singleton.h"
+#include "ShmAllocator.h"
 
 namespace eagle
 {
+
+#define TIME_STR_LEN 20
 
 class EagleTime
 {
 public:
     ~EagleTime();
 
-    void update();
-    void autoUpdate();
     void cancelUpdate();
+    void checkAndUpdate();
 
     const std::string &getTimeStr()
     {
-        return *m_timeStr;
+        static time_t &curSec = m_info->sec;
+        static char (&curTimeStr)[TIME_STR_LEN] = m_info->timeStr;
+        static int sec = curSec;
+        static std::string timeStr = curTimeStr;
+
+        if (sec != curSec)
+        {
+            sec = curSec;
+            timeStr = curTimeStr;
+        }
+
+        return timeStr;
     }
 
     const std::string getTimeStr(const char *format)
     {
         char buf[32];
-        strftime(buf, 32, format, &m_tm);
+        static struct tm &tm = m_info->tm;
+
+        strftime(buf, 32, format, &tm);
 
         return buf;
     }
@@ -48,36 +63,51 @@ public:
     {
         char buf[32];
         struct tm tm;
+        static time_t &sec = m_info->sec;
 
-        gmtime_r(&m_tv.tv_sec, &tm);
+        gmtime_r(&sec, &tm);
         strftime(buf, 32, format, &tm);
 
         return buf;
     }
 
-    const time_t getSec()
+    const time_t &getSec()
     {
-        return m_tv.tv_sec;
+        static time_t &sec = m_info->sec;
+
+        return sec;
     }
 
-    const uint64_t getMsec()
+    const uint64_t &getMsec()
     {
-        return m_msec;
+        static uint64_t &msec = m_info->msec;
+
+        return msec;
     }
 
     const struct tm &getTm()
     {
-        return m_tm;
+        static struct tm &tm = m_info->tm;
+
+        return tm;
     }
 
 private:
-    EagleTime();
+    struct TimeInfo
+    {
+        int pid;
+        time_t sec;
+        uint64_t msec;
+        char timeStr[TIME_STR_LEN];
+        struct tm tm;
+        struct timeval tv;
+    };
 
-    uint64_t m_msec;
-    struct tm m_tm;
-    struct timeval m_tv;
-    std::string *m_tmpStr;
-    std::string *m_timeStr;
+    EagleTime();
+    void update();
+
+    int m_pid;
+    TimeInfo *m_info;
 
     friend class Singleton<EagleTime>;
 };

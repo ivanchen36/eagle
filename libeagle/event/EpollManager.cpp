@@ -114,7 +114,7 @@ int EpollManager::registerEvent(int event, EventHandler *handler)
     if (-1 == m_fd) return EG_INVAL;
 
     int &reEvent = handler->getRegisterEvent();
-    LockGuard guard(m_lock);
+    LockGuard<SpinLock> guard(m_lock);
 
     if (NONE == reEvent)
     {
@@ -135,7 +135,7 @@ int EpollManager::unregisterEvent(int event, EventHandler *handler)
     if (-1 == m_fd) return EG_INVAL;
 
     int &reEvent = handler->getRegisterEvent();
-    LockGuard guard(m_lock);
+    LockGuard<SpinLock> guard(m_lock);
 
     reEvent &= ~event;
     if (NONE == reEvent) return delEvent(event, handler);
