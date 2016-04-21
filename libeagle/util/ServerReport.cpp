@@ -59,6 +59,11 @@ void ServerReport::Stats::handleXmlTag(std::string &prefix,
     int len = prefix.length();
 
     prefix.append(el->Name());
+    if (0 == strcmp(ERRCODE, el->Name()) || 0 == strcmp(KEY, el->Name()))
+    {
+        prefix.append(SEP);
+        prefix.append(el->Attribute(NAME));
+    }
     text = el->GetText();
     if (NULL != text)
     {
@@ -66,11 +71,6 @@ void ServerReport::Stats::handleXmlTag(std::string &prefix,
     }else
     {
         prefix.append(SEP);
-        if (0 == strcmp(ERRCODE, el->Name()) || 0 == strcmp(KEY, el->Name()))
-        {
-            prefix.append(el->Attribute(NAME));
-            prefix.append(SEP);
-        }
         for (el = el->FirstChildElement();
                 el != NULL; el = el->NextSiblingElement())
         {
@@ -95,7 +95,7 @@ void ServerReport::Stats::saveXmlTag(tinyxml2::XMLElement *el,
         tmp = el;
         str = list[i];
         el = tmp->FirstChildElement(str);
-        if (0 == strcmp(ERRCODE, str) || 0 == strcmp(KEY, str)) ++i;
+        if ((0 == strcmp(ERRCODE, str) || 0 == strcmp(KEY, str)) && len > i + 1) ++i;
         while (el != NULL)
         {
             if (0 == strcmp(STATS, str))
