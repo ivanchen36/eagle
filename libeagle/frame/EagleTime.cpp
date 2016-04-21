@@ -73,7 +73,7 @@ void EagleTime::checkAndUpdate()
         return;
     }
 
-    if (count < 2) return;
+    if (++count < 4) return;
 
     __sync_bool_compare_and_swap(
             const_cast<volatile int *>(&pid), pid, m_pid);

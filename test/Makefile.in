@@ -40,7 +40,7 @@ noinst_PROGRAMS = autoptrtest$(EXEEXT) timestatstest$(EXEEXT) \
 	eagletest$(EXEEXT) rbtest$(EXEEXT) locktest$(EXEEXT) \
 	sockettest$(EXEEXT) queuetest$(EXEEXT) classtest$(EXEEXT) \
 	eventtest$(EXEEXT) proptest$(EXEEXT) alloctest$(EXEEXT) \
-	prototest$(EXEEXT) chtest$(EXEEXT)
+	prototest$(EXEEXT) chtest$(EXEEXT) reporttest$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -136,6 +136,12 @@ rbtest_LDADD = $(LDADD)
 rbtest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(rbtest_LDFLAGS) $(LDFLAGS) -o $@
+am_reporttest_OBJECTS = ReportTest.$(OBJEXT)
+reporttest_OBJECTS = $(am_reporttest_OBJECTS)
+reporttest_LDADD = $(LDADD)
+reporttest_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(reporttest_LDFLAGS) $(LDFLAGS) -o $@
 am_shmtest_OBJECTS = ShmTest.$(OBJEXT)
 shmtest_OBJECTS = $(am_shmtest_OBJECTS)
 shmtest_LDADD = $(LDADD)
@@ -184,17 +190,17 @@ SOURCES = $(alloctest_SOURCES) $(autoptrtest_SOURCES) \
 	$(eventtest_SOURCES) $(locktest_SOURCES) $(logtest_SOURCES) \
 	$(mmaptest_SOURCES) $(proptest_SOURCES) $(prototest_SOURCES) \
 	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
-	$(shmtest_SOURCES) $(singletontest_SOURCES) \
-	$(sockettest_SOURCES) $(threadtest_SOURCES) \
-	$(timestatstest_SOURCES)
+	$(reporttest_SOURCES) $(shmtest_SOURCES) \
+	$(singletontest_SOURCES) $(sockettest_SOURCES) \
+	$(threadtest_SOURCES) $(timestatstest_SOURCES)
 DIST_SOURCES = $(alloctest_SOURCES) $(autoptrtest_SOURCES) \
 	$(chtest_SOURCES) $(classtest_SOURCES) $(eagletest_SOURCES) \
 	$(eventtest_SOURCES) $(locktest_SOURCES) $(logtest_SOURCES) \
 	$(mmaptest_SOURCES) $(proptest_SOURCES) $(prototest_SOURCES) \
 	$(psemtest_SOURCES) $(queuetest_SOURCES) $(rbtest_SOURCES) \
-	$(shmtest_SOURCES) $(singletontest_SOURCES) \
-	$(sockettest_SOURCES) $(threadtest_SOURCES) \
-	$(timestatstest_SOURCES)
+	$(reporttest_SOURCES) $(shmtest_SOURCES) \
+	$(singletontest_SOURCES) $(sockettest_SOURCES) \
+	$(threadtest_SOURCES) $(timestatstest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -367,6 +373,8 @@ prototest_SOURCES = ProtoTest.cpp
 prototest_LDFLAGS = $(TEST_LD)
 chtest_SOURCES = CHTest.cpp
 chtest_LDFLAGS = $(TEST_LD)
+reporttest_SOURCES = ReportTest.cpp
+reporttest_LDFLAGS = $(TEST_LD)
 all: all-am
 
 .SUFFIXES:
@@ -452,6 +460,9 @@ queuetest$(EXEEXT): $(queuetest_OBJECTS) $(queuetest_DEPENDENCIES)
 rbtest$(EXEEXT): $(rbtest_OBJECTS) $(rbtest_DEPENDENCIES) 
 	@rm -f rbtest$(EXEEXT)
 	$(rbtest_LINK) $(rbtest_OBJECTS) $(rbtest_LDADD) $(LIBS)
+reporttest$(EXEEXT): $(reporttest_OBJECTS) $(reporttest_DEPENDENCIES) 
+	@rm -f reporttest$(EXEEXT)
+	$(reporttest_LINK) $(reporttest_OBJECTS) $(reporttest_LDADD) $(LIBS)
 shmtest$(EXEEXT): $(shmtest_OBJECTS) $(shmtest_DEPENDENCIES) 
 	@rm -f shmtest$(EXEEXT)
 	$(shmtest_LINK) $(shmtest_OBJECTS) $(shmtest_LDADD) $(LIBS)
@@ -487,6 +498,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PropertiesTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProtoTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RbTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReportTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShmAllocatorTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ShmTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingletonTest.Po@am__quote@

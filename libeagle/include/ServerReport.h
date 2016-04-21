@@ -80,7 +80,7 @@ private:
         void handleXmlTag(std::string &prefix,
                 tinyxml2::XMLElement *el);
         void saveXmlTag(tinyxml2::XMLElement *el, 
-                const std::string &key, int val);
+                std::string key, int val);
 
         const struct tm m_tm;
         const std::string &m_savePath;

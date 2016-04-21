@@ -6,18 +6,20 @@
 namespace
 {
 const char *LEVEL3_NODE = "%s.%s.%s";
-const char *LEVEL5_SS_NODE = "%s.%s.%s.%s.%s";
-const char *LEVEL5_SI_NODE = "%s.%s.%s.%s.%d";
-const char *LEVEL5_II_NODE = "%s.%s.%s.%d.%d";
-const char *LEVEL5_IS_NODE = "%s.%s.%s.%d.%s";
+const char *LEVEL6_SS_NODE = "%s.%s.%s.%s.%s.%s";
+const char *LEVEL6_SI_NODE = "%s.%s.%s.%s.%s.%d";
+const char *LEVEL6_II_NODE = "%s.%s.%s.%d.%s.%d";
+const char *LEVEL6_IS_NODE = "%s.%s.%s.%d.%s.%s";
 
 const char *SEP = ".";
+const char *NAME = "name";
 const char *STATS = "stats";
 const char *HOUR = "hour";
 const char *SUCCESS = "success";
 const char *DATE = "date";
 const char *FAIL = "fail";
 const char *ERRCODE = "errcode";
+const char *KEY = "key";
 }
 
 namespace eagle
@@ -64,6 +66,11 @@ void ServerReport::Stats::handleXmlTag(std::string &prefix,
     }else
     {
         prefix.append(SEP);
+        if (0 == strcmp(ERRCODE, el->Name()) || 0 == strcmp(KEY, el->Name()))
+        {
+            prefix.append(el->Attribute(NAME));
+            prefix.append(SEP);
+        }
         for (el = el->FirstChildElement();
                 el != NULL; el = el->NextSiblingElement())
         {
@@ -74,55 +81,66 @@ void ServerReport::Stats::handleXmlTag(std::string &prefix,
 }
 
 void ServerReport::Stats::saveXmlTag(tinyxml2::XMLElement *el, 
-        const std::string &key, int val)
+        std::string key, int val)
 {
     int len;
     char *str;
-    std::string src(key.c_str());
     std::vector<char *> list;
     tinyxml2::XMLElement *tmp;
 
-    StrUtil::split(SEP, (char *)src.c_str(), list);
-    len = list.size() - 1;
+    StrUtil::split(SEP, (char *)&key.at(0), list);
+    len = list.size();
     for (int i = 0; i < len; ++i)
     {
         tmp = el;
         str = list[i];
         el = tmp->FirstChildElement(str);
-        if (0 != strcmp(STATS, str))
+        if (0 == strcmp(ERRCODE, str) || 0 == strcmp(KEY, str)) ++i;
+        while (el != NULL)
         {
-            if (el == NULL)
+            if (0 == strcmp(STATS, str))
             {
-                el = m_docPtr->NewElement(str);
-                tmp->InsertEndChild(el);
+                if (m_tm.tm_hour == atoi(el->Attribute(HOUR))) break;
+
+                el = el->NextSiblingElement();
+
+                continue;
             }
-            continue;
+
+            if (0 == strcmp(ERRCODE, str) || 0 == strcmp(KEY, str))
+            {
+                if (0 == strcmp(list[i], el->Attribute(NAME))) break;
+
+                el = el->NextSiblingElement();
+
+                continue;
+            }
+
+            break;
         }
 
-        while (el != NULL) 
-        {
-            if (m_tm.tm_hour == atoi(el->Attribute(HOUR)))    
-                break;
-            el = el->NextSiblingElement();
-        }
         if (NULL != el) continue;
 
         el = m_docPtr->NewElement(str);
-        el->SetAttribute(HOUR, m_tm.tm_hour);
-        tmp->InsertEndChild(el);
+        if (0 == strcmp(SUCCESS, str) || 0 == strcmp(FAIL, str))
+        {
+            tmp->InsertFirstChild(el);
+        }else
+        {
+            tmp->InsertEndChild(el);
+        }
+        if (0 == strcmp(STATS, str))
+        {
+            el->SetAttribute(HOUR, m_tm.tm_hour);
+            continue;
+        }
+
+        if (0 == strcmp(ERRCODE, str) || 0 == strcmp(KEY, str))
+        {
+            el->SetAttribute(NAME, list[i]);
+        }
     }
-
-    tmp = el->FirstChildElement(list[len]);
-    if (NULL != tmp)
-    {
-        tmp->SetText(val);
-
-        return;
-    }
-
-    tmp = m_docPtr->NewElement(list[len]);
-    tmp->SetText(val);
-    el->InsertEndChild(tmp);
+    el->SetText(val);
 }
 
 void ServerReport::Stats::saveXmlFile()
@@ -245,8 +263,9 @@ void ServerReport::sendSuccReq(const std::string &reqName)
     StatsPtr stats = m_hourStats;
     std::map<std::string, int> &intMap = stats->getMap();
     sprintf(buf, LEVEL3_NODE, reqName.c_str(), STATS, SUCCESS);
-    int &val = intMap[buf];
-     __sync_add_and_fetch(const_cast<volatile int *>(&val), 1);
+    std::string str(buf);
+    int &val = intMap[str];
+    __sync_add_and_fetch(const_cast<volatile int *>(&val), 1);
 }
 
 void ServerReport::sendFailReq(const std::string &reqName, const std::string &errCode, 
@@ -260,12 +279,12 @@ void ServerReport::sendFailReq(const std::string &reqName, const std::string &er
     std::map<std::string, int> &intMap = stats->getMap();
     sprintf(buf, LEVEL3_NODE, reqName.c_str(), STATS, FAIL);
     int &val1 = intMap[buf];
-     __sync_add_and_fetch(const_cast<volatile int *>(&val1), 1);
+    __sync_add_and_fetch(const_cast<volatile int *>(&val1), 1);
 
-    snprintf(buf, 128, LEVEL5_SS_NODE, reqName.c_str(), STATS, ERRCODE, 
-            errCode.c_str(), errKey.c_str());
+    snprintf(buf, 128, LEVEL6_SS_NODE, reqName.c_str(), STATS, ERRCODE, 
+            errCode.c_str(), KEY, errKey.c_str());
     int &val2 = intMap[buf];
-     __sync_add_and_fetch(const_cast<volatile int *>(&val2), 1);
+    __sync_add_and_fetch(const_cast<volatile int *>(&val2), 1);
 }
 
 void ServerReport::sendFailReq(const std::string &reqName, const std::string &errCode, 
@@ -279,12 +298,12 @@ void ServerReport::sendFailReq(const std::string &reqName, const std::string &er
     std::map<std::string, int> &intMap = stats->getMap();
     sprintf(buf, LEVEL3_NODE, reqName.c_str(), STATS, FAIL);
     int &val1 = intMap[buf];
-     __sync_add_and_fetch(const_cast<volatile int *>(&val1), 1);
+    __sync_add_and_fetch(const_cast<volatile int *>(&val1), 1);
 
-    snprintf(buf, 128, LEVEL5_SI_NODE, reqName.c_str(), STATS, ERRCODE, 
-            errCode.c_str(), errKey);
+    snprintf(buf, 128, LEVEL6_SI_NODE, reqName.c_str(), STATS, ERRCODE, 
+            errCode.c_str(), KEY, errKey);
     int &val2 = intMap[buf];
-     __sync_add_and_fetch(const_cast<volatile int *>(&val2), 1);
+    __sync_add_and_fetch(const_cast<volatile int *>(&val2), 1);
 }
 
 void ServerReport::sendFailReq(const std::string &reqName, const int errCode, 
@@ -298,12 +317,12 @@ void ServerReport::sendFailReq(const std::string &reqName, const int errCode,
     std::map<std::string, int> &intMap = stats->getMap();
     sprintf(buf, LEVEL3_NODE, reqName.c_str(), STATS, FAIL);
     int &val1 = intMap[buf];
-     __sync_add_and_fetch(const_cast<volatile int *>(&val1), 1);
+    __sync_add_and_fetch(const_cast<volatile int *>(&val1), 1);
 
-    snprintf(buf, 128, LEVEL5_II_NODE, reqName.c_str(), STATS, ERRCODE, 
-            errCode, errKey);
+    snprintf(buf, 128, LEVEL6_II_NODE, reqName.c_str(), STATS, ERRCODE, 
+            errCode, KEY, errKey);
     int &val2 = intMap[buf];
-     __sync_add_and_fetch(const_cast<volatile int *>(&val2), 1);
+    __sync_add_and_fetch(const_cast<volatile int *>(&val2), 1);
 }
 
 void ServerReport::sendFailReq(const std::string &reqName, const int errCode, 
@@ -316,12 +335,12 @@ void ServerReport::sendFailReq(const std::string &reqName, const int errCode,
     std::map<std::string, int> &intMap = stats->getMap();
     sprintf(buf, LEVEL3_NODE, reqName.c_str(), STATS, FAIL);
     int &val1 = intMap[buf];
-     __sync_add_and_fetch(const_cast<volatile int *>(&val1), 1);
+    __sync_add_and_fetch(const_cast<volatile int *>(&val1), 1);
 
-    snprintf(buf, 128, LEVEL5_IS_NODE, reqName.c_str(), STATS, ERRCODE, 
-            errCode, errKey.c_str());
+    snprintf(buf, 128, LEVEL6_IS_NODE, reqName.c_str(), STATS, ERRCODE, 
+            errCode, KEY, errKey.c_str());
     int &val2 = intMap[buf];
-     __sync_add_and_fetch(const_cast<volatile int *>(&val2), 1);
+    __sync_add_and_fetch(const_cast<volatile int *>(&val2), 1);
 }
 
 }
