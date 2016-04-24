@@ -22,7 +22,7 @@
 #include <google/protobuf/wire_format_lite_inl.h>
 
 #include "Log.h"
-#include "EagleTime.h"
+#include "ServerTime.h"
 #include "Propose.pb.h"
 
 using namespace std;

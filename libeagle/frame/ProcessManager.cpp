@@ -152,6 +152,7 @@ int ProcessManager::stop(const int pid)
 
 void ProcessManager::quit(int processNum)
 {
+    INFOLOG1("stop process, processnum %d", processNum);
     ProcessNode *process;
 
     if (processNum > m_processNum) processNum = m_processNum;

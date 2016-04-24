@@ -1,5 +1,5 @@
 /**
- *       Filename:  EagleTime.h
+ *       Filename:  ServerTime.h
  *
  *    Description:  
  *
@@ -11,8 +11,8 @@
  *         Author:  Ivan Chen, 228268157@qq.com
  *   Organization:  
  */
-#ifndef _EAGLE_EAGLETIME_H_
-#define _EAGLE_EAGLETIME_H_
+#ifndef _EAGLE_SERVERTIME_H_
+#define _EAGLE_SERVERTIME_H_
 #include <time.h>
 #include <stdint.h>
 #include <string>
@@ -25,11 +25,12 @@ namespace eagle
 
 #define TIME_STR_LEN 20
 
-class EagleTime
+class ServerTime
 {
 public:
-    ~EagleTime();
+    ~ServerTime();
 
+    void autoUpdate();
     void cancelUpdate();
     void checkAndUpdate();
 
@@ -103,16 +104,16 @@ private:
         struct timeval tv;
     };
 
-    EagleTime();
+    ServerTime();
     void update();
 
     int m_pid;
     TimeInfo *m_info;
 
-    friend class Singleton<EagleTime>;
+    friend class Singleton<ServerTime>;
 };
 
-typedef Singleton<EagleTime> EagleTimeI;
+typedef Singleton<ServerTime> ServerTimeI;
 
 }
-#endif   /* ----- #ifndef _EAGLE_EAGLETIME_H_  ----- */
+#endif   /* ----- #ifndeF _EAGLE_SERVERTIME_H_  ----- */

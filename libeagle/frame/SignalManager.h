@@ -34,7 +34,8 @@ public:
     int block();
     void init();
     void clean();
-    int unBlock();
+    int setBlock();
+    int setUnBlock();
     void handleSig(const int sig);
     virtual Type getType() = 0;
 

@@ -1,6 +1,7 @@
 #include <sys/shm.h>
 
 #include "Log.h"
+#include "Define.h"
 #include "ShareMem.h"
 
 namespace eagle
@@ -46,14 +47,6 @@ void *ShareMem::alloc(const int size, const int key)
     }
 
     ptr = shmat(id, NULL, 0);
-    if (0 == key)
-    {
-        if (shmctl(id, IPC_RMID, NULL) == -1)
-        {
-            ERRORLOG1("shmctl IPC_RMID err, %s!", strerror(errno));
-        }
-        id = -1;
-    }
     if ((void *)-1 == ptr)
     {
         ERRORLOG1("shmat err, %s!", strerror(errno));
@@ -61,39 +54,68 @@ void *ShareMem::alloc(const int size, const int key)
         return NULL;
     }
 
-    ShmInfo &info = m_shmMap[(uintptr_t)ptr];
     if (isNew) 
     {
         memset(ptr, 0, size);
-        info.id = id;
-        info.pid = getpid();
-    }else
-    {
-        info.id = -1;
     }
+    m_shmMap[(uintptr_t)ptr] = id;
 
     return ptr;
 }
 
-void ShareMem::free(void *ptr, const ShmInfo &info)
+int ShareMem::getNattch(void *ptr)
 {
-    if (shmdt(ptr) == -1) ERRORLOG1("shmdt err, %s!", strerror(errno));
+    struct shmid_ds shmds;
+    ShareMemMap::iterator iter = m_shmMap.find((uintptr_t)ptr);
 
-    if (-1 == info.id || getpid() != info.pid) return;
+    if (iter == m_shmMap.end()) return EG_FAILED;
 
-    if (shmctl(info.id, IPC_RMID, NULL) == -1) 
-        ERRORLOG2("shmctl IPC_RMID  %d err, %s!", info.id, strerror(errno));
+    if (shmctl(iter->second, IPC_STAT, &shmds) == -1)
+    {
+        ERRORLOG2("shmctl IPC_STAT  %d err, %s!", iter->second, strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    return shmds.shm_nattch;
 }
 
-void ShareMem::free(void *ptr)
+int ShareMem::free(void *ptr, const int id)
 {
-    if (NULL == ptr) return;
+    struct shmid_ds shmds;
+
+    if (shmdt(ptr) == -1) 
+    {
+        ERRORLOG1("shmdt err, %s!", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    if (shmctl(id, IPC_STAT, &shmds) == -1)
+    {
+        ERRORLOG2("shmctl IPC_STAT %d err, %s!", id, strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    if (0 == shmds.shm_nattch && shmctl(id, IPC_RMID, NULL) == -1) 
+        ERRORLOG2("shmctl IPC_RMID %d err, %s!", id, strerror(errno));
+
+    return shmds.shm_nattch;
+}
+
+int ShareMem::free(void *ptr)
+{
+    int ret = EG_FAILED;
+    if (NULL == ptr) return ret;
 
     ShareMemMap::iterator iter = m_shmMap.find((uintptr_t)ptr);
-    if (iter == m_shmMap.end()) return;
+    if (iter == m_shmMap.end()) return ret;
 
-    free(ptr, iter->second);
+    ret = free(ptr, iter->second);
     m_shmMap.erase(iter);
+
+    return ret;
 }
 
 }

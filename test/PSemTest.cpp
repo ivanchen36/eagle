@@ -18,7 +18,7 @@
 #include <sys/wait.h>
 
 #include "Log.h"
-#include "EagleTime.h"
+#include "ServerTime.h"
 #include "ProcessSem.h"
 
 using namespace std;
@@ -42,7 +42,6 @@ void test(SemaphorePtr &semPtr)
     }
     else
     {
-        int status;
         int ret;
 
         DEBUGLOG1("child pid %d", pid);
@@ -60,6 +59,12 @@ void test(SemaphorePtr &semPtr)
         DEBUGLOG1("child %d exit", ret);
         DEBUGLOG("parent exit");
     }
+}
+
+void doTest()
+{
+    SemaphorePtr semPtr = new ProcessSem(2);
+    test(semPtr);
 }
 
 void test1(SemaphorePtr &semPtr)
@@ -88,7 +93,7 @@ void test1(SemaphorePtr &semPtr)
     }
     else
     {
-        int status;
+        int ret;
 
         DEBUGLOG1("child pid %d", pid);
         DEBUGLOG("parent sleep");
@@ -104,10 +109,58 @@ void test1(SemaphorePtr &semPtr)
     }
 }
 
-void doTest()
+void doTest1()
 {
     SemaphorePtr semPtr = new ProcessSem(2);
     test1(semPtr);
+}
+
+void doTest2()
+{
+    int ret;
+    pid_t pid = 0;
+    int process = 10;
+
+    for (int i = 0; i < process; ++i)
+    {
+        pid = fork();
+        if (pid < 0)
+        {
+            ERRORLOG("fork err");
+            break;
+        }
+        if (pid == 0) break;
+    }
+
+    ProcessSem sem(21464982); 
+    if(pid == 0)
+    {
+        DEBUGLOG("child wait");
+        sem.wait();
+        DEBUGLOG("child exit");
+    }
+    else
+    {
+        DEBUGLOG("parent post");
+        if (sem.op(process))
+        {
+            DEBUGLOG("post err");
+        }
+
+        while (process)
+        {
+            ret = waitpid(-1, NULL, 0);
+            if (ret != -1)
+            {
+                DEBUGLOG1("waitpid %d quit", ret);
+                --process;
+            }else
+            {
+                DEBUGLOG1("waitpid err %s", strerror(errno));
+            }
+        }
+        DEBUGLOG("parent exit");
+    }
 }
 
 /**
@@ -115,7 +168,7 @@ void doTest()
  */
 int main (int argc, char *argv[] )
 {
-    doTest();
+    doTest2();
 
     return EXIT_SUCCESS;
 }

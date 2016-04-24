@@ -23,7 +23,7 @@ __attribute__((constructor)) void startTimer()
 }
 
 Timer::Timer() : m_status(STOP), m_nextExecuteTime((uint64_t)-1), 
-    m_taskListHead(NULL), m_thread(NULL), m_eagleTime(EagleTimeI::instance())
+    m_taskListHead(NULL), m_thread(NULL), m_serverTime(ServerTimeI::instance())
 { 
 }
 
@@ -88,7 +88,7 @@ void Timer::stop()
 void Timer::loop()
 {
     int ret;
-    static const uint64_t &curTime = EagleTimeI::instance().getMsec();
+    static const uint64_t &curTime = ServerTimeI::instance().getMsec();
 
     for (;;)
     {
@@ -140,7 +140,7 @@ void Timer::execute()
     TaskNode *next;
     uint64_t tmp;
     uint64_t startTime = (uint64_t)-1;
-    static const uint64_t &msec = EagleTimeI::instance().getMsec();
+    static const uint64_t &msec = ServerTimeI::instance().getMsec();
     uint64_t curTime = msec < m_nextExecuteTime ? m_nextExecuteTime : msec;
 
     LockGuard<SpinLock> guard(m_lock);
@@ -193,7 +193,7 @@ void Timer::execute()
 int Timer::addTask(const char *name, const int msec,
         const CallBack &cb, const int isAsync, const int times)
 {
-    static const uint64_t &curTime = EagleTimeI::instance().getMsec();
+    static const uint64_t &curTime = ServerTimeI::instance().getMsec();
 
     LockGuard<SpinLock> guard(m_lock);
     TaskNode *tmp = find(name);

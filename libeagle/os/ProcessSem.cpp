@@ -23,6 +23,8 @@ union semun
 ProcessSem::ProcessSem(const int key, const int val) 
     : m_semId(-1), m_ref(NULL)
 {
+    ShareMem &shareMem = ShareMemI::instance();
+
     m_semId = semget(key, 1, IPC_CREAT | S_IRUSR | S_IWUSR);
     if (-1 == m_semId) 
     {
@@ -31,23 +33,19 @@ ProcessSem::ProcessSem(const int key, const int val)
         return;
     }
 
-    init(val);
-    ShareMem &shareMem = ShareMemI::instance();
-    m_ref = (int *)shareMem.alloc(sizeof(int), key);
-    __sync_add_and_fetch(const_cast<volatile int *>(m_ref), 1);
-    m_pid = getpid();
+    m_ref = (char *)shareMem.alloc(1, key);
+    if (shareMem.getNattch((void *)m_ref) == 1)init(val);
 }
 
 ProcessSem::~ProcessSem()
 {
-    if (-1 == m_semId) return;
-    if (getpid() != m_pid) return;
-
-    if (__sync_sub_and_fetch(const_cast<volatile int *>(m_ref), 1) != 0) return;
-
+    int ret;
     ShareMem &shareMem = ShareMemI::instance();
-    shareMem.free(m_ref);
-    if (semctl(m_semId, 0, IPC_RMID) != 0)
+
+    if (-1 == m_semId) return;
+
+    ret = shareMem.free(m_ref);
+    if (0 == ret && semctl(m_semId, 0, IPC_RMID) != 0) 
     {
         ERRORLOG1("semctl err, %s", strerror(errno));
     }
@@ -57,7 +55,7 @@ int ProcessSem::init(int val)
 {
     union semun sem;
 
-    sem.val = 0;
+    sem.val = val;
     if (semctl(m_semId, 0, SETVAL, sem) != 0)
     {
         ERRORLOG1("semctl err, %s", strerror(errno));
@@ -66,6 +64,21 @@ int ProcessSem::init(int val)
     }
 
     return EG_SUCCESS;
+}
+
+int ProcessSem::getVal()
+{
+    int ret;
+
+    ret = semctl(m_semId, 0, GETVAL, 0);
+    if (ret == -1)
+    {
+        ERRORLOG1("semctl err, %s", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    return ret;
 }
 
 int ProcessSem::op(const int val, const int msec)
@@ -78,7 +91,7 @@ int ProcessSem::op(const int val, const int msec)
 
     buf.sem_num = 0;
     buf.sem_op = val;
-    buf.sem_flg = SEM_UNDO;
+    buf.sem_flg = 0;
     if (msec > 0)
     {
         t.tv_sec = msec / 1000;
@@ -87,7 +100,7 @@ int ProcessSem::op(const int val, const int msec)
     }
     for (; ;)
     {
-        if (semtimedop(m_semId, &buf, 1, timeOut) == 0) return EG_SUCCESS;
+        if (semtimedop(m_semId, &buf, 1, timeOut) == 0) break;
 
         if (EINTR == errno) continue;
 

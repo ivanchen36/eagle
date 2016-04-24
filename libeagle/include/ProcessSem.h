@@ -29,12 +29,12 @@ public:
     virtual int wait();
     virtual int timedWait(const int msec);
     int op(const int val, const int msec = 0);
+    int getVal();
 
 private:
     int init(int val);
     int m_semId;
-    int m_pid;
-    int *m_ref;
+    char *m_ref;
 };
 
 typedef AutoPtr<ProcessSem> ProcessSemPtr;

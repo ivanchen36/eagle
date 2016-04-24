@@ -19,7 +19,7 @@
 
 #include "Log.h"
 #include "MutexLock.h"
-#include "EagleTime.h"
+#include "ServerTime.h"
 
 using namespace std;
 using namespace eagle;

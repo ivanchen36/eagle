@@ -62,8 +62,23 @@ Eagle::~Eagle()
         delete [](char *)m_servers;
     }
     if (NULL != m_properties) delete m_properties;
-    if (NULL != m_acceptManager) delete m_acceptManager;
-    if (NULL != m_receiveManager) delete m_receiveManager;
+}
+
+void Eagle::destroy()
+{
+    if (NULL != m_acceptManager)
+    {
+        delete m_acceptManager;
+        m_acceptManager = NULL;
+    }
+    if (NULL != m_receiveManager)
+    {
+        delete m_receiveManager;
+        m_acceptManager = NULL;
+    }
+    TimerI::del();
+    ServerTimeI::del();
+    ShareMemI::del();
 }
 
 int Eagle::checkDir()
@@ -205,11 +220,11 @@ int Eagle::initServers(std::string &ip, std::map<std::string, int> &serverMap)
 int Eagle::initProcess()
 {
     int ret;
-    int key;
     uint8_t *isStop;
     std::string ip;
     int processNum;
     std::map<std::string, int> serverMap;
+    ProcessSem sem(INT_MAX - getpid());
 
     if (PropertiesParser::parseProProperties(ip, serverMap))
         return EG_FAILED;
@@ -221,12 +236,11 @@ int Eagle::initProcess()
     isStop = (uint8_t *)shareMem.calloc(1);
     *isStop = 0;
     processNum = m_program.processNum + 1;
-    key = INT_MAX - getpid();
+    TimerI::instance().pause();
     ret = ProcessManagerI::instance().spawn(processNum);
     if (ret == EG_CHILD)
     {
-        ProcessSem sem(key);
-        ProcessManagerI::del();
+        cleanMaster();
         sem.wait();
         if(*isStop) ret = EG_FAILED;
         shareMem.free(isStop);
@@ -239,13 +253,17 @@ int Eagle::initProcess()
         return ret;
     }
 
+    TimerI::instance().start();
     if (EG_FAILED == ret) 
     {
         *isStop = 1;
         ERRORLOG("spawnprocess err");
     }
-    ProcessSem sem(key);
     sem.op(processNum);
+    while (sem.getVal() > 0)
+    {
+        sched_yield();
+    }
     shareMem.free(isStop);
 
     return ret;
@@ -292,12 +310,12 @@ void Eagle::initWorker()
 void Eagle::initMaster()
 {
     MasterSigManagerI::instance().init();
-    MasterSigManagerI::instance().block();
+    MasterSigManagerI::instance().setBlock();
 }
 
 void Eagle::cleanMaster()
 {
-    MasterSigManagerI::instance().unBlock();
+    MasterSigManagerI::instance().setUnBlock();
     MasterSigManagerI::instance().clean();
     MasterSigManagerI::del();
     ProcessManagerI::del();
@@ -325,13 +343,12 @@ void Eagle::stopWorker()
 
 int Eagle::masterCycle()
 {
-    sigset_t set;
     ProcessManager::Status status;
 
     initMaster();
     for (;;)
     {
-        sigsuspend(&set);
+        MasterSigManagerI::instance().block();
         status = ProcessManagerI::instance().getStatus();
 
         if (ProcessManager::QUIT == status)
@@ -363,7 +380,6 @@ int Eagle::init(const int argc, char *const *argv, const char *ver)
     int ret;
     Proctitle proctitle;
 
-    proctitle.init(argc, argv);
     StrUtil::copy(m_program.ver, ver);
     ret = parseOptions(argc, argv);
     if (EG_SUCCESS != ret) return EG_FAILED;
@@ -375,6 +391,7 @@ int Eagle::init(const int argc, char *const *argv, const char *ver)
 
     ret = initProcess();
 
+    proctitle.init(argc, argv);
     if (EG_PARENT == ret) 
     {
         proctitle.setMaster(argc, argv, "%s: master", m_program.name);

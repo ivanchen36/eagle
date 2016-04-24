@@ -1,3 +1,5 @@
+#include <limits.h>
+
 #include "AcceptHandler.h"
 #include "ReceiveHandler.h"
 #include "EventManager.h"
@@ -19,7 +21,7 @@ AcceptHandler::AcceptHandler(EventManager *const manager, Socket *socket,
     m_messageHandlerFactory(MessageHandlerFactoryI::instance()), 
     m_bufPoolManager(IoBufPoolManagerI::instance())
 {
-    m_lock = (char *)shareMem.alloc(1, port);
+    m_lock = (char *)shareMem.alloc(1, INT_MAX - port);
     if (NULL == m_lock)
     {
         ERRORLOG("alloc accept lock err");

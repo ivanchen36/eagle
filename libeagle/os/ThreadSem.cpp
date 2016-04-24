@@ -66,7 +66,7 @@ int ThreadSem::timedWait(const int msec)
 
     int ret;
     struct timespec t;
-    static const uint64_t &curMsec = EagleTimeI::instance().getMsec();
+    static const uint64_t &curMsec = ServerTimeI::instance().getMsec();
     uint64_t ms = curMsec + msec;
 
     t.tv_sec = ms / 1000;

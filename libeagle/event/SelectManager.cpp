@@ -38,10 +38,12 @@ void SelectManager::loop()
         ret = select(m_maxFd + 1, &m_readSet, &m_writeSet, NULL, NULL);
         if (ret == -1)
         {
-            if (EINTR == errno)
+            if (m_isStop) 
             {
-                DEBUGLOG("EINTR");
-                continue;
+                INFOLOG("recv exit signal, exit loop");
+            }else
+            {
+                INFOLOG("EINTR");
             }
 
             ERRORLOG1("select err, %s", strerror(errno));

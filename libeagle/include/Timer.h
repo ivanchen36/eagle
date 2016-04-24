@@ -23,7 +23,7 @@
 #include "TaskThread.h"
 #include "StrUtil.h"
 #include "SpinLock.h"
-#include "EagleTime.h"
+#include "ServerTime.h"
 
 namespace eagle
 {
@@ -89,7 +89,7 @@ private:
     TaskMap m_taskMap;
     ThreadSem m_sem;
     Thread *m_thread;
-    EagleTime &m_eagleTime;
+    ServerTime &m_serverTime;
 };
 
 typedef Singleton<Timer> TimerI;

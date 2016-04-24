@@ -16,8 +16,9 @@
 #include <string>
 
 #include "CallBack.h"
+#include "ShareMem.h"
 #include "Singleton.h"
-#include "Log.h"
+#include "Timer.h"
 #include "StrUtil.h"
 #include "Properties.h"
 #include "EventHandler.h"
@@ -29,10 +30,17 @@ namespace eagle
 #define EAGLE_MAIN(ver) \
 int main ( int argc, char *argv[] ) \
 { \
+    TimerI::del(); \
+    ServerTimeI::del(); \
+    ShareMemI::del(); \
+    if (fork() > 0) return 0;\
+    ServerTimeI::instance().autoUpdate(); \
     if (EG_SUCCESS != EagleI::instance().init(argc, argv, ver)) \
     return 0; \
  \
     EagleI::instance().runWorker(); \
+    EagleI::instance().destroy(); \
+    INFOLOG1("process %d quit", getpid()); \
     return 0; \
 }
 
@@ -102,6 +110,7 @@ public:
     } 
 
     int init(const int argc, char *const *argv, const char *ver);
+    void destroy();
     void runWorker(const int isMasterThread = 1);
     void stopWorker();
 

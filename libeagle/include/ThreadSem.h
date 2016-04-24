@@ -17,7 +17,7 @@
 #include <semaphore.h>
 
 #include "SemEx.h"
-#include "EagleTime.h"
+#include "ServerTime.h"
 
 namespace eagle
 {

@@ -1,3 +1,4 @@
+#include "Define.h"
 #include "SignalManager.h"
 #include "MasterSigManager.h"
 #include "ChildSigManager.h"
@@ -24,6 +25,24 @@ int SignalManager::block()
     sigset_t set;
 
     sigemptyset(&set);
+    for (;;)
+    {
+        sigsuspend(&set);
+        if (EINTR == errno) return EG_SUCCESS;
+
+        ERRORLOG1("sigsuspend err, %s", strerror(errno));
+
+        return EG_FAILED;
+    }
+
+    return EG_SUCCESS;
+}
+
+int SignalManager::setBlock()
+{
+    sigset_t set;
+
+    sigemptyset(&set);
     for (SaHandleMap::const_iterator it = m_handleMap.begin(); 
             it != m_handleMap.end(); ++it)
     {
@@ -34,13 +53,13 @@ int SignalManager::block()
     {
         ERRORLOG1("sigprocmask err, %d", strerror(errno));
 
-        return -1;
+        return EG_FAILED;
     }
 
-    return 0;
+    return EG_SUCCESS;
 }
 
-int SignalManager::unBlock()
+int SignalManager::setUnBlock()
 {
     sigset_t set;
 
@@ -55,10 +74,10 @@ int SignalManager::unBlock()
     {
         ERRORLOG1("sigprocmask err, %d", strerror(errno));
 
-        return -1;
+        return EG_FAILED;
     }
 
-    return 0;
+    return EG_SUCCESS;
 }
 
 void SignalManager::init()
@@ -94,6 +113,8 @@ void SignalManager::clean()
 
 void SignalManager::handleSig(const int sig)
 {
+    INFOLOG2("%d receive signal %d", getpid(), sig);
+
     SaHandleMap::const_iterator it;
     if ((it = m_handleMap.find(sig)) != m_handleMap.end())
     {

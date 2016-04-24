@@ -16,7 +16,7 @@
 #include <iostream>
 
 #include "Log.h"
-#include "EagleTime.h"
+#include "ServerTime.h"
 #include "PropertiesParser.h"
 
 using namespace eagle;

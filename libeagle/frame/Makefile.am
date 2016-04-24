@@ -19,7 +19,7 @@ libeagle_HEADERS = $(top_srcdir)/libeagle/include/AutoPtr.h \
 				   $(top_srcdir)/libeagle/include/CycleQueue.h \
 				   $(top_srcdir)/libeagle/include/Define.h \
 				   $(top_srcdir)/libeagle/include/Eagle.h \
-				   $(top_srcdir)/libeagle/include/EagleTime.h \
+				   $(top_srcdir)/libeagle/include/ServerTime.h \
 				   $(top_srcdir)/libeagle/include/EventHandler.h \
 				   $(top_srcdir)/libeagle/include/EventManager.h \
 				   $(top_srcdir)/libeagle/include/EventWorker.h \
@@ -50,7 +50,7 @@ lib_LTLIBRARIES = libeagle.la
 libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
 					  MasterSigManager.cpp ChildSigManager.cpp \
 					  ProcessManager.cpp Timer.cpp Proctitle.cpp \
-					  EagleTime.cpp
+					  ServerTime.cpp
 libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
 					 $(EVENT_PATH)/libevent.la $(NODE_PATH)/libnode.la \
 					 $(OPEN_PATH)/libopen.la $(PROTO_PATH)/libproto.la

@@ -76,7 +76,7 @@ libeagle_la_DEPENDENCIES = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
 	$(OPEN_PATH)/libopen.la $(PROTO_PATH)/libproto.la
 am_libeagle_la_OBJECTS = Eagle.lo TaskThread.lo SignalManager.lo \
 	MasterSigManager.lo ChildSigManager.lo ProcessManager.lo \
-	Timer.lo Proctitle.lo EagleTime.lo
+	Timer.lo Proctitle.lo ServerTime.lo
 libeagle_la_OBJECTS = $(am_libeagle_la_OBJECTS)
 libeagle_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -231,7 +231,7 @@ libeagle_HEADERS = $(top_srcdir)/libeagle/include/AutoPtr.h \
 				   $(top_srcdir)/libeagle/include/CycleQueue.h \
 				   $(top_srcdir)/libeagle/include/Define.h \
 				   $(top_srcdir)/libeagle/include/Eagle.h \
-				   $(top_srcdir)/libeagle/include/EagleTime.h \
+				   $(top_srcdir)/libeagle/include/ServerTime.h \
 				   $(top_srcdir)/libeagle/include/EventHandler.h \
 				   $(top_srcdir)/libeagle/include/EventManager.h \
 				   $(top_srcdir)/libeagle/include/EventWorker.h \
@@ -261,7 +261,7 @@ lib_LTLIBRARIES = libeagle.la
 libeagle_la_SOURCES = Eagle.cpp TaskThread.cpp SignalManager.cpp \
 					  MasterSigManager.cpp ChildSigManager.cpp \
 					  ProcessManager.cpp Timer.cpp Proctitle.cpp \
-					  EagleTime.cpp
+					  ServerTime.cpp
 
 libeagle_la_LIBADD = $(OS_PATH)/libos.la $(UTIL_PATH)/libutil.la \
 					 $(EVENT_PATH)/libevent.la $(NODE_PATH)/libnode.la \
@@ -344,10 +344,10 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChildSigManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Eagle.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EagleTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MasterSigManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProcessManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Proctitle.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ServerTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SignalManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TaskThread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Timer.Plo@am__quote@

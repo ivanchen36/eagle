@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-#include "EagleTime.h"
+#include "ServerTime.h"
 #include "CallBack.h"
 #include "Define.h"
 #include "Timer.h"
@@ -14,9 +14,10 @@ namespace
 
 const char *TIME_UPDATE_TIMERTASK = "updatetime";
 
-void updateEagleTime(void *param)
+void updateServerTime(void *param)
 {
-    eagle::EagleTimeI::instance().checkAndUpdate();
+    static eagle::ServerTime &time = eagle::ServerTimeI::instance();
+    time.checkAndUpdate();
 }
 
 }
@@ -26,12 +27,12 @@ namespace eagle
 
 __attribute__((constructor)) void autoUpdate()
 {
-    CallBack cb(updateEagleTime);
+    CallBack cb(updateServerTime);
 
     TimerI::instance().addTask(TIME_UPDATE_TIMERTASK, MIN_TIMER_INTERVAL, cb);
 }
 
-EagleTime::EagleTime() : m_info(NULL)
+ServerTime::ServerTime() : m_info(NULL)
 {
     m_pid = getpid();
     m_info = (TimeInfo *)ShareMemI::instance().alloc(
@@ -41,18 +42,23 @@ EagleTime::EagleTime() : m_info(NULL)
     checkAndUpdate();
 }
 
-EagleTime::~EagleTime()
+ServerTime::~ServerTime()
 {
-    if (TimerI::isExist()) TimerI::instance().stop();
-    if (NULL != m_info) ShareMemI::instance().free(m_info);
 }
 
-void EagleTime::cancelUpdate()
+void ServerTime::autoUpdate()
+{
+    CallBack cb(updateServerTime);
+
+    TimerI::instance().addTask(TIME_UPDATE_TIMERTASK, MIN_TIMER_INTERVAL, cb);
+}
+
+void ServerTime::cancelUpdate()
 {
     TimerI::instance().delTask(TIME_UPDATE_TIMERTASK);
 }
 
-void EagleTime::checkAndUpdate()
+void ServerTime::checkAndUpdate()
 {
     static int count = 0;
     static uint64_t msec = 0;
@@ -80,7 +86,7 @@ void EagleTime::checkAndUpdate()
     count = 0;
 }
 
-void EagleTime::update()
+void ServerTime::update()
 {
     static time_t &sec = m_info->sec;
     static uint64_t &msec = m_info->msec;

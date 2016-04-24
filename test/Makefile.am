@@ -17,7 +17,7 @@ noinst_PROGRAMS = autoptrtest timestatstest singletontest \
 				  logtest psemtest threadtest shmtest mmaptest \
 				  eagletest rbtest locktest sockettest queuetest \
 				  classtest eventtest proptest alloctest prototest \
-				  chtest reporttest
+				  chtest reporttest sigtest
 
 INCLUDES = -I$(TEST_INCLUDE) -I$(LIB_INCLUDE) -I$(LIBEAGLE_INCLUDE) \
 		   -I$(LIBEVENT_INCLUDE) -I$(LIBNODE_INCLUDE) -I$(LIBPROTO_INCLUDE)
@@ -81,3 +81,6 @@ chtest_LDFLAGS = $(TEST_LD)
 
 reporttest_SOURCES = ReportTest.cpp
 reporttest_LDFLAGS = $(TEST_LD)
+
+sigtest_SOURCES = SigTest.cpp
+sigtest_LDFLAGS = $(TEST_LD)

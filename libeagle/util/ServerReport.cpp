@@ -1,7 +1,7 @@
 #include "ServerReport.h"
 #include "StrUtil.h"
 #include "Shell.h"
-#include "EagleTime.h"
+#include "ServerTime.h"
 
 namespace
 {
@@ -190,12 +190,12 @@ int ServerReport::createSavePathDir()
 
 int ServerReport::init(const std::string &reportPath, const std::string &serverName)
 {
-    static eagle::EagleTime &eagleTime = eagle::EagleTimeI::instance();
+    static eagle::ServerTime &serverTime = eagle::ServerTimeI::instance();
 
-    int t = eagleTime.getSec();
+    int t = serverTime.getSec();
     int tmp = reportPath.length() -1;
 
-    m_tm = eagleTime.getTm();
+    m_tm = serverTime.getTm();
     m_nextHour = ((t + SECONDS_PER_EIGHT_HOUR - 1) / SECONDS_PER_HOUR + 1
             ) * SECONDS_PER_HOUR - SECONDS_PER_EIGHT_HOUR;
     m_nextFiveMinute = ((t + SECONDS_PER_EIGHT_HOUR - 1) / SECONDS_PER_FIVE_MINUITE + 1
@@ -223,9 +223,9 @@ void ServerReport::destroy()
 
 void ServerReport::checkAndSaveFile()
 {
-    static eagle::EagleTime &eagleTime = eagle::EagleTimeI::instance();
+    static eagle::ServerTime &serverTime = eagle::ServerTimeI::instance();
 
-    int tmp = eagleTime.getSec();
+    int tmp = serverTime.getSec();
 
     if (tmp < m_nextFiveMinute) return;
 
@@ -242,7 +242,7 @@ void ServerReport::checkAndSaveFile()
             ) * SECONDS_PER_FIVE_MINUITE - SECONDS_PER_EIGHT_HOUR;
     if (tmp > m_nextHour)
     {
-        m_tm = eagleTime.getTm();
+        m_tm = serverTime.getTm();
         m_nextHour = ((tmp + SECONDS_PER_EIGHT_HOUR - 1) / SECONDS_PER_HOUR + 1
                 ) * SECONDS_PER_HOUR - SECONDS_PER_EIGHT_HOUR;
         m_hourStats = new Stats(m_doc, m_tm, m_savePath, m_serverName);
@@ -263,8 +263,7 @@ void ServerReport::sendSuccReq(const std::string &reqName)
     StatsPtr stats = m_hourStats;
     std::map<std::string, int> &intMap = stats->getMap();
     sprintf(buf, LEVEL3_NODE, reqName.c_str(), STATS, SUCCESS);
-    std::string str(buf);
-    int &val = intMap[str];
+    int &val = intMap[buf];
     __sync_add_and_fetch(const_cast<volatile int *>(&val), 1);
 }
 

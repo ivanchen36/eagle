@@ -5,7 +5,7 @@
 
 #include "Log.h"
 #include "Define.h"
-#include "EagleTime.h"
+#include "ServerTime.h"
 namespace
 {
 const char *LOG_LEVEL_STR[] = {"debug", "info", "warn", "error"};
@@ -54,7 +54,7 @@ void Log::write(int level, const char *format, va_list args)
 {
     int len;
     char buf[MAX_LOG_LINE_LEN];
-    const std::string &logTimeStr = EagleTimeI::instance().getTimeStr();
+    const std::string &logTimeStr = ServerTimeI::instance().getTimeStr();
 
     snprintf(buf, MAX_LOG_LINE_LEN, "[%s %s]", logTimeStr.c_str(), LOG_LEVEL_STR[level]);
     len = strlen(buf);

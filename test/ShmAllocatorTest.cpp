@@ -18,7 +18,7 @@
 #include <vector>
 
 #include "Log.h"
-#include "EagleTime.h"
+#include "ServerTime.h"
 #include "ShmAllocator.h"
 
 using namespace eagle;

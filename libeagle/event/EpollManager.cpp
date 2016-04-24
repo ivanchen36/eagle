@@ -54,7 +54,13 @@ void EpollManager::loop()
         {
             if (EINTR == errno)
             {
-                DEBUGLOG("EINTR");
+                if (m_isStop) 
+                {
+                    INFOLOG("recv exit signal, exit loop");
+                }else
+                {
+                    INFOLOG("EINTR");
+                }
                 continue;
             }
 
@@ -75,7 +81,6 @@ void EpollManager::loop()
 
             if (NULL == handler)
             {
-                m_isStop = 1;
                 INFOLOG("recv exit notify, exit loop");
 
                 break;

@@ -17,7 +17,7 @@
 
 #include "Log.h"
 #include "CycleQueue.h"
-#include "EagleTime.h"
+#include "ServerTime.h"
 #include "Thread.h"
 
 using namespace std;

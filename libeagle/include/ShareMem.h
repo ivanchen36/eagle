@@ -31,18 +31,14 @@ public:
 
     void *alloc(const int size, const int key = 0);
     void *calloc(const int size, const int key = 0);
-    void free(void *ptr);
+    int free(void *ptr);
+    int getNattch(void *ptr);
 
 private:
-    struct ShmInfo
-    {
-        int id;
-        int pid;
-    };
-    typedef std::tr1::unordered_map<uintptr_t, ShmInfo> ShareMemMap;
+    typedef std::tr1::unordered_map<uintptr_t, int> ShareMemMap;
 
     ShareMem(){};
-    void free(void *ptr, const ShmInfo &info);
+    int free(void *ptr, const int id);
 
     ShareMemMap m_shmMap;
 
