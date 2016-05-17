@@ -54,7 +54,7 @@ void Log::write(int level, const char *format, va_list args)
 {
     int len;
     char buf[MAX_LOG_LINE_LEN];
-    const std::string &logTimeStr = ServerTimeI::instance().getTimeStr();
+    static const std::string &logTimeStr = ServerTimeI::instance().getTimeStr();
 
     snprintf(buf, MAX_LOG_LINE_LEN, "[%s %s]", logTimeStr.c_str(), LOG_LEVEL_STR[level]);
     len = strlen(buf);

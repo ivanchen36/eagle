@@ -51,6 +51,7 @@ void test()
     }
 
     test->printTest();
+    delete test;
 }
 
 /**

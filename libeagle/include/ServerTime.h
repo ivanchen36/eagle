@@ -34,20 +34,9 @@ public:
     void cancelUpdate();
     void checkAndUpdate();
 
-    const std::string &getTimeStr()
+    static const std::string &getTimeStr()
     {
-        static time_t &curSec = m_info->sec;
-        static char (&curTimeStr)[TIME_STR_LEN] = m_info->timeStr;
-        static int sec = curSec;
-        static std::string timeStr = curTimeStr;
-
-        if (sec != curSec)
-        {
-            sec = curSec;
-            timeStr = curTimeStr;
-        }
-
-        return timeStr;
+        return s_timeStr;
     }
 
     const std::string getTimeStr(const char *format)
@@ -109,6 +98,7 @@ private:
 
     int m_pid;
     TimeInfo *m_info;
+    static std::string s_timeStr;
 
     friend class Singleton<ServerTime>;
 };

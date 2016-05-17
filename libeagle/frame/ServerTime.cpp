@@ -32,6 +32,8 @@ __attribute__((constructor)) void autoUpdate()
     TimerI::instance().addTask(TIME_UPDATE_TIMERTASK, MIN_TIMER_INTERVAL, cb);
 }
 
+std::string ServerTime::s_timeStr = "1970-01-01 00:00:00";
+
 ServerTime::ServerTime() : m_info(NULL)
 {
     m_pid = getpid();
@@ -64,6 +66,8 @@ void ServerTime::checkAndUpdate()
     static uint64_t msec = 0;
     static int &pid = m_info->pid;
     static uint64_t &curMsec = m_info->msec;
+    static char (&timeStr)[TIME_STR_LEN] = m_info->timeStr;
+    static int len = s_timeStr.length();
 
     if (m_pid == pid)
     {
@@ -75,6 +79,7 @@ void ServerTime::checkAndUpdate()
     if (msec != curMsec)
     {
         msec = curMsec;
+        memcpy(&s_timeStr.at(0), timeStr, len);
 
         return;
     }
@@ -93,6 +98,7 @@ void ServerTime::update()
     static char (&timeStr)[TIME_STR_LEN] = m_info->timeStr;
     static struct tm &tm = m_info->tm;
     static struct timeval &tv = m_info->tv;
+    static int len = s_timeStr.length();
 
     gettimeofday(&tv, NULL);
     msec = tv.tv_sec * 1000 + tv.tv_usec / 1000;
@@ -103,6 +109,7 @@ void ServerTime::update()
     sprintf(timeStr, "%04d-%02d-%02d %02d:%02d:%02d",
             tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, 
             tm.tm_min, tm.tm_sec);
+    memcpy(&s_timeStr.at(0), timeStr, len);
 }
 
 }
